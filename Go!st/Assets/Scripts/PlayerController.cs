@@ -1,19 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
     PlayerInputAction action;
     Rigidbody rb;
-    Vector3 initScale;
     Vector3 velocity;
-    Vector2 inputValue;
 
-    //接地判定
-    bool isGround = false;
     //攻撃中か
     bool isAttack = false;
     bool isDamage = false;
@@ -23,38 +20,40 @@ public class PlayerController : MonoBehaviour
     float moveSpeed = 1f;
     [SerializeField]
     float maxSpeed = 10f;
-    //ジャンプ力
-    [SerializeField]
-    float jumpPower = 1f;
     [SerializeField]
     float damping = 0.98f; // 減衰率（1に近いほどゆっくり減衰）
-    //重力調整
+
+    private Vector2 startPosition;
+    private Vector2 currentPosition;
+    private Vector2 moveDirection;
+    private bool isInteracting = false;
+
     [SerializeField]
-    Vector2 gravity = new Vector3(0, -9.81f);
+    GameObject stickPrefab;
 
     // Start is called before the first frame update
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         action = new PlayerInputAction();
-        // ActionMaps[Player]の中の[Jump]というActionに紐づくイベントリスナーを登録
-        action.Player.Move.performed += OnMovePerformed;
-        action.Player.Move.canceled += OnMoveCanceled;
-        //action.Player.Jump.performed += OnJumpPerformed;
-        //action.Player.Attack.performed += OnAttackPerformed;
-        initScale = transform.localScale;
+        // ActionMaps[Player]の中のActionに紐づくイベントリスナーを登録
+        action.Player.Touch.performed += OnTouchMoved;
+        action.Player.TouchClick.started += OnTouchStarted;
+        action.Player.TouchClick.canceled += OnTouchEnded;
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        //重力
-        Gravity();
+        if (isInteracting)
+        {
+            //移動
+            Move();
+            //慣性
+            Inertia();
 
-        //移動
-        Move();
-        //慣性
-        Inertia();
+            Stick();
+        }
     }
 
     private void OnEnable()
@@ -69,40 +68,57 @@ public class PlayerController : MonoBehaviour
         action.Disable();
     }
 
-    //移動
-    private void OnMovePerformed(InputAction.CallbackContext context)
+    // タッチまたはマウスの開始位置
+    public void OnTouchStarted(InputAction.CallbackContext context)
     {
-        if (isDamage) return;
-        inputValue = context.ReadValue<Vector2>();
-        //走るアニメーション
-        //playerAnim.Run(true);
-        //進行方向を向く
-        Vector3 scale = initScale;
-        scale.x *= Mathf.Sign(inputValue.x);
-        transform.localScale = scale;
+        if (context.started)
+        {
+            isInteracting = true;
+            //最初にタッチまたはクリックした場所を保存
+            // タッチデバイスがアクティブならタッチ座標を取得
+            if (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.isPressed)
+            {
+                startPosition = Touchscreen.current.primaryTouch.position.ReadValue();
+            }
+            else if (Mouse.current != null)
+            {
+                // それ以外はマウス座標を取得
+                startPosition = Mouse.current.position.ReadValue();
+            }
+            //スタートポジション以外も設定することで前回の位置をリセット
+            currentPosition = startPosition;
+            stickPrefab.SetActive(true);
+            stickPrefab.transform.position = startPosition;
+            stickPrefab.transform.GetChild(0).gameObject.transform.position = startPosition;
+        }
     }
 
-    //移動終了
-    private void OnMoveCanceled(InputAction.CallbackContext context)
+    // タッチまたはマウスの現在位置
+    public void OnTouchMoved(InputAction.CallbackContext context)
     {
-        //移動しないように
-        inputValue = Vector2.zero;
-        //playerAnim.Run(false);
+        if (context.performed && isInteracting)
+        {
+            currentPosition = context.ReadValue<Vector2>();
+            moveDirection = (currentPosition - startPosition).normalized;
+        }
     }
 
-    //ジャンプ
-    private void OnJumpPerformed(InputAction.CallbackContext context)
+    // タッチまたはマウス操作の終了
+    public void OnTouchEnded(InputAction.CallbackContext context)
     {
-        if (!isGround || isDamage) return;
-        //rb2d.AddForce(Vector3.up * jumpPower, ForceMode2D.Impulse);
-        //playerAnim.Jump(true);
+        if (context.canceled)
+        {
+            isInteracting = false;
+            moveDirection = Vector2.zero;
+            stickPrefab.SetActive(false);
+        }
     }
 
     //移動update
     void Move()
     {
-        Vector3 moveDirection = new Vector3(inputValue.x, 0, inputValue.y).normalized;
-        rb.AddForce(moveDirection * moveSpeed, ForceMode.Force);
+        Vector3 moveDir = new Vector3(moveDirection.x, 0, moveDirection.y);
+        rb.AddForce(moveDir * moveSpeed, ForceMode.Force);
         //水平方向の移動が最大スピードを超えないように
         velocity = rb.velocity;
         Vector3 horizontalVelocity = new Vector3(velocity.x, 0, velocity.z); // 水平方向のみ計算
@@ -121,7 +137,7 @@ public class PlayerController : MonoBehaviour
             rb.velocity = Vector2.zero;
         }
         //入力がなくなった時または攻撃中にX軸の慣性の調整
-        else if (inputValue == Vector2.zero || isAttack == true)
+        else if (moveDirection == Vector2.zero || isAttack == true)
         {
             // 現在のvelocityを取得し減衰を適用
             velocity = rb.velocity;
@@ -136,57 +152,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    //重力
-    void Gravity()
+    void Stick()
     {
-        rb.AddForce(gravity, ForceMode.Force);
-    }
-
-    //攻撃
-    private void OnAttackPerformed(InputAction.CallbackContext context)
-    {
-        if (isDamage) return;
-        isAttack = true;
-        //playerAnim.Attack(true);
-    }
-
-    //ダメージ
-    public void Damage()
-    {
-        //if (playerHP.GetIsDead()) return;
-        //isDamage = true;
-        //playerAnim.Hit();
-        //playerHP.HPDamage();
-    }
-
-    //接地判定
-    private void OnTriggerStay2D(Collider2D _other)
-    {
-        if (_other.CompareTag("Ground"))
-        {
-            isGround = true;
-            //playerAnim.Jump(true);
-        }
-    }
-
-    //接地判定
-    private void OnTriggerExit2D(Collider2D _other)
-    {
-        if (_other.CompareTag("Ground"))
-        {
-            isGround = false;
-        }
-    }
-
-    //攻撃終了
-    public void SetAttackFalse()
-    {
-        isAttack = false;
-    }
-
-    //ダメージアニメーション終了
-    public void SetHitFalse()
-    {
-        isDamage = false;
+        //スティックの位置がタッチした位置から離れすぎないように
+        Vector2 stickPos = Vector2.ClampMagnitude(currentPosition - startPosition, 50);
+        stickPrefab.transform.GetChild(0).gameObject.transform.position = startPosition + stickPos;
     }
 }
