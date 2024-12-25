@@ -4,32 +4,39 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static UnityEngine.GraphicsBuffer;
 
 public class PlayerController : MonoBehaviour
 {
+    //移動
+    [SerializeField] float moveSpeed = 1f;
+    [SerializeField] float maxSpeed = 10f;
+    [SerializeField] float damping = 0.98f; // 減衰率（1に近いほどゆっくり減衰）
+    [SerializeField] float attackSpeed;//攻撃の速度力
+
+    [SerializeField] int maxHP = 10;
+
+    [SerializeField] GameObject stickPrefab;//仮想スティック
+    [SerializeField] GameObject attackPrefab;    //発射したいプレハブ
+
     PlayerInputAction action;
     Rigidbody rb;
     Vector3 velocity;
 
-    //攻撃中か
-    bool isAttack = false;
-    bool isDamage = false;
-
-    //移動
-    [SerializeField]
-    float moveSpeed = 1f;
-    [SerializeField]
-    float maxSpeed = 10f;
-    [SerializeField]
-    float damping = 0.98f; // 減衰率（1に近いほどゆっくり減衰）
-
     private Vector2 startPosition;
     private Vector2 currentPosition;
     private Vector2 moveDirection;
-    private bool isInteracting = false;
 
-    [SerializeField]
-    GameObject stickPrefab;
+    private bool isInteracting = false;//入力中フラグ
+    private bool isAttack = false;//攻撃中フラグ
+    private bool isDamage = false;
+    private bool isSkill = false;//必殺技発動中フラグ
+
+    private float touchTime = 0;
+    private float hp = 0;
+    //オートエイム用角度変数
+    private float degreeAttack = 0.0f;
+    private float radAttack = 0.0f;
 
     // Start is called before the first frame update
     void Awake()
@@ -40,6 +47,19 @@ public class PlayerController : MonoBehaviour
         action.Player.Touch.performed += OnTouchMoved;
         action.Player.TouchClick.started += OnTouchStarted;
         action.Player.TouchClick.canceled += OnTouchEnded;
+        hp = maxHP;
+    }
+
+    private void Update()
+    {
+        if (isInteracting)
+        {
+            touchTime += Time.deltaTime;
+        }
+        else
+        {
+            touchTime = 0;
+        }
     }
 
     // Update is called once per frame
@@ -51,7 +71,7 @@ public class PlayerController : MonoBehaviour
             Move();
             //慣性
             Inertia();
-
+            //スティック
             Stick();
         }
     }
@@ -100,6 +120,11 @@ public class PlayerController : MonoBehaviour
         {
             currentPosition = context.ReadValue<Vector2>();
             moveDirection = (currentPosition - startPosition).normalized;
+            //0.5秒以内にタッチしたポイントから100離れると必殺技発動
+            if(touchTime < 0.5f && (currentPosition - startPosition).magnitude > 100)
+            {
+                print("必殺技");
+            }
         }
     }
 
@@ -157,5 +182,43 @@ public class PlayerController : MonoBehaviour
         //スティックの位置がタッチした位置から離れすぎないように
         Vector2 stickPos = Vector2.ClampMagnitude(currentPosition - startPosition, 50);
         stickPrefab.transform.GetChild(0).gameObject.transform.position = startPosition + stickPos;
+    }
+
+    void Attack()
+    {
+        if (isAttack == false)
+        {
+            isAttack = true;
+
+            //  タグEnemyのオブジェクトをすべて取得し、10f以内の最も近いエネミーを取得する。
+            GameObject nearestEnemy = null;    //前回の攻撃で一番近かった敵をリセット
+            float minDis = 10f;    //オートエイム範囲。お好みで。
+            GameObject[] enemys = GameObject.FindGameObjectsWithTag("Enemy");//Enemyタグがついたオブジェクトをすべて配列に格納。
+            foreach (GameObject enemy in enemys)    //全Enemyオブジェクト入り配列をひとつづつループ。
+            {
+                float dis = Vector3.Distance(transform.position, enemy.transform.position);    //プレイヤーキャラとループ中の敵オブジェクトの距離を引き算して差を出す。
+                if (dis < minDis)    //オートエイム範囲(10f)以内か確認
+                {
+                    minDis = dis;    //今んとこ一番近い敵との距離更新。次のループ用。
+                    nearestEnemy = enemy;    //今んとこ一番近い敵オブジェクト更新。
+                }
+            }
+            // foreach　が終わった時、nearestEnemyにプレイヤーキャラから一番近い敵が入ってる。
+
+            if (nearestEnemy != null)  //オートエイム有効nullチェック。10f以内にタグEnemy存在。
+            {
+                GameObject attackObj = Instantiate(attackPrefab, this.transform.position, Quaternion.identity);
+                Rigidbody rb = attackObj.GetComponent<Rigidbody>();
+                Vector3 direction = (nearestEnemy.transform.position - this.transform.position).normalized;
+                rb.velocity = direction * attackSpeed;
+
+                Invoke("StopAttack", 0.4f);    //連射を防ぐためのフラグ操作。
+            }
+        }
+    }
+
+    void StopAttack()
+    {
+        isAttack = false;    //攻撃中フラグ下ろす
     }
 }
