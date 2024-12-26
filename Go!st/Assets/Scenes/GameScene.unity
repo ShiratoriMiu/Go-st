@@ -649,6 +649,7 @@ GameObject:
   - component: {fileID: 1205311233}
   - component: {fileID: 1205311235}
   - component: {fileID: 1205311234}
+  - component: {fileID: 1205311236}
   m_Layer: 0
   m_Name: EnemyBlack
   m_TagString: Enemy
@@ -665,7 +666,7 @@ Transform:
   m_GameObject: {fileID: 1205311232}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.64, y: 0.5, z: 2.82}
+  m_LocalPosition: {x: 0.12, y: 0.5, z: 1.6}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -697,7 +698,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 80
   m_CollisionDetection: 0
 --- !u!136 &1205311235
 CapsuleCollider:
@@ -722,6 +723,18 @@ CapsuleCollider:
   m_Height: 1.1666331
   m_Direction: 1
   m_Center: {x: 0.019093513, y: 0.56585956, z: -0.019093275}
+--- !u!114 &1205311236
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1205311232}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e4e7266d675fd14aba5f54339f8fa4a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1254780508
 GameObject:
   m_ObjectHideFlags: 0
@@ -756,7 +769,7 @@ MonoBehaviour:
   moveSpeed: 20
   maxSpeed: 3
   damping: 0.98
-  attackSpeed: 0
+  attackSpeed: 10
   maxHP: 10
   stickPrefab: {fileID: 961139193}
   attackPrefab: {fileID: 2829636624271746724, guid: 7cafba95233f17745b87ee26c54ba3fc, type: 3}

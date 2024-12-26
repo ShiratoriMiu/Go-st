@@ -121,7 +121,7 @@ public class PlayerController : MonoBehaviour
             currentPosition = context.ReadValue<Vector2>();
             moveDirection = (currentPosition - startPosition).normalized;
             //0.5秒以内にタッチしたポイントから100離れると必殺技発動
-            if(touchTime < 0.5f && (currentPosition - startPosition).magnitude > 100)
+            if(touchTime < 0.2f && (currentPosition - startPosition).magnitude > 200)
             {
                 print("必殺技");
             }
@@ -133,6 +133,10 @@ public class PlayerController : MonoBehaviour
     {
         if (context.canceled)
         {
+            if(touchTime < 0.2f)
+            {
+                Attack();
+            }
             isInteracting = false;
             moveDirection = Vector2.zero;
             stickPrefab.SetActive(false);
@@ -208,9 +212,9 @@ public class PlayerController : MonoBehaviour
             if (nearestEnemy != null)  //オートエイム有効nullチェック。10f以内にタグEnemy存在。
             {
                 GameObject attackObj = Instantiate(attackPrefab, this.transform.position, Quaternion.identity);
-                Rigidbody rb = attackObj.GetComponent<Rigidbody>();
-                Vector3 direction = (nearestEnemy.transform.position - this.transform.position).normalized;
-                rb.velocity = direction * attackSpeed;
+                Rigidbody attackObjRb = attackObj.GetComponent<Rigidbody>();
+                Vector3 attackDirection = (nearestEnemy.transform.position - this.transform.position).normalized;
+                attackObjRb.velocity = attackDirection * attackSpeed;
 
                 Invoke("StopAttack", 0.4f);    //連射を防ぐためのフラグ操作。
             }
