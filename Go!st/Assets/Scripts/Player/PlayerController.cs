@@ -1,10 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static UnityEngine.GraphicsBuffer;
+using UnityEngine.EventSystems;
 
 public class PlayerController : MonoBehaviour
 {
@@ -32,7 +30,7 @@ public class PlayerController : MonoBehaviour
     private bool isInteracting = false;//入力中フラグ
     private bool isAttack = false;//攻撃中フラグ
     private bool isDamage = false;
-    private bool isSkill = false;//必殺話字フラグs
+    private bool isSkill = false;//必殺話字フラグ
 
     private float touchTime = 0;
     private float hp = 0;
@@ -113,7 +111,6 @@ public class PlayerController : MonoBehaviour
     {
         if (context.started)
         {
-            isInteracting = true;
             //最初にタッチまたはクリックした場所を保存
             // タッチデバイスがアクティブならタッチ座標を取得
             if (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.isPressed)
@@ -125,11 +122,15 @@ public class PlayerController : MonoBehaviour
                 // それ以外はマウス座標を取得
                 startPosition = Mouse.current.position.ReadValue();
             }
-            //スタートポジション以外も設定することで前回の位置をリセット
-            currentPosition = startPosition;
-            stickPrefab.SetActive(true);
-            stickPrefab.transform.position = startPosition;
-            stickPrefab.transform.GetChild(0).gameObject.transform.position = startPosition;
+            isInteracting = TouchAreaJudge(startPosition);
+            if (isInteracting)
+            {
+                //スタートポジション以外も設定することで前回の位置をリセット
+                currentPosition = startPosition;
+                stickPrefab.SetActive(true);
+                stickPrefab.transform.position = startPosition;
+                stickPrefab.transform.GetChild(0).gameObject.transform.position = startPosition;
+            }
         }
     }
 
@@ -151,7 +152,7 @@ public class PlayerController : MonoBehaviour
     // タッチまたはマウス操作の終了
     public void OnTouchEnded(InputAction.CallbackContext context)
     {
-        if (context.canceled)
+        if (context.canceled && isInteracting)
         {
             if(touchTime < 0.2f)
             {
@@ -377,5 +378,27 @@ public class PlayerController : MonoBehaviour
 
         // 線分上の最も近い点を返す
         return segmentStart + t * segment;
+    }
+
+    bool TouchAreaJudge(Vector2 _startPosition)
+    {
+        //RaycastAllの結果格納用のリスト作成
+        List<RaycastResult> RayResult = new List<RaycastResult>();
+
+        PointerEventData pointer = new PointerEventData(EventSystem.current);
+        //PointerEvenDataに、マウスの位置をセット
+        pointer.position = _startPosition;
+        //RayCast（スクリーン座標）
+        EventSystem.current.RaycastAll(pointer, RayResult);
+
+        foreach (RaycastResult result in RayResult)
+        {
+            if (result.gameObject.CompareTag("TouchArea"))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
