@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController01 : MonoBehaviour
 {
     //移動
     [SerializeField] float moveSpeed = 1f;
@@ -17,11 +17,11 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] GameObject stickPrefab;//仮想スティック
     [SerializeField] GameObject attackPrefab;    //発射したいプレハブ
+    [SerializeField] GameObject skillArea;    //必殺技範囲
 
     PlayerInputAction action;
     Rigidbody rb;
     Vector3 velocity;
-    PlayerSkill01 skill;
 
     private Vector2 startPosition;
     private Vector2 currentPosition;
@@ -40,21 +40,17 @@ public class PlayerController : MonoBehaviour
 
     //画面内に移動範囲を制限
     [SerializeField] LayerMask groundLayer; // 地面のレイヤー
-
     [SerializeField, Range(0f, 1f)] float leftOffset = 0.1f;   // 左端のオフセット
     [SerializeField, Range(0f, 1f)] float rightOffset = 0.9f;  // 右端のオフセット
     [SerializeField, Range(0f, 1f)] float topOffset = 0.9f;    // 上端のオフセット
     [SerializeField, Range(0f, 1f)] float bottomOffset = 0.1f; // 下端のオフセット
-
     Camera mainCamera; // 使用するカメラ
-
     private Vector3[] corners = new Vector3[4]; // 四角形の頂点
 
     // Start is called before the first frame update
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        skill = GetComponent<PlayerSkill01>();
         action = new PlayerInputAction();
         // ActionMaps[Player]の中のActionに紐づくイベントリスナーを登録
         action.Player.Touch.performed += OnTouchMoved;
@@ -62,6 +58,8 @@ public class PlayerController : MonoBehaviour
         action.Player.TouchClick.canceled += OnTouchEnded;
         hp = maxHP;
         mainCamera = Camera.main;
+
+        skillArea.SetActive(false);
 
         // カメラの四隅から地面への交点を取得
         CalculateCorners();
@@ -146,9 +144,8 @@ public class PlayerController : MonoBehaviour
             //0.5秒以内にタッチしたポイントから100離れると必殺技発動
             if (touchTime < 0.2f && (currentPosition - startPosition).magnitude > 200)
             {
-                if (!isSkill) Skill(currentPosition);
+                if (!isSkill) Skill();
             }
-            skill.SkillTouchEnded();
         }
     }
 
@@ -256,16 +253,17 @@ public class PlayerController : MonoBehaviour
         isAttack = false;    //攻撃中フラグ下ろす
     }
 
-    void Skill(Vector2 _context)
+    void Skill()
     {
         isSkill = true;
-        skill.SkillTouchMove(_context);
+        skillArea.SetActive(true);
 
-        Invoke("StopSkill", 5f);
+        Invoke("StopSkill", 1f);
     }
 
     void StopSkill()
     {
+        skillArea.SetActive(false);
         isSkill = false;
     }
 
