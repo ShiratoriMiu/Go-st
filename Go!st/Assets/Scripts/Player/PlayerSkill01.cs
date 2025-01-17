@@ -5,6 +5,7 @@ public class PlayerSkill01 : MonoBehaviour
 {
     public LineRenderer lineRenderer; // LineRendererをアタッチ
     private List<Vector3> points = new List<Vector3>(); // 線の頂点を記録するリスト
+    private List<GameObject> detectedEnemies = new List<GameObject>(); // 検知したEnemyを格納するリスト
 
     void Start()
     {
@@ -29,27 +30,26 @@ public class PlayerSkill01 : MonoBehaviour
         }
     }
 
-    public void SkillTouchMove(Vector2 _context)
+    public void SkillTouchMove()
     {
-        Vector2 screenPosition = _context;
-        AddPoint(screenPosition);
+        AddPoint();
     }
 
     public void SkillTouchEnded()
     {
         points.Clear(); // 軌跡をクリア
         UpdateLineRenderer();
+        DetectEnemies(); // 範囲内のEnemyを検知
     }
 
-    private void AddPoint(Vector2 screenPosition)
+    private void AddPoint()
     {
-        Vector3 worldPosition = Camera.main.ScreenToWorldPoint(new Vector3(screenPosition.x, screenPosition.y, Mathf.Abs(Camera.main.transform.position.z)));
-
-        Debug.Log($"Screen Position: {screenPosition}, World Position: {worldPosition}");
+        Vector3 worldPosition = transform.position;
 
         if (points.Count == 0 || Vector3.Distance(points[points.Count - 1], worldPosition) > 0.1f)
         {
-            points.Add(transform.position);
+            worldPosition.y = 1;
+            points.Add(worldPosition);
             UpdateLineRenderer();
         }
     }
@@ -61,5 +61,55 @@ public class PlayerSkill01 : MonoBehaviour
 
         lineRenderer.positionCount = points.Count;
         lineRenderer.SetPositions(points.ToArray());
+    }
+
+
+    private void DetectEnemies()
+    {
+        // 前回検知したEnemyをクリア
+        detectedEnemies.Clear();
+
+        // 頂点が3つ以上ないと多角形を作れないので、検知を行わない
+        if (points.Count < 3)
+        {
+            return;
+        }
+
+        // すべてのEnemyTagを持つオブジェクトを検索
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+
+        foreach (GameObject enemy in enemies)
+        {
+            // オブジェクトのコライダーを取得
+            Collider enemyCollider = enemy.GetComponent<Collider>();
+
+            if (enemyCollider != null && IsPointInsidePolygon(enemyCollider.bounds.center))
+            {
+                // 範囲内にあるので、リストに追加
+                detectedEnemies.Add(enemy);
+
+                // 検知したオブジェクトに対して処理
+                Debug.Log("Enemy Detected: " + enemy.name);
+                
+                // ここに、検知後の処理を記述(例：ダメージを与えるなど)
+            }
+        }
+    }
+
+    private bool IsPointInsidePolygon(Vector3 point)
+    {
+        int nvert = points.Count;
+        int i, j;
+        bool c = false;
+
+        for (i = 0, j = nvert - 1; i < nvert; j = i++)
+        {
+            if (((points[i].z > point.z) != (points[j].z > point.z)) &&
+                 (point.x < (points[j].x - points[i].x) * (point.z - points[i].z) / (points[j].z - points[i].z) + points[i].x))
+            {
+                c = !c;
+            }
+        }
+        return c;
     }
 }

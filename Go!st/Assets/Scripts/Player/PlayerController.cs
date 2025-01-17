@@ -62,9 +62,6 @@ public class PlayerController : MonoBehaviour
         action.Player.TouchClick.canceled += OnTouchEnded;
         hp = maxHP;
         mainCamera = Camera.main;
-
-        // カメラの四隅から地面への交点を取得
-        CalculateCorners();
     }
 
     private void Update()
@@ -91,9 +88,14 @@ public class PlayerController : MonoBehaviour
             Inertia();
             //スティック
             Stick();
+
+            if (isSkill)
+            {
+                skill.SkillTouchMove();
+                // プレイヤーを四角形の中に制限
+                ConstrainPlayer();
+            }
         }
-        // プレイヤーを四角形の中に制限
-        ConstrainPlayer();
     }
 
     private void OnEnable()
@@ -146,9 +148,13 @@ public class PlayerController : MonoBehaviour
             //0.5秒以内にタッチしたポイントから100離れると必殺技発動
             if (touchTime < 0.2f && (currentPosition - startPosition).magnitude > 200)
             {
-                if (!isSkill) Skill(currentPosition);
+                if (!isSkill)
+                {
+                    // カメラの四隅から地面への交点を取得
+                    CalculateCorners();
+                    Skill();
+                }
             }
-            skill.SkillTouchEnded();
         }
     }
 
@@ -164,6 +170,7 @@ public class PlayerController : MonoBehaviour
             isInteracting = false;
             moveDirection = Vector2.zero;
             stickPrefab.SetActive(false);
+            skill.SkillTouchEnded();
         }
     }
 
@@ -256,12 +263,11 @@ public class PlayerController : MonoBehaviour
         isAttack = false;    //攻撃中フラグ下ろす
     }
 
-    void Skill(Vector2 _context)
+    void Skill()
     {
         isSkill = true;
-        skill.SkillTouchMove(_context);
 
-        Invoke("StopSkill", 5f);
+        Invoke("StopSkill", 10);
     }
 
     void StopSkill()
@@ -269,6 +275,7 @@ public class PlayerController : MonoBehaviour
         isSkill = false;
     }
 
+    //スキル中フラグ取得
     public bool GetIsSkill() { return isSkill; }
 
     //ここから下はカメラの範囲内に移動範囲を制限
