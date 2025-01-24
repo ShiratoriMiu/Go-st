@@ -1,31 +1,45 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class EnemySpawn : MonoBehaviour
 {
-    [SerializeField] GameObject enemyPrefab;
+    [SerializeField,Header("敵のプレハブ")] GameObject enemyPrefab; // 敵のプレハブ
+    [SerializeField, Header("敵の最大数")] private int maxPoolSize = 100; // プールの最大サイズ
+    [SerializeField, Header("次にスポーンするまでの時間")] private float spawnTime = 10f;
+    //プレイヤーを基準に周りにスポーン
+    [SerializeField, Header("最小スポーン位置")] private float spawnMinDistance = 5f;
+    [SerializeField, Header("最大スポーン位置")] private float spawnMaxDistance = 10f;
 
-    [SerializeField] private float spawnTime = 10f;
-    [SerializeField] private float spawnMinDistance = 5f;
-    [SerializeField] private float spawnMaxDistance = 10f;
+    private GameObject player;
+    private float time = 0;
+    private PlayerController playerController;
 
-    Transform player;
-    float time = 0;
+    private List<GameObject> enemyPool; // 敵オブジェクトのプール
 
-    // Start is called before the first frame update
     void Start()
     {
-        player = GameObject.FindWithTag("Player").GetComponent<Transform>();
+        // プレイヤーを取得
+        player = GameObject.FindWithTag("Player");
+        playerController = player.GetComponent<PlayerController>();
+
+        // プールを初期化
+        enemyPool = new List<GameObject>();
+        for (int i = 0; i < maxPoolSize; i++)
+        {
+            GameObject enemy = Instantiate(enemyPrefab,this.transform);
+            enemy.SetActive(false); // 初期状態で非アクティブにする
+            enemyPool.Add(enemy);
+        }
     }
 
-    // Update is called once per frame
     void Update()
     {
+        if (playerController.GetIsSkill()) return;
+
         time += Time.deltaTime;
 
-        if(time > spawnTime)
+        if (time > spawnTime)
         {
             Spawn();
             time = 0;
@@ -48,9 +62,28 @@ public class EnemySpawn : MonoBehaviour
         );
 
         // プレイヤーの位置を基準に配置
-        spawnPosition += player.position;
+        spawnPosition += player.transform.position;
 
-        // オブジェクトを生成
-        Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
+        // プールから非アクティブな敵を取得
+        GameObject enemy = GetPooledEnemy();
+        if (enemy != null)
+        {
+            enemy.transform.position = spawnPosition;
+            enemy.transform.rotation = Quaternion.identity;
+            enemy.SetActive(true); // 敵をアクティブにする
+        }
+    }
+
+    // プールから非アクティブな敵を取得
+    GameObject GetPooledEnemy()
+    {
+        foreach (var enemy in enemyPool)
+        {
+            if (!enemy.activeInHierarchy) // 非アクティブなオブジェクトを探す
+            {
+                return enemy;
+            }
+        }
+        return null; // プールがすべて使用中の場合は null を返す
     }
 }

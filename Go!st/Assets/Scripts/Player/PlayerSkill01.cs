@@ -37,9 +37,9 @@ public class PlayerSkill01 : MonoBehaviour
 
     public void SkillTouchEnded()
     {
+        DetectEnemies(); // 範囲内のEnemyを検知
         points.Clear(); // 軌跡をクリア
         UpdateLineRenderer();
-        DetectEnemies(); // 範囲内のEnemyを検知
     }
 
     private void AddPoint()
@@ -48,7 +48,7 @@ public class PlayerSkill01 : MonoBehaviour
 
         if (points.Count == 0 || Vector3.Distance(points[points.Count - 1], worldPosition) > 0.1f)
         {
-            worldPosition.y = 1;
+            worldPosition.y = 0.5f; // 固定高さに設定
             points.Add(worldPosition);
             UpdateLineRenderer();
         }
@@ -72,6 +72,7 @@ public class PlayerSkill01 : MonoBehaviour
         // 頂点が3つ以上ないと多角形を作れないので、検知を行わない
         if (points.Count < 3)
         {
+            Debug.Log("線の頂点が少なすぎます。");
             return;
         }
 
@@ -83,20 +84,27 @@ public class PlayerSkill01 : MonoBehaviour
             // オブジェクトのコライダーを取得
             Collider enemyCollider = enemy.GetComponent<Collider>();
 
-            if (enemyCollider != null && IsPointInsidePolygon(enemyCollider.bounds.center))
+            if (enemyCollider != null)
             {
-                // 範囲内にあるので、リストに追加
-                detectedEnemies.Add(enemy);
+                Vector3 enemyPosition = enemyCollider.bounds.center;
 
-                // 検知したオブジェクトに対して処理
-                Debug.Log("Enemy Detected: " + enemy.name);
-                
-                // ここに、検知後の処理を記述(例：ダメージを与えるなど)
+                // X-Z平面上でのポリゴン内判定を行う
+                if (IsPointInsidePolygonXZ(enemyPosition))
+                {
+                    // 範囲内にあるので、リストに追加
+                    detectedEnemies.Add(enemy);
+
+                    // 検知したオブジェクトに対して処理
+                    Debug.Log("Enemy Detected: " + enemy.name);
+
+                    // ここに、検知後の処理を記述(例：ダメージを与えるなど)
+                    enemy.GetComponent<EnemyController>().Damage(3);
+                }
             }
         }
     }
 
-    private bool IsPointInsidePolygon(Vector3 point)
+    private bool IsPointInsidePolygonXZ(Vector3 point)
     {
         int nvert = points.Count;
         int i, j;
@@ -104,6 +112,7 @@ public class PlayerSkill01 : MonoBehaviour
 
         for (i = 0, j = nvert - 1; i < nvert; j = i++)
         {
+            // X-Z平面上でのポリゴン内判定
             if (((points[i].z > point.z) != (points[j].z > point.z)) &&
                  (point.x < (points[j].x - points[i].x) * (point.z - points[i].z) / (points[j].z - points[i].z) + points[i].x))
             {

@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour
     PlayerInputAction action;
     Rigidbody rb;
     Vector3 velocity;
-    PlayerSkill01 skill;
+    PlayerSkill skill;
 
     private Vector2 startPosition;
     private Vector2 currentPosition;
@@ -37,6 +37,7 @@ public class PlayerController : MonoBehaviour
     //オートエイム用角度変数
     private float degreeAttack = 0.0f;
     private float radAttack = 0.0f;
+    private float nearestEnemyDis;
 
     //画面内に移動範囲を制限
     [SerializeField] LayerMask groundLayer; // 地面のレイヤー
@@ -54,7 +55,7 @@ public class PlayerController : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        skill = GetComponent<PlayerSkill01>();
+        skill = GetComponent<PlayerSkill>();
         action = new PlayerInputAction();
         // ActionMaps[Player]の中のActionに紐づくイベントリスナーを登録
         action.Player.Touch.performed += OnTouchMoved;
@@ -88,13 +89,15 @@ public class PlayerController : MonoBehaviour
             Inertia();
             //スティック
             Stick();
+            //移動方向を向く
+            LookMoveDirection();
+        }
 
-            if (isSkill)
-            {
-                skill.SkillTouchMove();
-                // プレイヤーを四角形の中に制限
-                ConstrainPlayer();
-            }
+        if (isSkill)
+        {
+            skill.SkillTouchMove();
+            // プレイヤーを四角形の中に制限
+            ConstrainPlayer();
         }
     }
 
@@ -145,16 +148,6 @@ public class PlayerController : MonoBehaviour
         {
             currentPosition = context.ReadValue<Vector2>();
             moveDirection = (currentPosition - startPosition).normalized;
-            //0.5秒以内にタッチしたポイントから100離れると必殺技発動
-            if (touchTime < 0.2f && (currentPosition - startPosition).magnitude > 200)
-            {
-                if (!isSkill)
-                {
-                    // カメラの四隅から地面への交点を取得
-                    CalculateCorners();
-                    Skill();
-                }
-            }
         }
     }
 
@@ -163,14 +156,31 @@ public class PlayerController : MonoBehaviour
     {
         if (context.canceled && isInteracting)
         {
+            skill.SkillTouchEnded();
+            StopSkill();
+
             if (touchTime < 0.2f)
             {
-                Attack();
+                //0.2秒以内にタッチしたポイントから100離れると必殺技発動
+                if ((currentPosition - startPosition).magnitude > 200)
+                {
+                    if (!isSkill)
+                    {
+                        // カメラの四隅から地面への交点を取得
+                        CalculateCorners();
+                        Skill();
+                    }
+                }
+                else
+                {
+                    nearestEnemyDis = attackDis;
+                    Attack();
+                }
             }
+           
             isInteracting = false;
             moveDirection = Vector2.zero;
             stickPrefab.SetActive(false);
-            skill.SkillTouchEnded();
         }
     }
 
@@ -230,9 +240,10 @@ public class PlayerController : MonoBehaviour
             foreach (GameObject enemy in enemys)    //全Enemyオブジェクト入り配列をひとつづつループ。
             {
                 float dis = Vector3.Distance(transform.position, enemy.transform.position);    //プレイヤーキャラとループ中の敵オブジェクトの距離を引き算して差を出す。
-                if (dis < attackDis)    //オートエイム範囲(10f)以内か確認
+                
+                if (dis < nearestEnemyDis)    //オートエイム範囲(10f)以内か確認
                 {
-                    attackDis = dis;    //今んとこ一番近い敵との距離更新。次のループ用。
+                    nearestEnemyDis = dis;    //今んとこ一番近い敵との距離更新。次のループ用。
                     nearestEnemy = enemy;    //今んとこ一番近い敵オブジェクト更新。
                 }
             }
@@ -272,6 +283,7 @@ public class PlayerController : MonoBehaviour
 
     void StopSkill()
     {
+        skill.SkillTouchEnded();
         isSkill = false;
     }
 
@@ -409,5 +421,17 @@ public class PlayerController : MonoBehaviour
         }
 
         return false;
+    }
+
+    void LookMoveDirection()
+    {
+        Vector3 moveDir = new Vector3(moveDirection.x, 0, moveDirection.y);
+        // 移動方向がゼロでない場合に回転
+        if (moveDir.magnitude > 0.1f)
+        {
+            // 移動方向に向く
+            Quaternion targetRotation = Quaternion.LookRotation(moveDir);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+        }
     }
 }

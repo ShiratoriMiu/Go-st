@@ -1,63 +1,99 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public class EnemyController : MonoBehaviour
 {
     GameObject player;
     Rigidbody rb;
+    PlayerController playerController;
+    LevelManager levelManager;
+    Vector3 lastVelocity;
+    private float hp;
 
     [SerializeField] private float moveSpeed = 0;
-    [SerializeField] private int hp = 10;
+    [SerializeField] private int maxHp = 10;
+
+    [SerializeField] Animator animator;
+
+    private bool previousSkillState = false; // 前回のスキル状態を記録
 
     // Start is called before the first frame update
     void Start()
     {
         player = GameObject.FindWithTag("Player");
+        playerController = player.GetComponent<PlayerController>();
         rb = GetComponent<Rigidbody>();
+        hp = maxHp;
+        levelManager = player.GetComponent<LevelManager>();
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         if (player != null)
         {
-            transform.LookAt(player.transform.position);
+            if (!playerController.GetIsSkill())
+            {
+                // 常に一定の速度で移動させる
+                Vector3 direction = (player.transform.position - transform.position).normalized;
+                rb.velocity = direction * moveSpeed;
 
-            rb.AddForce(transform.forward * moveSpeed * Time.deltaTime, ForceMode.Force);
+                // プレイヤーの方向を向く
+                transform.LookAt(player.transform.position);
+            }
+
+            Stan();
         }
+    }
 
-        if (player.GetComponent<PlayerController>().GetIsSkill())
+    void Stan()
+    {
+        bool currentSkillState = playerController.GetIsSkill();
+
+        // スキル状態が true に変化したタイミングで1回だけ実行
+        if (!previousSkillState && currentSkillState)
         {
+            // 停止時の速度を記録し、Rigidbody を停止
+            lastVelocity = rb.velocity;
             rb.Sleep();
-        }
-        else
-        {
-            rb.WakeUp();
+
+            // アニメーションを停止
+            animator.speed = 0f;
+
+            Debug.Log("Stan 処理を1回実行しました");
         }
 
-        Dead();
+        // スキル状態が false に戻った場合の処理
+        if (previousSkillState && !currentSkillState)
+        {
+            // Rigidbody を再開し、速度を復元
+            rb.WakeUp();
+            rb.velocity = lastVelocity;
+
+            // アニメーションを再開
+            animator.speed = 1f;
+
+            Debug.Log("Stan 状態解除処理を実行しました");
+        }
+
+        // スキル状態を更新
+        previousSkillState = currentSkillState;
     }
 
     public void Damage(int _damage)
     {
         hp -= _damage;
+        Dead();
     }
 
     void Dead()
     {
-        if(hp <= 0)
+        if (hp <= 0)
         {
-            Destroy(this.gameObject);
-        }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("SkillArea"))
-        {
-            Damage(3);
+            this.gameObject.SetActive(false);
+            hp = maxHp;
+            levelManager.AddEnemyNum();
         }
     }
 }
