@@ -17,8 +17,11 @@ public class EnemySpawn : MonoBehaviour
 
     private List<GameObject> enemyPool; // 敵オブジェクトのプール
 
+    GameManager gameManager;
+
     void Start()
     {
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         // プレイヤーを取得
         player = GameObject.FindWithTag("Player");
         playerController = player.GetComponent<PlayerController>();
@@ -35,6 +38,8 @@ public class EnemySpawn : MonoBehaviour
 
     void Update()
     {
+        if (gameManager.state != GameManager.GameState.Game) return;
+
         if (playerController.GetIsSkill()) return;
 
         time += Time.deltaTime;

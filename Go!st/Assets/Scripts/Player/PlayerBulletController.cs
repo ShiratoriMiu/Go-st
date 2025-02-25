@@ -6,6 +6,8 @@ public class PlayerBulletController : MonoBehaviour
 {
     [SerializeField] float destroyTime = 3f;
 
+    PlayerController playerController;
+
     // Start is called before the first frame update
     void Start()
     {

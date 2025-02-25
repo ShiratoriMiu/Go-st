@@ -8,11 +8,13 @@ public class EnemyController : MonoBehaviour
     Rigidbody rb;
     PlayerController playerController;
     LevelManager levelManager;
+    GameManager gameManager;
     Vector3 lastVelocity;
     private float hp;
 
     [SerializeField] private float moveSpeed = 0;
     [SerializeField] private int maxHp = 10;
+    [SerializeField] private int attack = 1;
 
     [SerializeField] Animator animator;
 
@@ -26,11 +28,14 @@ public class EnemyController : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         hp = maxHp;
         levelManager = player.GetComponent<LevelManager>();
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
+        if (gameManager.state != GameManager.GameState.Game) return;
+
         if (player != null)
         {
             if (!playerController.GetIsSkill())
@@ -94,6 +99,18 @@ public class EnemyController : MonoBehaviour
             this.gameObject.SetActive(false);
             hp = maxHp;
             levelManager.AddEnemyNum();
+            gameManager.AddEnemiesDefeatedNum();
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            if (!playerController.GetIsSkill())
+            {
+                collision.gameObject.GetComponent<PlayerController>().Damage(attack);
+            }
         }
     }
 }

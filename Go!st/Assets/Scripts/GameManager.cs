@@ -7,21 +7,39 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] private int minute;
     [SerializeField] private float seconds;
+    [SerializeField] GameObject gameUI;
+    [SerializeField] GameObject titleUI;
 
     Text timeText;
+    Text resultText;
 
     //Å@ëOÇÃUpdateÇÃéûÇÃïbêî
     private float oldSeconds;
+
+    //ì|ÇµÇΩìGÇÃëçêî
+    private int enemiesDefeatedNum = 0;
+    public enum GameState
+    {
+        Title,
+        Game,
+        Result
+    }
+    public GameState state = GameState.Title;
 
     // Start is called before the first frame update
     void Start()
     {
         timeText = GameObject.Find("TimeText").GetComponent<Text>();
+        resultText = GameObject.Find("ResultText").GetComponent<Text>();
+        gameUI.SetActive(false);
+        titleUI.SetActive(true);
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (state != GameState.Game) return;
+
         seconds -= Time.deltaTime;
         if (seconds <= 0f)
         {
@@ -38,5 +56,22 @@ public class GameManager : MonoBehaviour
             }
             oldSeconds = seconds;
         }
+        else
+        {
+            state = GameState.Result;
+            resultText.enabled = true;
+        }
+    }
+
+    public void AddEnemiesDefeatedNum()
+    {
+        enemiesDefeatedNum++;
+    }
+
+    public void ChangeGameState()
+    {
+        state = GameState.Game;
+        gameUI.SetActive(true);
+        titleUI.SetActive(false);
     }
 }

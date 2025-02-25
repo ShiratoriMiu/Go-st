@@ -51,6 +51,10 @@ public class PlayerController : MonoBehaviour
 
     private Vector3[] corners = new Vector3[4]; // ŽlŠpŒ`‚Ì’¸“_
 
+    GameManager gameManager;
+
+    GameManager.GameState oldState;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -63,10 +67,20 @@ public class PlayerController : MonoBehaviour
         action.Player.TouchClick.canceled += OnTouchEnded;
         hp = maxHP;
         mainCamera = Camera.main;
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
 
     private void Update()
     {
+        if (gameManager.state != GameManager.GameState.Game)
+        {
+            OnDisable();
+            return;
+        }
+        else
+        {
+            if(oldState != gameManager.state) OnEnable();
+        }
 
         if (isInteracting)
         {
@@ -76,11 +90,15 @@ public class PlayerController : MonoBehaviour
         {
             touchTime = 0;
         }
+
+        oldState = gameManager.state;
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
+        if (gameManager.state != GameManager.GameState.Game) return;
+
         if (isInteracting)
         {
             //ˆÚ“®
@@ -432,6 +450,16 @@ public class PlayerController : MonoBehaviour
             // ˆÚ“®•ûŒü‚ÉŒü‚­
             Quaternion targetRotation = Quaternion.LookRotation(moveDir);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+        }
+    }
+
+    public void Damage(int _num)
+    {
+        hp -= _num;
+        if (hp <= 0)
+        {
+            rb.isKinematic = true;
+            gameManager.state = GameManager.GameState.Result;
         }
     }
 }

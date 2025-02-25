@@ -7,6 +7,9 @@ public class PlayerSkill : MonoBehaviour
     private List<Vector3> points = new List<Vector3>(); // 線の頂点を記録するリスト
     private List<GameObject> detectedEnemies = new List<GameObject>(); // 検知したEnemyを格納するリスト
 
+    [SerializeField]
+    int attack = 0;
+
     void Start()
     {
         if (lineRenderer == null)
@@ -98,7 +101,7 @@ public class PlayerSkill : MonoBehaviour
                     Debug.Log("Enemy Detected: " + enemy.name);
 
                     // ここに、検知後の処理を記述(例：ダメージを与えるなど)
-                    enemy.GetComponent<EnemyController>().Damage(3);
+                    enemy.GetComponent<EnemyController>().Damage(attack);
                 }
             }
         }
