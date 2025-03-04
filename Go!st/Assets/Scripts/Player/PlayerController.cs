@@ -12,11 +12,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float damping = 0.98f; // 減衰率（1に近いほどゆっくり減衰）
     [SerializeField] float attackSpeed;//攻撃の速度力
     [SerializeField] float attackDis = 10f;    //オートエイム範囲。お好みで。
+    [SerializeField] float skillCooldownTime = 5f; // 必殺技のクールタイム（秒）
 
     [SerializeField] int maxHP = 10;
 
     [SerializeField] GameObject stickPrefab;//仮想スティック
     [SerializeField] GameObject attackPrefab;    //発射したいプレハブ
+    [SerializeField] GameObject skillChargeEffect; //スキル発動可能エフェクト
 
     PlayerInputAction action;
     Rigidbody rb;
@@ -38,6 +40,7 @@ public class PlayerController : MonoBehaviour
     private float degreeAttack = 0.0f;
     private float radAttack = 0.0f;
     private float nearestEnemyDis;
+    private float lastSkillTime = -Mathf.Infinity; // 最後にスキルを発動した時間
 
     //画面内に移動範囲を制限
     [SerializeField] LayerMask groundLayer; // 地面のレイヤー
@@ -112,6 +115,16 @@ public class PlayerController : MonoBehaviour
             skill.SkillTouchMove();
             // プレイヤーを四角形の中に制限
             ConstrainPlayer();
+        }
+
+        // クールタイム中なら発動できない
+        if (Time.time - lastSkillTime < skillCooldownTime)
+        {
+            skillChargeEffect.SetActive(false);
+        }
+        else
+        {
+            skillChargeEffect.SetActive(true);
         }
     }
 
@@ -290,7 +303,11 @@ public class PlayerController : MonoBehaviour
 
     void Skill()
     {
+        // クールタイム中なら発動できない
+        if (Time.time - lastSkillTime < skillCooldownTime) return;
+
         isSkill = true;
+        lastSkillTime = Time.time; // スキル発動時間を記録
 
         Invoke("StopSkill", 10);
     }
