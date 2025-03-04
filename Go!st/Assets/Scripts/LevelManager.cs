@@ -33,4 +33,16 @@ public class LevelManager : MonoBehaviour
     {
         enemyNum++;
     }
+
+    public void LevelInit()
+    {
+        level = 1;
+        enemyNum = 0;
+        levelText.text = "Level : " + level;
+    }
+
+    public int GetCurrentLevel()
+    {
+        return level;
+    }
 }

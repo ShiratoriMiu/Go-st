@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -9,12 +10,18 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float seconds;
     [SerializeField] GameObject gameUI;
     [SerializeField] GameObject titleUI;
+    [SerializeField] GameObject resultUI;
 
     Text timeText;
     Text resultText;
 
     //Å@ëOÇÃUpdateÇÃéûÇÃïbêî
     private float oldSeconds;
+
+    LevelManager levelManager;
+
+    private int minuteInit;
+    private float secondsInit;
 
     //ì|ÇµÇΩìGÇÃëçêî
     private int enemiesDefeatedNum = 0;
@@ -31,8 +38,12 @@ public class GameManager : MonoBehaviour
     {
         timeText = GameObject.Find("TimeText").GetComponent<Text>();
         resultText = GameObject.Find("ResultText").GetComponent<Text>();
+        levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
         gameUI.SetActive(false);
         titleUI.SetActive(true);
+        resultUI.SetActive(false);
+        minuteInit = minute;
+        secondsInit = seconds;
     }
 
     // Update is called once per frame
@@ -58,9 +69,15 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            state = GameState.Result;
-            resultText.enabled = true;
+            ChangeResultState();
         }
+    }
+
+    public void ChangeResultState()
+    {
+        state = GameState.Result;
+        resultUI.SetActive(true);
+        resultText.text = "Score : " + ((minuteInit - minute) * 60 + ((int)secondsInit - (int)seconds) + enemiesDefeatedNum).ToString();
     }
 
     public void AddEnemiesDefeatedNum()
@@ -73,5 +90,17 @@ public class GameManager : MonoBehaviour
         state = GameState.Game;
         gameUI.SetActive(true);
         titleUI.SetActive(false);
+    }
+
+    public void ChangeTitleState()
+    {
+        state = GameState.Title;
+        enemiesDefeatedNum = 0;
+        resultUI.SetActive(false);
+        gameUI.SetActive(false);
+        titleUI.SetActive(true);
+        levelManager.LevelInit();
+        minute = minuteInit;
+        seconds = secondsInit;
     }
 }

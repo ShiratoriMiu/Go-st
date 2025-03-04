@@ -53,8 +53,6 @@ public class PlayerController : MonoBehaviour
 
     GameManager gameManager;
 
-    GameManager.GameState oldState;
-
     // Start is called before the first frame update
     void Awake()
     {
@@ -79,7 +77,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            if(oldState != gameManager.state) OnEnable();
+            if(!action.Player.enabled) OnEnable();
         }
 
         if (isInteracting)
@@ -90,8 +88,6 @@ public class PlayerController : MonoBehaviour
         {
             touchTime = 0;
         }
-
-        oldState = gameManager.state;
     }
 
     // Update is called once per frame
@@ -459,7 +455,7 @@ public class PlayerController : MonoBehaviour
         if (hp <= 0)
         {
             rb.isKinematic = true;
-            gameManager.state = GameManager.GameState.Result;
+            gameManager.ChangeResultState();
         }
     }
 }

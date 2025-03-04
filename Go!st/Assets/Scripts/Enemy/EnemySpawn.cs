@@ -4,42 +4,67 @@ using UnityEngine;
 
 public class EnemySpawn : MonoBehaviour
 {
-    [SerializeField,Header("敵のプレハブ")] GameObject enemyPrefab; // 敵のプレハブ
-    [SerializeField, Header("敵の最大数")] private int maxPoolSize = 100; // プールの最大サイズ
-    [SerializeField, Header("次にスポーンするまでの時間")] private float spawnTime = 10f;
-    //プレイヤーを基準に周りにスポーン
-    [SerializeField, Header("最小スポーン位置")] private float spawnMinDistance = 5f;
-    [SerializeField, Header("最大スポーン位置")] private float spawnMaxDistance = 10f;
+    [System.Serializable]
+    public class EnemyData
+    {
+        public GameObject enemyPrefab; // 敵のプレハブ
+        public int level; // その敵のレベル
+    }
+
+    [SerializeField, Header("敵データリスト")]
+    private List<EnemyData> enemyDataList; // 敵データのリスト
+
+    [SerializeField, Header("敵の最大数")]
+    private int maxPoolSize = 100; // プールの最大サイズ
+
+    [SerializeField, Header("次にスポーンするまでの時間")]
+    private float spawnTime = 10f;
+
+    [SerializeField, Header("最小スポーン位置")]
+    private float spawnMinDistance = 5f;
+
+    [SerializeField, Header("最大スポーン位置")]
+    private float spawnMaxDistance = 10f;
 
     private GameObject player;
     private float time = 0;
     private PlayerController playerController;
+    private LevelManager levelManager;
+    private GameManager gameManager;
 
-    private List<GameObject> enemyPool; // 敵オブジェクトのプール
-
-    GameManager gameManager;
+    private Dictionary<GameObject, List<GameObject>> enemyPools; // 敵ごとのオブジェクトプール
 
     void Start()
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        // プレイヤーを取得
+        levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
+
         player = GameObject.FindWithTag("Player");
         playerController = player.GetComponent<PlayerController>();
 
         // プールを初期化
-        enemyPool = new List<GameObject>();
-        for (int i = 0; i < maxPoolSize; i++)
+        enemyPools = new Dictionary<GameObject, List<GameObject>>();
+        foreach (var enemyData in enemyDataList)
         {
-            GameObject enemy = Instantiate(enemyPrefab,this.transform);
-            enemy.SetActive(false); // 初期状態で非アクティブにする
-            enemyPool.Add(enemy);
+            enemyPools[enemyData.enemyPrefab] = new List<GameObject>();
+            for (int i = 0; i < maxPoolSize / enemyDataList.Count; i++) // 各敵ごとに均等にプール
+            {
+                GameObject enemy = Instantiate(enemyData.enemyPrefab, this.transform);
+                enemy.SetActive(false);
+                enemyPools[enemyData.enemyPrefab].Add(enemy);
+            }
         }
     }
 
     void Update()
     {
-        if (gameManager.state != GameManager.GameState.Game) return;
+        if (gameManager.state == GameManager.GameState.Title)
+        {
+            DeactivateAllEnemies(); // すべての敵を非アクティブにする
+            return;
+        }
 
+        if (gameManager.state != GameManager.GameState.Game) return;
         if (playerController.GetIsSkill()) return;
 
         time += Time.deltaTime;
@@ -51,44 +76,57 @@ public class EnemySpawn : MonoBehaviour
         }
     }
 
+    // すべての敵を非アクティブにする
+    void DeactivateAllEnemies()
+    {
+        foreach (var pool in enemyPools.Values)
+        {
+            foreach (var enemy in pool)
+            {
+                enemy.SetActive(false);
+            }
+        }
+    }
+
     void Spawn()
     {
-        // ランダムな方向を生成 (XZ平面)
+        int currentLevel = levelManager.GetCurrentLevel(); // 現在のレベルを取得
+
+        // レベル条件を満たす敵をリストアップ
+        List<EnemyData> validEnemies = enemyDataList.FindAll(e => e.level <= currentLevel);
+        if (validEnemies.Count == 0) return; // スポーンできる敵がいない場合は終了
+
+        // ランダムに敵を選択
+        EnemyData selectedEnemyData = validEnemies[Random.Range(0, validEnemies.Count)];
+
+        // スポーン位置を計算
         Vector2 randomDirection = Random.insideUnitCircle.normalized;
-
-        // ランダムな距離を生成
         float randomDistance = Random.Range(spawnMinDistance, spawnMaxDistance);
-
-        // オフセットを計算
         Vector3 spawnPosition = new Vector3(
             randomDirection.x * randomDistance,
-            0, // 高さは必要に応じて調整
+            0,
             randomDirection.y * randomDistance
-        );
+        ) + player.transform.position;
 
-        // プレイヤーの位置を基準に配置
-        spawnPosition += player.transform.position;
-
-        // プールから非アクティブな敵を取得
-        GameObject enemy = GetPooledEnemy();
+        // プールから取得
+        GameObject enemy = GetPooledEnemy(selectedEnemyData.enemyPrefab);
         if (enemy != null)
         {
             enemy.transform.position = spawnPosition;
             enemy.transform.rotation = Quaternion.identity;
-            enemy.SetActive(true); // 敵をアクティブにする
+            enemy.SetActive(true);
         }
     }
 
-    // プールから非アクティブな敵を取得
-    GameObject GetPooledEnemy()
+    GameObject GetPooledEnemy(GameObject prefab)
     {
-        foreach (var enemy in enemyPool)
+        foreach (var enemy in enemyPools[prefab])
         {
-            if (!enemy.activeInHierarchy) // 非アクティブなオブジェクトを探す
+            if (!enemy.activeInHierarchy)
             {
                 return enemy;
             }
         }
-        return null; // プールがすべて使用中の場合は null を返す
+        return null;
     }
 }

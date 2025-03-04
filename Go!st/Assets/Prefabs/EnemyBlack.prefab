@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 6600563889714299056}
   - component: {fileID: 2096601638509324295}
   - component: {fileID: 7934102601632362932}
-  - component: {fileID: -4835514472887131550}
   m_Layer: 0
   m_Name: EnemyBlack
   m_TagString: Enemy
@@ -99,20 +98,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 0.5
-  maxHp: 3
+  maxHp: 5
+  attack: 1
   animator: {fileID: 8520648192612306320}
---- !u!114 &-4835514472887131550
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4874350126175269579}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6ef55879555fddb4592bc33687a0706a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &5308306546003304786
 PrefabInstance:
   m_ObjectHideFlags: 0

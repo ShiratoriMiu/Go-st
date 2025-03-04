@@ -27,7 +27,7 @@ public class EnemyController : MonoBehaviour
         playerController = player.GetComponent<PlayerController>();
         rb = GetComponent<Rigidbody>();
         hp = maxHp;
-        levelManager = player.GetComponent<LevelManager>();
+        levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
 
