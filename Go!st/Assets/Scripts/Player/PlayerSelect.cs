@@ -88,12 +88,14 @@ public class PlayerSelect : MonoBehaviour
         if (gameManager.state != GameManager.GameState.Title)
         {
             isInitialize = false;
+            OnDisable();
             return;
         }
 
         if (!isInitialize)
         {
             InitializePlayerPositions();
+            OnEnable();
             isInitialize = true;
         }
 

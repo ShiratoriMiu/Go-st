@@ -36,6 +36,8 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Application.targetFrameRate = 60;
+
         timeText = GameObject.Find("TimeText").GetComponent<Text>();
         resultText = GameObject.Find("ResultText").GetComponent<Text>();
         levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();

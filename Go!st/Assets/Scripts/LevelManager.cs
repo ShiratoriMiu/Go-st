@@ -21,7 +21,7 @@ public class LevelManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(enemyNum >= level * 10)
+        if(enemyNum >= level * 5)
         {
             level++;
             enemyNum = 0;

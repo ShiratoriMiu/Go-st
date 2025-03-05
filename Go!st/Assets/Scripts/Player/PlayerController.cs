@@ -35,7 +35,7 @@ public class PlayerController : MonoBehaviour
     private bool isSkill = false;//必殺話字フラグ
 
     private float touchTime = 0;
-    private float hp = 0;
+    private int hp = 0;
     //オートエイム用角度変数
     private float degreeAttack = 0.0f;
     private float radAttack = 0.0f;
@@ -55,6 +55,8 @@ public class PlayerController : MonoBehaviour
     private Vector3[] corners = new Vector3[4]; // 四角形の頂点
 
     GameManager gameManager;
+
+    [SerializeField] PlayerHpImage playerHpImage;
 
     // Start is called before the first frame update
     void Awake()
@@ -76,6 +78,7 @@ public class PlayerController : MonoBehaviour
         if (gameManager.state != GameManager.GameState.Game)
         {
             OnDisable();
+            skillChargeEffect.SetActive(false);
             return;
         }
         else
@@ -183,7 +186,6 @@ public class PlayerController : MonoBehaviour
     {
         if (context.canceled && isInteracting)
         {
-            skill.SkillTouchEnded();
             StopSkill();
 
             if (touchTime < 0.2f)
@@ -343,7 +345,7 @@ public class PlayerController : MonoBehaviour
             if (Physics.Raycast(mainCamera.transform.position, direction, out RaycastHit hit, Mathf.Infinity, groundLayer))
             {
                 corners[i] = hit.point;
-                Debug.DrawLine(mainCamera.transform.position, hit.point, Color.red); // デバッグ用ライン
+                //Debug.DrawLine(mainCamera.transform.position, hit.point, Color.red); // デバッグ用ライン
             }
         }
     }
@@ -469,6 +471,7 @@ public class PlayerController : MonoBehaviour
     public void Damage(int _num)
     {
         hp -= _num;
+        playerHpImage.UpdateHp(hp);
         if (hp <= 0)
         {
             rb.isKinematic = true;
