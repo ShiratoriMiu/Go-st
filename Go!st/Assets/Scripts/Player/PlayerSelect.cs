@@ -66,6 +66,15 @@ public class PlayerSelect : MonoBehaviour
             players[i].transform.position = new Vector3(-i * space, 0, 0);
             players[i].transform.rotation = new Quaternion(0, 0, 0, 0);
             players[i].GetComponent<Rigidbody>().useGravity = false;
+
+            if(i == lastCount)
+            {
+                players[i].transform.position = new Vector3(1 * space, 0, 0);
+            }
+            else if (i == nextCount)
+            {
+                players[i].transform.position = new Vector3(-1 * space, 0, 0);
+            }
         }
     }
 

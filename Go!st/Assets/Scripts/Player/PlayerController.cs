@@ -345,7 +345,6 @@ public class PlayerController : MonoBehaviour
             if (Physics.Raycast(mainCamera.transform.position, direction, out RaycastHit hit, Mathf.Infinity, groundLayer))
             {
                 corners[i] = hit.point;
-                //Debug.DrawLine(mainCamera.transform.position, hit.point, Color.red); // デバッグ用ライン
             }
         }
     }
