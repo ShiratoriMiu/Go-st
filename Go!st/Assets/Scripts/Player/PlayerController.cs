@@ -71,19 +71,22 @@ public class PlayerController : MonoBehaviour
         hp = maxHP;
         mainCamera = Camera.main;
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        action.Disable();
     }
 
     private void Update()
     {
         if (gameManager.state != GameManager.GameState.Game)
         {
-            OnDisable();
-            skillChargeEffect.SetActive(false);
             return;
         }
         else
         {
-            if(!action.Player.enabled) OnEnable();
+            if (!action.Player.enabled)
+            {
+                action.Enable();
+                Init();
+            }
         }
 
         if (isInteracting)
@@ -174,6 +177,7 @@ public class PlayerController : MonoBehaviour
     // タッチまたはマウスの現在位置
     public void OnTouchMoved(InputAction.CallbackContext context)
     {
+        print(context.ReadValue<Vector2>());
         if (context.performed && isInteracting)
         {
             currentPosition = context.ReadValue<Vector2>();
@@ -467,13 +471,27 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    void Init()
+    {
+        skillChargeEffect.SetActive(false);
+        isInteracting = false;
+        moveDirection = Vector2.zero;
+        currentPosition = Vector2.zero;
+        stickPrefab.SetActive(false);
+        StopSkill();
+        hp = maxHP;
+        playerHpImage.UpdateHp(hp);
+    }
+
     public void Damage(int _num)
     {
         hp -= _num;
         playerHpImage.UpdateHp(hp);
         if (hp <= 0)
         {
-            rb.isKinematic = true;
+            action.Disable();
+            Init();
+            skillChargeEffect.SetActive(false);
             gameManager.ChangeResultState();
         }
     }

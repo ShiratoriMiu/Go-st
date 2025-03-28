@@ -20,11 +20,11 @@ public class EnemyController : MonoBehaviour
 
     private bool previousSkillState = false; // 前回のスキル状態を記録
 
+    bool setSelectPlayer = true;
+
     // Start is called before the first frame update
     void Start()
     {
-        player = GameObject.FindWithTag("Player");
-        playerController = player.GetComponent<PlayerController>();
         rb = GetComponent<Rigidbody>();
         hp = maxHp;
         levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
@@ -35,6 +35,12 @@ public class EnemyController : MonoBehaviour
     void FixedUpdate()
     {
         if (gameManager.state != GameManager.GameState.Game) return;
+
+        if (setSelectPlayer)
+        {
+            player = GameObject.FindWithTag("Player");
+            playerController = player.GetComponent<PlayerController>();
+        }
 
         if (player != null)
         {

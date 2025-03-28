@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.EnhancedTouch; // スマホのタッチ対応
+//using UnityEngine.InputSystem.EnhancedTouch; // スマホのタッチ対応
 
 public class PlayerSelect : MonoBehaviour
 {
@@ -81,14 +81,14 @@ public class PlayerSelect : MonoBehaviour
     private void OnEnable()
     {
         action.Enable();
-        EnhancedTouchSupport.Enable(); // スマホのタッチ対応
-        TouchSimulation.Enable(); // エディタでタッチをシミュレート
+        //EnhancedTouchSupport.Enable(); // スマホのタッチ対応
+        //TouchSimulation.Enable(); // エディタでタッチをシミュレート
     }
 
     private void OnDisable()
     {
         action.Disable();
-        EnhancedTouchSupport.Disable();
+        //EnhancedTouchSupport.Disable();
     }
 
     void Update()
@@ -96,8 +96,11 @@ public class PlayerSelect : MonoBehaviour
         // タイトル画面以外では処理を行わない
         if (gameManager.state != GameManager.GameState.Title)
         {
-            isInitialize = false;
-            OnDisable();
+            if (action.Title.enabled)
+            {
+                isInitialize = false;
+                OnDisable();
+            }
             return;
         }
 
