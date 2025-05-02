@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
+
 //using UnityEngine.InputSystem.EnhancedTouch; // スマホのタッチ対応
 
 public class PlayerSelect : MonoBehaviour
@@ -11,6 +13,7 @@ public class PlayerSelect : MonoBehaviour
     [SerializeField] float swipeThreshold = 100f; // スワイプ判定の閾値（スマホ向け）
     [SerializeField] float lerpSpeed = 10f; // スムーズな移動速度
     [SerializeField] float swipeOffsetValue = 0.3f;
+    [SerializeField] Text skillEnemyNumText;
 
     PlayerInputAction action;
 
@@ -27,6 +30,8 @@ public class PlayerSelect : MonoBehaviour
 
     bool isInitialize = false;
 
+    public GameObject selectPlayer{ get; private set; }
+
     void Awake()
     {
         // Input Action の初期化
@@ -41,6 +46,9 @@ public class PlayerSelect : MonoBehaviour
         // lastCount, nextCount の初期化
         lastCount = players.Length - 1;
         nextCount = (count + 1) % players.Length;
+        selectPlayer = players[0];
+
+        skillEnemyNumText.gameObject.SetActive(false);
     }
 
     /// <summary>
@@ -66,8 +74,9 @@ public class PlayerSelect : MonoBehaviour
             players[i].transform.position = new Vector3(-i * space, 0, 0);
             players[i].transform.rotation = new Quaternion(0, 0, 0, 0);
             players[i].GetComponent<Rigidbody>().useGravity = false;
+            players[i].GetComponent<PlayerSkill>().SetSkillEnemyNumText(skillEnemyNumText);
 
-            if(i == lastCount)
+            if (i == lastCount)
             {
                 players[i].transform.position = new Vector3(1 * space, 0, 0);
             }
@@ -221,9 +230,12 @@ public class PlayerSelect : MonoBehaviour
             if(i == count)
             {
                 players[i].GetComponent<Rigidbody>().useGravity = true;
+                selectPlayer = players[i];
             }
         }
-        gameManager.ChangeGameState();
+
+        gameManager.SetPlayer(selectPlayer);
+        gameManager.StartGame();
     }
 
     private void OnPressStarted(InputAction.CallbackContext context)
@@ -276,6 +288,33 @@ public class PlayerSelect : MonoBehaviour
         {
             Vector2 currentTouch = context.ReadValue<Vector2>();
             swipeOffset = -(currentTouch.x - startTouchPoint.x) * swipeOffsetValue; // スワイプ量を適用（調整可能）
+        }
+    }
+
+    public GameObject[] GetPlayers()
+    {
+        return players;
+    }
+
+    public void ResetSelection()
+    {
+        count = 0;
+        lastCount = players.Length - 1;
+        nextCount = (count + 1) % players.Length;
+        selectPlayer = players[0];
+
+        isSwipe = false;
+        isPressing = false;
+        swipeOffset = 0f;
+
+        InitializePlayerPositions();
+    }
+
+    public void SetAutoAim(bool _onAutoAim)
+    {
+        foreach (var player in players)
+        {
+            player.GetComponent<PlayerController>().SetAutoAim(_onAutoAim);
         }
     }
 }

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2325765228274746030}
   - component: {fileID: 7338973442641365689}
   - component: {fileID: 9134293402675391216}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: EnemyYellow
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -101,6 +101,10 @@ MonoBehaviour:
   maxHp: 1
   attack: 1
   animator: {fileID: 5635570882279310782}
+  enemyRenderers:
+  - {fileID: 8853573783609187573}
+  - {fileID: 8499032377229182632}
+  enemyCollider: {fileID: 2325765228274746030}
 --- !u!1001 &5210029761843479436
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -156,7 +160,8 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 466174982370493813, guid: 7577e3de9babd604d9880ded032d1752, type: 3}
     - {fileID: 466174982370493812, guid: 7577e3de9babd604d9880ded032d1752, type: 3}
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 2850855972600701023, guid: 7577e3de9babd604d9880ded032d1752, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7577e3de9babd604d9880ded032d1752, type: 3}
@@ -168,5 +173,15 @@ Transform:
 --- !u!95 &5635570882279310782 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 466174981629265458, guid: 7577e3de9babd604d9880ded032d1752, type: 3}
+  m_PrefabInstance: {fileID: 5210029761843479436}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &8499032377229182632 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 4449308613112939812, guid: 7577e3de9babd604d9880ded032d1752, type: 3}
+  m_PrefabInstance: {fileID: 5210029761843479436}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &8853573783609187573 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 3644406075498192761, guid: 7577e3de9babd604d9880ded032d1752, type: 3}
   m_PrefabInstance: {fileID: 5210029761843479436}
   m_PrefabAsset: {fileID: 0}

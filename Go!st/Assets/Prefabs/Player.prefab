@@ -105,10 +105,11 @@ MonoBehaviour:
   damping: 0.98
   attackSpeed: 10
   attackDis: 5
+  attackCooldownTime: 1
   skillCooldownTime: 20
+  skillTime: 5
   maxHP: 5
-  stickPrefab: {fileID: 0}
-  attackPrefab: {fileID: 2829636624271746724, guid: 7cafba95233f17745b87ee26c54ba3fc, type: 3}
+  stickPrefab: {fileID: 3094963788836493681, guid: 35aed7c20b9a5604d8d48f628bf5ba21, type: 3}
   skillChargeEffect: {fileID: 7890945356539490520}
   groundLayer:
     serializedVersion: 2
@@ -116,8 +117,10 @@ MonoBehaviour:
   leftOffset: 0.1
   rightOffset: 0.92
   topOffset: 0.95
-  bottomOffset: 0.45
+  bottomOffset: 0.05
   playerHpImage: {fileID: 0}
+  centerToGrayEffect: {fileID: 0}
+  bulletManager: {fileID: 0}
 --- !u!114 &5452021018072248373
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6600563889714299056}
   - component: {fileID: 2096601638509324295}
   - component: {fileID: 7934102601632362932}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: EnemyBlack
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -101,6 +101,10 @@ MonoBehaviour:
   maxHp: 5
   attack: 1
   animator: {fileID: 8520648192612306320}
+  enemyRenderers:
+  - {fileID: 4815697971163993307}
+  - {fileID: 5618343142907055750}
+  enemyCollider: {fileID: 6600563889714299056}
 --- !u!1001 &5308306546003304786
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -109,6 +113,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 382350979641296285}
     m_Modifications:
+    - target: {fileID: 828151503421502857, guid: 8146374d820c3ac45baeed5014144363, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 891957722177419005, guid: 8146374d820c3ac45baeed5014144363, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -185,13 +193,29 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5954301793336381631, guid: 8146374d820c3ac45baeed5014144363, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 4581718618250850180, guid: 8146374d820c3ac45baeed5014144363, type: 3}
     - {fileID: 4581718618250850181, guid: 8146374d820c3ac45baeed5014144363, type: 3}
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 5954301793336381631, guid: 8146374d820c3ac45baeed5014144363, type: 3}
+    - {fileID: 2197159603984583343, guid: 8146374d820c3ac45baeed5014144363, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8146374d820c3ac45baeed5014144363, type: 3}
+--- !u!137 &4815697971163993307 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 828151503421502857, guid: 8146374d820c3ac45baeed5014144363, type: 3}
+  m_PrefabInstance: {fileID: 5308306546003304786}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &5618343142907055750 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 311515833041055700, guid: 8146374d820c3ac45baeed5014144363, type: 3}
+  m_PrefabInstance: {fileID: 5308306546003304786}
+  m_PrefabAsset: {fileID: 0}
 --- !u!95 &8520648192612306320 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 4581718617918500034, guid: 8146374d820c3ac45baeed5014144363, type: 3}

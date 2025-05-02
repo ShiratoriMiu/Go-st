@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerSkill : MonoBehaviour
 {
@@ -9,6 +10,11 @@ public class PlayerSkill : MonoBehaviour
 
     [SerializeField]
     int attack = 0;
+
+    [SerializeField]
+    ParticleSystem skillEffect;
+
+    Text skillEnemyNumText;
 
     void Start()
     {
@@ -40,9 +46,12 @@ public class PlayerSkill : MonoBehaviour
 
     public void SkillTouchEnded()
     {
+        skillEffect.transform.position = GetPolygonCenter();
+        skillEffect.Play();
         DetectEnemies(); // 範囲内のEnemyを検知
         points.Clear(); // 軌跡をクリア
         UpdateLineRenderer();
+        skillEnemyNumText.gameObject.SetActive(true);
     }
 
     private void AddPoint()
@@ -76,7 +85,6 @@ public class PlayerSkill : MonoBehaviour
         if (points.Count < 3)
         {
             Debug.Log("線の頂点が少なすぎます。");
-            return;
         }
 
         // すべてのEnemyTagを持つオブジェクトを検索
@@ -96,16 +104,23 @@ public class PlayerSkill : MonoBehaviour
                 {
                     // 範囲内にあるので、リストに追加
                     detectedEnemies.Add(enemy);
-
-                    // 検知したオブジェクトに対して処理
                     Debug.Log("Enemy Detected: " + enemy.name);
 
-                    // ここに、検知後の処理を記述(例：ダメージを与えるなど)
+                    // 検知したオブジェクトに対して処理
                     enemy.GetComponent<EnemyController>().Damage(attack);
                 }
             }
         }
+
+        skillEnemyNumText.text = detectedEnemies.Count.ToString();
+        Invoke("StopSkillEnemyNumText", 3);
     }
+
+    void StopSkillEnemyNumText()
+    {
+        skillEnemyNumText.gameObject.SetActive(false);
+    }
+
 
     private bool IsPointInsidePolygonXZ(Vector3 point)
     {
@@ -124,4 +139,22 @@ public class PlayerSkill : MonoBehaviour
         }
         return c;
     }
+
+    public void SetSkillEnemyNumText(Text _skillEnemyNumText)
+    {
+        skillEnemyNumText = _skillEnemyNumText;
+    }
+
+    //囲った範囲の中心を取得
+    private Vector3 GetPolygonCenter()
+    {
+        Vector3 center = Vector3.zero;
+        foreach (Vector3 point in points)
+        {
+            center += point;
+        }
+        center /= points.Count;
+        return center;
+    }
+
 }

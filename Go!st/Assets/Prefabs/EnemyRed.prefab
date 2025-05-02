@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4529864787827551751}
   - component: {fileID: 535866174196229017}
   - component: {fileID: 1482835451932221631}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: EnemyRed
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -101,6 +101,10 @@ MonoBehaviour:
   maxHp: 3
   attack: 1
   animator: {fileID: 5585635859854130372}
+  enemyRenderers:
+  - {fileID: 8750368255907882383}
+  - {fileID: 8521684646537789394}
+  enemyCollider: {fileID: 4529864787827551751}
 --- !u!1001 &5609285259822924224
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -156,7 +160,8 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 25901200661331523, guid: aaf0bae1b4fe202469a91f418e19fa04, type: 3}
     - {fileID: 25901200661331522, guid: aaf0bae1b4fe202469a91f418e19fa04, type: 3}
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 2428685718652509033, guid: aaf0bae1b4fe202469a91f418e19fa04, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: aaf0bae1b4fe202469a91f418e19fa04, type: 3}
@@ -168,5 +173,15 @@ Transform:
 --- !u!95 &5585635859854130372 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 25901199926328580, guid: aaf0bae1b4fe202469a91f418e19fa04, type: 3}
+  m_PrefabInstance: {fileID: 5609285259822924224}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &8521684646537789394 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 4295084051454000658, guid: aaf0bae1b4fe202469a91f418e19fa04, type: 3}
+  m_PrefabInstance: {fileID: 5609285259822924224}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &8750368255907882383 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 3798683654233449551, guid: aaf0bae1b4fe202469a91f418e19fa04, type: 3}
   m_PrefabInstance: {fileID: 5609285259822924224}
   m_PrefabAsset: {fileID: 0}

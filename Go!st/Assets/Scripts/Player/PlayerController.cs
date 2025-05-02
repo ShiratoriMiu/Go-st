@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
+using System;
 
 public class PlayerController : MonoBehaviour
 {
@@ -12,35 +13,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float damping = 0.98f; // 減衰率（1に近いほどゆっくり減衰）
     [SerializeField] float attackSpeed;//攻撃の速度力
     [SerializeField] float attackDis = 10f;    //オートエイム範囲。お好みで。
+    [SerializeField] float attackCooldownTime = 1f; // 通常攻撃のクールタイム（秒)
     [SerializeField] float skillCooldownTime = 5f; // 必殺技のクールタイム（秒）
+    [SerializeField] float skillTime = 5f; // 必殺技の発動時間（秒）
 
     [SerializeField] int maxHP = 10;
 
     [SerializeField] GameObject stickPrefab;//仮想スティック
-    [SerializeField] GameObject attackPrefab;    //発射したいプレハブ
-    [SerializeField] GameObject skillChargeEffect; //スキル発動可能エフェクト
-
-    PlayerInputAction action;
-    Rigidbody rb;
-    Vector3 velocity;
-    PlayerSkill skill;
-
-    private Vector2 startPosition;
-    private Vector2 currentPosition;
-    private Vector2 moveDirection;
-
-    private bool isInteracting = false;//入力中フラグ
-    private bool isAttack = false;//攻撃中フラグ
-    private bool isDamage = false;
-    private bool isSkill = false;//必殺話字フラグ
-
-    private float touchTime = 0;
-    private int hp = 0;
-    //オートエイム用角度変数
-    private float degreeAttack = 0.0f;
-    private float radAttack = 0.0f;
-    private float nearestEnemyDis;
-    private float lastSkillTime = -Mathf.Infinity; // 最後にスキルを発動した時間
+    [SerializeField] GameObject skillChargeEffect; //スキル発動可能エフェクト 
 
     //画面内に移動範囲を制限
     [SerializeField] LayerMask groundLayer; // 地面のレイヤー
@@ -50,13 +30,43 @@ public class PlayerController : MonoBehaviour
     [SerializeField, Range(0f, 1f)] float topOffset = 0.9f;    // 上端のオフセット
     [SerializeField, Range(0f, 1f)] float bottomOffset = 0.1f; // 下端のオフセット
 
+    [SerializeField] PlayerHpImage playerHpImage;
+
+    [SerializeField] CenterToGrayEffect centerToGrayEffect;
+    [SerializeField] private BulletManager bulletManager;
+
+    PlayerInputAction action;
+    Rigidbody rb;
+    PlayerSkill skill;
     Camera mainCamera; // 使用するカメラ
-
-    private Vector3[] corners = new Vector3[4]; // 四角形の頂点
-
     GameManager gameManager;
 
-    [SerializeField] PlayerHpImage playerHpImage;
+    private Vector2 startPosition;
+    private Vector2 currentPosition;
+    private Vector2 moveDirection;
+
+    private Vector3 velocity;
+    private Vector3[] corners = new Vector3[4]; // 四角形の頂点
+
+    private bool isInteracting = false;//入力中フラグ
+    private bool isAttack = false;//攻撃中フラグ
+    private bool isDamage = false;
+    private bool isSkill = false;//必殺技フラグ
+    private bool onAutoAim = false;
+
+    private float touchTime = 0;
+    //オートエイム用角度変数
+    private float degreeAttack = 0.0f;
+    private float radAttack = 0.0f;
+    private float nearestEnemyDis;
+    private float lastSkillTime = -Mathf.Infinity; // 最後にスキルを発動した時間
+
+    private int hp = 0;
+    private int bulletNum = 1;
+
+    //スキル発動中は敵と当たらなくする
+    private int playerLayer;
+    private int enemyLayer;
 
     // Start is called before the first frame update
     void Awake()
@@ -72,6 +82,8 @@ public class PlayerController : MonoBehaviour
         mainCamera = Camera.main;
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         action.Disable();
+        playerLayer = LayerMask.NameToLayer("Player");
+        enemyLayer = LayerMask.NameToLayer("Enemy");
     }
 
     private void Update()
@@ -116,19 +128,25 @@ public class PlayerController : MonoBehaviour
             LookMoveDirection();
         }
 
+        //skill
         if (isSkill)
         {
             skill.SkillTouchMove();
             // プレイヤーを四角形の中に制限
             ConstrainPlayer();
         }
-
-        // クールタイム中なら発動できない
-        if (Time.time - lastSkillTime < skillCooldownTime)
-        {
-            skillChargeEffect.SetActive(false);
-        }
         else
+        {
+            //attack
+            if (!isAttack)
+            {
+                nearestEnemyDis = attackDis;
+                Attack();
+            }
+        }
+
+        // Skill発動可能時にエフェクト表示
+        if (Time.time - lastSkillTime >= skillCooldownTime && !isSkill)
         {
             skillChargeEffect.SetActive(true);
         }
@@ -149,6 +167,7 @@ public class PlayerController : MonoBehaviour
     // タッチまたはマウスの開始位置
     public void OnTouchStarted(InputAction.CallbackContext context)
     {
+        if(gameManager.state != GameManager.GameState.Game)return;
         if (context.started)
         {
             //最初にタッチまたはクリックした場所を保存
@@ -162,7 +181,7 @@ public class PlayerController : MonoBehaviour
                 // それ以外はマウス座標を取得
                 startPosition = Mouse.current.position.ReadValue();
             }
-            isInteracting = TouchAreaJudge(startPosition);
+            isInteracting = true;
             if (isInteracting)
             {
                 //スタートポジション以外も設定することで前回の位置をリセット
@@ -177,7 +196,6 @@ public class PlayerController : MonoBehaviour
     // タッチまたはマウスの現在位置
     public void OnTouchMoved(InputAction.CallbackContext context)
     {
-        print(context.ReadValue<Vector2>());
         if (context.performed && isInteracting)
         {
             currentPosition = context.ReadValue<Vector2>();
@@ -194,23 +212,14 @@ public class PlayerController : MonoBehaviour
 
             if (touchTime < 0.2f)
             {
-                //0.2秒以内にタッチしたポイントから100離れると必殺技発動
-                if ((currentPosition - startPosition).magnitude > 200)
+                if (!isSkill)
                 {
-                    if (!isSkill)
-                    {
-                        // カメラの四隅から地面への交点を取得
-                        CalculateCorners();
-                        Skill();
-                    }
-                }
-                else
-                {
-                    nearestEnemyDis = attackDis;
-                    Attack();
+                    // カメラの四隅から地面への交点を取得
+                    CalculateCorners();
+                    Skill();
                 }
             }
-           
+
             isInteracting = false;
             moveDirection = Vector2.zero;
             stickPrefab.SetActive(false);
@@ -239,7 +248,7 @@ public class PlayerController : MonoBehaviour
             rb.velocity = Vector2.zero;
         }
         //入力がなくなった時または攻撃中にX軸の慣性の調整
-        else if (moveDirection == Vector2.zero || isAttack == true)
+        else if (moveDirection == Vector2.zero)
         {
             // 現在のvelocityを取得し減衰を適用
             velocity = rb.velocity;
@@ -267,39 +276,71 @@ public class PlayerController : MonoBehaviour
         {
             isAttack = true;
 
-            //  タグEnemyのオブジェクトをすべて取得し、10f以内の最も近いエネミーを取得する。
-            GameObject nearestEnemy = null;    //前回の攻撃で一番近かった敵をリセット
-            GameObject[] enemys = GameObject.FindGameObjectsWithTag("Enemy");//Enemyタグがついたオブジェクトをすべて配列に格納。
-            foreach (GameObject enemy in enemys)    //全Enemyオブジェクト入り配列をひとつづつループ。
+            if (onAutoAim)
             {
-                float dis = Vector3.Distance(transform.position, enemy.transform.position);    //プレイヤーキャラとループ中の敵オブジェクトの距離を引き算して差を出す。
-                
-                if (dis < nearestEnemyDis)    //オートエイム範囲(10f)以内か確認
+                GameObject nearestEnemy = null;    //前回の攻撃で一番近かった敵をリセット
+                nearestEnemy = AutoAim();
+                if (nearestEnemy != null)  //オートエイム有効nullチェック。10f以内にタグEnemy存在。
                 {
-                    nearestEnemyDis = dis;    //今んとこ一番近い敵との距離更新。次のループ用。
-                    nearestEnemy = enemy;    //今んとこ一番近い敵オブジェクト更新。
+                    Vector3 baseDirection = (nearestEnemy.transform.position - this.transform.position).normalized;
+
+                    Shot(baseDirection);
                 }
-            }
-            // foreach　が終わった時、nearestEnemyにプレイヤーキャラから一番近い敵が入ってる。
-
-            if (nearestEnemy != null)  //オートエイム有効nullチェック。10f以内にタグEnemy存在。
-            {
-                GameObject attackObj = Instantiate(attackPrefab, this.transform.position, Quaternion.identity);
-                Rigidbody attackObjRb = attackObj.GetComponent<Rigidbody>();
-                Vector3 attackDirection = (nearestEnemy.transform.position - this.transform.position).normalized;
-                attackObjRb.velocity = attackDirection * attackSpeed;
-
-                Invoke("StopAttack", 0.4f);    //連射を防ぐためのフラグ操作。
+                else
+                {
+                    Shot(transform.forward);
+                }
             }
             else
             {
-                GameObject attackObj = Instantiate(attackPrefab, this.transform.position, Quaternion.identity);
-                Rigidbody attackObjRb = attackObj.GetComponent<Rigidbody>();
-                attackObjRb.velocity = transform.forward * attackSpeed;
+                Shot(transform.forward);
+            }
+            
+        }
+    }
 
-                Invoke("StopAttack", 0.4f);    //連射を防ぐためのフラグ操作。
+    void Shot(Vector3 _aimDirection)
+    {
+        for (int i = 0; i < bulletNum; i++)
+        {
+            GameObject attackObj = bulletManager.GetBullet();
+            attackObj.transform.position = this.transform.position;
+            attackObj.transform.rotation = Quaternion.identity;
+
+            PlayerBulletController attackObjPlayerBullet = attackObj.GetComponent<PlayerBulletController>();
+            Rigidbody attackObjRb = attackObj.GetComponent<Rigidbody>();
+
+            attackObjPlayerBullet.Display();
+
+            // 念のため、前の速度をゼロにする
+            attackObjRb.velocity = Vector3.zero;
+
+            float angle = 90f * i;
+            Vector3 rotatedDirection = Quaternion.AngleAxis(angle, Vector3.up) * _aimDirection;
+            attackObjRb.velocity = rotatedDirection * attackSpeed;
+        }
+
+        Invoke("StopAttack", attackCooldownTime);
+    }
+
+
+    GameObject AutoAim()
+    {
+        //  タグEnemyのオブジェクトをすべて取得し、10f以内の最も近いエネミーを取得する。
+        GameObject nearestEnemy = null;    //前回の攻撃で一番近かった敵をリセット
+        GameObject[] enemys = GameObject.FindGameObjectsWithTag("Enemy");//Enemyタグがついたオブジェクトをすべて配列に格納。
+        foreach (GameObject enemy in enemys)    //全Enemyオブジェクト入り配列をひとつづつループ。
+        {
+            float dis = Vector3.Distance(transform.position, enemy.transform.position);    //プレイヤーキャラとループ中の敵オブジェクトの距離を引き算して差を出す。
+
+            if (dis < nearestEnemyDis)    //オートエイム範囲(10f)以内か確認
+            {
+                nearestEnemyDis = dis;    //今んとこ一番近い敵との距離更新。次のループ用。
+                nearestEnemy = enemy;    //今んとこ一番近い敵オブジェクト更新。
             }
         }
+        return nearestEnemy;
+        // foreach　が終わった時、nearestEnemyにプレイヤーキャラから一番近い敵が入ってる。
     }
 
     void StopAttack()
@@ -313,16 +354,31 @@ public class PlayerController : MonoBehaviour
         if (Time.time - lastSkillTime < skillCooldownTime) return;
 
         isSkill = true;
-        lastSkillTime = Time.time; // スキル発動時間を記録
-
-        Invoke("StopSkill", 10);
+        centerToGrayEffect.Gray(true);
+        skillChargeEffect.SetActive(false);
+        maxSpeed *= 1.5f;
+        moveSpeed *= 1.5f;
+        // 衝突無効化
+        Physics.IgnoreLayerCollision(playerLayer, enemyLayer, true);
+        Invoke("StopSkill", skillTime);
     }
 
     void StopSkill()
     {
+        // もしすでにスキル状態でなければ、何もしない
+        if (!isSkill) return;
+
+        // スキル終了処理
         skill.SkillTouchEnded();
         isSkill = false;
+        maxSpeed /= 1.5f;
+        moveSpeed /= 1.5f;
+        centerToGrayEffect.Gray(false);
+        lastSkillTime = Time.time; // スキル終了時刻を記録する
+                                   // 衝突を再び有効にする
+        Physics.IgnoreLayerCollision(playerLayer, enemyLayer, false);
     }
+
 
     //スキル中フラグ取得
     public bool GetIsSkill() { return isSkill; }
@@ -437,28 +493,6 @@ public class PlayerController : MonoBehaviour
         return segmentStart + t * segment;
     }
 
-    bool TouchAreaJudge(Vector2 _startPosition)
-    {
-        //RaycastAllの結果格納用のリスト作成
-        List<RaycastResult> RayResult = new List<RaycastResult>();
-
-        PointerEventData pointer = new PointerEventData(EventSystem.current);
-        //PointerEvenDataに、マウスの位置をセット
-        pointer.position = _startPosition;
-        //RayCast（スクリーン座標）
-        EventSystem.current.RaycastAll(pointer, RayResult);
-
-        foreach (RaycastResult result in RayResult)
-        {
-            if (result.gameObject.CompareTag("TouchArea"))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     void LookMoveDirection()
     {
         Vector3 moveDir = new Vector3(moveDirection.x, 0, moveDirection.y);
@@ -471,13 +505,14 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void Init()
+    public void Init()
     {
         skillChargeEffect.SetActive(false);
         isInteracting = false;
         moveDirection = Vector2.zero;
         currentPosition = Vector2.zero;
         stickPrefab.SetActive(false);
+        skillChargeEffect.SetActive(false);
         StopSkill();
         hp = maxHP;
         playerHpImage.UpdateHp(hp);
@@ -490,9 +525,57 @@ public class PlayerController : MonoBehaviour
         if (hp <= 0)
         {
             action.Disable();
-            Init();
-            skillChargeEffect.SetActive(false);
-            gameManager.ChangeResultState();
+            gameManager.EndGame();
         }
+    }
+
+    public void ApplyBuff(BuffSO buff)
+    {
+        // HP回復
+        if (hp < maxHP)
+        {
+            hp = Mathf.Min(hp + buff.healAmount, maxHP);
+            playerHpImage.UpdateHp(hp);
+            Debug.Log($"HP回復：{buff.healAmount} → 現在HP: {hp}");
+        }
+        if (hp > maxHP)
+        {
+            hp = maxHP;
+        }
+
+        // 速度アップ
+        if (buff.speedMultiplier != 1f)
+            StartCoroutine(SpeedBuffCoroutine(buff.speedMultiplier, buff.duration));
+    }
+
+    private IEnumerator SpeedBuffCoroutine(float multiplier, float duration)
+    {
+        moveSpeed *= multiplier;
+        Debug.Log($"速度アップ：{multiplier}倍");
+
+        yield return new WaitForSeconds(duration);
+
+        moveSpeed /= multiplier;
+        Debug.Log("速度元に戻った！");
+    }
+
+    public void SetBulletNum(int _bulletNum)
+    {
+        bulletNum = _bulletNum;
+    }
+
+    public void SetAttackSpeed(float _attackSpeed)
+    {
+        attackSpeed = _attackSpeed;
+    }
+
+    public void SetAttackCooldownTime(float _attackCooldownTime)
+    {
+        attackCooldownTime = _attackCooldownTime;
+    }
+
+    public void SetAutoAim(bool _onAutoAim)
+    {
+        onAutoAim = _onAutoAim;
     }
 }

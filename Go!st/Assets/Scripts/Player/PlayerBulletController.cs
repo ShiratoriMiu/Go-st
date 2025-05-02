@@ -8,24 +8,34 @@ public class PlayerBulletController : MonoBehaviour
 
     PlayerController playerController;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [SerializeField] Collider bulletCollider;
+    [SerializeField] Renderer bulletRenderer;
 
-    // Update is called once per frame
-    void Update()
-    {
-        Destroy(this.gameObject, destroyTime);
-    }
+    public bool isActive { get; private set; }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Enemy"))
         {
             other.GetComponent<EnemyController>().Damage(1);
-            Destroy(this.gameObject);
+            Hidden();
         }
+    }
+
+    public void Display()
+    {
+        bulletCollider.enabled = true;
+        bulletRenderer.enabled = true;
+        isActive = true;
+
+        CancelInvoke();
+        Invoke("Hidden", destroyTime); // ”ñ•\Ž¦
+    }
+
+    public void Hidden()
+    {
+        bulletCollider.enabled = false;
+        bulletRenderer.enabled = false;
+        isActive = false;
     }
 }

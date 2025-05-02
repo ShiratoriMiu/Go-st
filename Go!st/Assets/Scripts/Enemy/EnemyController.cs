@@ -17,28 +17,35 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private int attack = 1;
 
     [SerializeField] Animator animator;
+    [SerializeField] private Renderer[] enemyRenderers;
+    [SerializeField] private Collider enemyCollider;
 
-    private bool previousSkillState = false; // ‘O‰ñ‚ÌƒXƒLƒ‹ó‘Ô‚ğ‹L˜^
+    private bool previousSkillState = false; // å‰å›ã®ã‚¹ã‚­ãƒ«çŠ¶æ…‹ã‚’è¨˜éŒ²
 
-    bool setSelectPlayer = true;
+    public bool isActive { get; private set; }
 
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
         rb = GetComponent<Rigidbody>();
         hp = maxHp;
-        levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+    }
+
+    public void Initialize(GameManager _gameManager, LevelManager _levelManager)
+    {
+        gameManager = _gameManager;
+        levelManager = _levelManager;
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
+        if (!isActive) return;
+
         if (gameManager.state != GameManager.GameState.Game) return;
 
-        if (setSelectPlayer)
+        if (player != gameManager.selectPlayer && gameManager.selectPlayer != null)
         {
-            player = GameObject.FindWithTag("Player");
+            player = gameManager.selectPlayer;
             playerController = player.GetComponent<PlayerController>();
         }
 
@@ -46,11 +53,11 @@ public class EnemyController : MonoBehaviour
         {
             if (!playerController.GetIsSkill())
             {
-                // í‚Éˆê’è‚Ì‘¬“x‚ÅˆÚ“®‚³‚¹‚é
+                // å¸¸ã«ä¸€å®šã®é€Ÿåº¦ã§ç§»å‹•ã•ã›ã‚‹
                 Vector3 direction = (player.transform.position - transform.position).normalized;
                 rb.velocity = direction * moveSpeed;
 
-                // ƒvƒŒƒCƒ„[‚Ì•ûŒü‚ğŒü‚­
+                // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æ–¹å‘ã‚’å‘ã
                 transform.LookAt(player.transform.position);
             }
 
@@ -62,33 +69,29 @@ public class EnemyController : MonoBehaviour
     {
         bool currentSkillState = playerController.GetIsSkill();
 
-        // ƒXƒLƒ‹ó‘Ô‚ª true ‚É•Ï‰»‚µ‚½ƒ^ƒCƒ~ƒ“ƒO‚Å1‰ñ‚¾‚¯Às
+        // ã‚¹ã‚­ãƒ«çŠ¶æ…‹ãŒ true ã«å¤‰åŒ–ã—ãŸã‚¿ã‚¤ãƒŸãƒ³ã‚°ã§1å›ã ã‘å®Ÿè¡Œ
         if (!previousSkillState && currentSkillState)
         {
-            // ’â~‚Ì‘¬“x‚ğ‹L˜^‚µARigidbody ‚ğ’â~
+            // åœæ­¢æ™‚ã®é€Ÿåº¦ã‚’è¨˜éŒ²ã—ã€Rigidbody ã‚’åœæ­¢
             lastVelocity = rb.velocity;
             rb.Sleep();
 
-            // ƒAƒjƒ[ƒVƒ‡ƒ“‚ğ’â~
+            // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’åœæ­¢
             animator.speed = 0f;
-
-            Debug.Log("Stan ˆ—‚ğ1‰ñÀs‚µ‚Ü‚µ‚½");
         }
 
-        // ƒXƒLƒ‹ó‘Ô‚ª false ‚É–ß‚Á‚½ê‡‚Ìˆ—
+        // ã‚¹ã‚­ãƒ«çŠ¶æ…‹ãŒ false ã«æˆ»ã£ãŸå ´åˆã®å‡¦ç†
         if (previousSkillState && !currentSkillState)
         {
-            // Rigidbody ‚ğÄŠJ‚µA‘¬“x‚ğ•œŒ³
+            // Rigidbody ã‚’å†é–‹ã—ã€é€Ÿåº¦ã‚’å¾©å…ƒ
             rb.WakeUp();
             rb.velocity = lastVelocity;
 
-            // ƒAƒjƒ[ƒVƒ‡ƒ“‚ğÄŠJ
+            // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’å†é–‹
             animator.speed = 1f;
-
-            Debug.Log("Stan ó‘Ô‰ğœˆ—‚ğÀs‚µ‚Ü‚µ‚½");
         }
 
-        // ƒXƒLƒ‹ó‘Ô‚ğXV
+        // ã‚¹ã‚­ãƒ«çŠ¶æ…‹ã‚’æ›´æ–°
         previousSkillState = currentSkillState;
     }
 
@@ -102,9 +105,9 @@ public class EnemyController : MonoBehaviour
     {
         if (hp <= 0)
         {
-            this.gameObject.SetActive(false);
+            Hidden();
             hp = maxHp;
-            levelManager.AddEnemyNum();
+            levelManager.AddEnemyKill();
             gameManager.AddEnemiesDefeatedNum();
         }
     }
@@ -118,5 +121,29 @@ public class EnemyController : MonoBehaviour
                 collision.gameObject.GetComponent<PlayerController>().Damage(attack);
             }
         }
+    }
+
+    public void Display()
+    {
+        isActive = true;
+        animator.enabled = true;
+        enemyCollider.enabled = true;
+        foreach (Renderer renderer in enemyRenderers)
+        {
+            renderer.enabled = true;
+        }
+        rb.useGravity = true;
+    }
+
+    public void Hidden()
+    {
+        isActive = false;
+        animator.enabled = false;
+        enemyCollider.enabled = false;
+        foreach (Renderer renderer in enemyRenderers)
+        {
+            renderer.enabled = false;
+        }
+        rb.useGravity = false;
     }
 }
