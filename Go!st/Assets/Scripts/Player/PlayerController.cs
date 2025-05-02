@@ -68,6 +68,9 @@ public class PlayerController : MonoBehaviour
     private int playerLayer;
     private int enemyLayer;
 
+    //デバッグ用
+    private float initSkillCooldownTime;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -84,6 +87,7 @@ public class PlayerController : MonoBehaviour
         action.Disable();
         playerLayer = LayerMask.NameToLayer("Player");
         enemyLayer = LayerMask.NameToLayer("Enemy");
+        initSkillCooldownTime = skillCooldownTime;
     }
 
     private void Update()
@@ -577,5 +581,16 @@ public class PlayerController : MonoBehaviour
     public void SetAutoAim(bool _onAutoAim)
     {
         onAutoAim = _onAutoAim;
+    }
+
+    //デバッグ用
+    public void SetSkillCooldownTime(float _skillCooldownTime)
+    {
+        skillCooldownTime = _skillCooldownTime;
+    }
+
+    public void ResetSetSkillCooldownTime()
+    {
+        skillCooldownTime = initSkillCooldownTime;
     }
 }

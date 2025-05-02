@@ -36,11 +36,15 @@ public class GameManager : MonoBehaviour
 
     private int finalScore;
 
+    //デバッグ用
+    private float initmaxTimeLimit;
+
     private void Start()
     {
         InitGame();
         SelectOnUI(titlePanel);
         centerToGrayEffect = Camera.main.GetComponent<CenterToGrayEffect>();
+        initmaxTimeLimit = maxTimeLimit;
     }
 
     private void Update()
@@ -183,5 +187,16 @@ public class GameManager : MonoBehaviour
     {
         ResetGame();
         StartGame();
+    }
+
+    //デバッグ用
+    public void SetMaxTimeLimit(float _maxTimeLimit)
+    {
+        maxTimeLimit = _maxTimeLimit;
+    }
+
+    public void ResetMaxTimeLimit()
+    {
+        maxTimeLimit = initmaxTimeLimit;
     }
 }

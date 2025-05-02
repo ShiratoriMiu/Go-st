@@ -10,6 +10,7 @@ public class SettingManager : MonoBehaviour
     [SerializeField] Button titleButton;
     [SerializeField] Button restartButton;
     [SerializeField] GameManager gameManager;
+    [SerializeField] PlayerController[] players;
 
     // Start is called before the first frame update
     void Start()
@@ -17,6 +18,7 @@ public class SettingManager : MonoBehaviour
         titleButton.onClick.AddListener(ToTitle);
         restartButton.onClick.AddListener(Restart);
         noSkillCoolTimeToggle.onValueChanged.AddListener(OnToggleChanged);
+        timelimitInputField.onValueChanged.AddListener(OnInputValueChanged);
     }
 
     void ToTitle()
@@ -31,6 +33,24 @@ public class SettingManager : MonoBehaviour
 
     void OnToggleChanged(bool isOn)
     {
-        int value = isOn ? 1 : 0;
+        if (isOn)
+        {
+            foreach(var player in players)
+            {
+                player.SetSkillCooldownTime(0);
+            }
+        }
+        else
+        {
+            foreach (var player in players)
+            {
+                player.ResetSetSkillCooldownTime();
+            }
+        }
+    }
+
+    void OnInputValueChanged(string newText)
+    {
+        gameManager.SetMaxTimeLimit(float.Parse(newText));
     }
 }
