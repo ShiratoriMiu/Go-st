@@ -28,7 +28,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject scorePanel;
     [SerializeField] private GameObject rankingPanel;
 
-    [SerializeField] private ScoreManager scoreManager;
+    [SerializeField] private FirebaseController firebaseController;
 
     CenterToGrayEffect centerToGrayEffect;
 
@@ -117,28 +117,23 @@ public class GameManager : MonoBehaviour
     public async void ShowScore()
     {
         int score = CalculateScore();
-        await scoreManager.WriteScoreDataAsync(score);
+        await firebaseController.SaveScoreAsync(score);
         scoreText.text = $"Score : {score}";
     }
 
 
-    public void ShowRanking()
+    public async void ShowRanking()
     {
-        state = GameState.Ranking;
-        SelectOnUI(rankingPanel);
-
-        List<int> scores = scoreManager.LoadScoreData();
-        scores.Sort((a, b) => b.CompareTo(a)); // ç~èáÉ\Å[Ég
-
-        int count = Mathf.Min(scores.Count, 5);
+        List<int> scores = await firebaseController.GetTopScoresAsync();
 
         string rankingResult = "";
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < scores.Count; i++)
         {
             rankingResult += $"{i + 1}à : {scores[i]}\n";
         }
 
         rankingText.text = rankingResult;
+        SelectOnUI(rankingPanel);
     }
 
 

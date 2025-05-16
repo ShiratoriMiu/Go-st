@@ -47,8 +47,13 @@ public class PlayerSkill : MonoBehaviour
     public void SkillTouchEnded()
     {
         skillEffect.transform.position = GetPolygonCenter();
-        skillEffect.Play();
-        DetectEnemies(); // 範囲内のEnemyを検知
+        int enemyNum = DetectEnemies(); // 範囲内のEnemyを検知かつその数を返す
+        //範囲内の敵が1体以上いたら
+        if(enemyNum > 0)
+        {
+            //エフェクトを出す
+            skillEffect.Play();
+        }
         points.Clear(); // 軌跡をクリア
         UpdateLineRenderer();
         skillEnemyNumText.gameObject.SetActive(true);
@@ -76,7 +81,7 @@ public class PlayerSkill : MonoBehaviour
     }
 
 
-    private void DetectEnemies()
+    private int DetectEnemies()
     {
         // 前回検知したEnemyをクリア
         detectedEnemies.Clear();
@@ -89,7 +94,7 @@ public class PlayerSkill : MonoBehaviour
 
         // すべてのEnemyTagを持つオブジェクトを検索
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-
+        
         foreach (GameObject enemy in enemies)
         {
             // オブジェクトのコライダーを取得
@@ -105,15 +110,16 @@ public class PlayerSkill : MonoBehaviour
                     // 範囲内にあるので、リストに追加
                     detectedEnemies.Add(enemy);
                     Debug.Log("Enemy Detected: " + enemy.name);
-
+                    
                     // 検知したオブジェクトに対して処理
                     enemy.GetComponent<EnemyController>().Damage(attack);
                 }
             }
         }
-
         skillEnemyNumText.text = detectedEnemies.Count.ToString();
         Invoke("StopSkillEnemyNumText", 3);
+
+        return detectedEnemies.Count;
     }
 
     void StopSkillEnemyNumText()

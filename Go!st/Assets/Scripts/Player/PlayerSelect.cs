@@ -4,8 +4,6 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-//using UnityEngine.InputSystem.EnhancedTouch; // スマホのタッチ対応
-
 public class PlayerSelect : MonoBehaviour
 {
     [SerializeField] GameObject[] players; // キャラリスト
@@ -14,6 +12,7 @@ public class PlayerSelect : MonoBehaviour
     [SerializeField] float lerpSpeed = 10f; // スムーズな移動速度
     [SerializeField] float swipeOffsetValue = 0.3f;
     [SerializeField] Text skillEnemyNumText;
+    [SerializeField] bool debugCanSwipe = false;
 
     PlayerInputAction action;
 
@@ -89,15 +88,19 @@ public class PlayerSelect : MonoBehaviour
 
     private void OnEnable()
     {
-        action.Enable();
-        //EnhancedTouchSupport.Enable(); // スマホのタッチ対応
-        //TouchSimulation.Enable(); // エディタでタッチをシミュレート
+        if (debugCanSwipe)
+        {
+            action.Enable();
+        }
+        else
+        {
+            action.Disable();
+        }
     }
 
     private void OnDisable()
     {
         action.Disable();
-        //EnhancedTouchSupport.Disable();
     }
 
     void Update()
@@ -284,12 +287,24 @@ public class PlayerSelect : MonoBehaviour
 
     private void OnSwipePerformed(InputAction.CallbackContext context)
     {
-        if (isSwipe && isPressing) // スワイプ中かつタッチしている状態で
+        if (isSwipe && isPressing)
         {
             Vector2 currentTouch = context.ReadValue<Vector2>();
-            swipeOffset = -(currentTouch.x - startTouchPoint.x) * swipeOffsetValue; // スワイプ量を適用（調整可能）
+            float direction = currentTouch.x - startTouchPoint.x;
+
+            if (Mathf.Abs(direction) > 0.01f)
+            {
+                // スワイプ方向に基づいてオフセットを変更
+                float swipeDirection = -Mathf.Sign(direction);
+                swipeOffset = swipeDirection * swipeOffsetValue;
+            }
+            else
+            {
+                swipeOffset = 0f;
+            }
         }
     }
+
 
     public GameObject[] GetPlayers()
     {
