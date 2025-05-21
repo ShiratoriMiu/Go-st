@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public enum GameState { Title, Game, Score, Ranking }
+    public enum GameState { Title, Game, Score, Ranking, SkinChange }
     public GameState state;
 
     public PlayerManager playerManager;
@@ -27,6 +27,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject titlePanel;
     [SerializeField] private GameObject scorePanel;
     [SerializeField] private GameObject rankingPanel;
+    [SerializeField] private GameObject skinChangePanel;
 
     [SerializeField] private FirebaseController firebaseController;
 
@@ -86,6 +87,7 @@ public class GameManager : MonoBehaviour
         gamePanel.SetActive(false);
         scorePanel.SetActive(false);
         rankingPanel.SetActive(false);
+        skinChangePanel.SetActive(false);
 
         // 引数で渡されたUIオブジェクトのみを表示
         _obj.SetActive(true);
@@ -161,6 +163,11 @@ public class GameManager : MonoBehaviour
         ResetGame();
     }
 
+    public void SkinChangeToTitle()
+    {
+        state = GameState.Title;
+        SelectOnUI(titlePanel);
+    }
 
     private void ResetGame()
     {
@@ -193,5 +200,11 @@ public class GameManager : MonoBehaviour
     public void ResetMaxTimeLimit()
     {
         maxTimeLimit = initmaxTimeLimit;
+    }
+
+    public void ToSkinChange()
+    {
+        state = GameState.SkinChange;
+        SelectOnUI(skinChangePanel);
     }
 }

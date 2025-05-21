@@ -103,7 +103,6 @@ MonoBehaviour:
   animator: {fileID: 5585635859854130372}
   enemyRenderers:
   - {fileID: 8750368255907882383}
-  - {fileID: 8521684646537789394}
   enemyCollider: {fileID: 4529864787827551751}
 --- !u!1001 &5609285259822924224
 PrefabInstance:
@@ -157,6 +156,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: G2_Red
       objectReference: {fileID: 0}
+    - target: {fileID: 2505947989032719008, guid: aaf0bae1b4fe202469a91f418e19fa04, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 25901200661331523, guid: aaf0bae1b4fe202469a91f418e19fa04, type: 3}
     - {fileID: 25901200661331522, guid: aaf0bae1b4fe202469a91f418e19fa04, type: 3}
@@ -173,11 +176,6 @@ Transform:
 --- !u!95 &5585635859854130372 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 25901199926328580, guid: aaf0bae1b4fe202469a91f418e19fa04, type: 3}
-  m_PrefabInstance: {fileID: 5609285259822924224}
-  m_PrefabAsset: {fileID: 0}
---- !u!23 &8521684646537789394 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 4295084051454000658, guid: aaf0bae1b4fe202469a91f418e19fa04, type: 3}
   m_PrefabInstance: {fileID: 5609285259822924224}
   m_PrefabAsset: {fileID: 0}
 --- !u!137 &8750368255907882383 stripped

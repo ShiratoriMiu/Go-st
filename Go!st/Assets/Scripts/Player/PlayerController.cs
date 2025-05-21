@@ -34,6 +34,8 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] CenterToGrayEffect centerToGrayEffect;
     [SerializeField] private BulletManager bulletManager;
+    [SerializeField] Renderer rendererInit;
+    public Renderer renderer { get; private set; }
 
     PlayerInputAction action;
     Rigidbody rb;
@@ -88,6 +90,7 @@ public class PlayerController : MonoBehaviour
         playerLayer = LayerMask.NameToLayer("Player");
         enemyLayer = LayerMask.NameToLayer("Enemy");
         initSkillCooldownTime = skillCooldownTime;
+        renderer = rendererInit;
     }
 
     private void Update()

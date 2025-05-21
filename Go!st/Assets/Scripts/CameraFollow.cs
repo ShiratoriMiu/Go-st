@@ -5,8 +5,10 @@ using UnityEngine;
 public class CameraFollow : MonoBehaviour
 {
     [SerializeField] float speed;
+    [SerializeField] float toSkinChangrSpeed;
 
     [SerializeField] Transform titleCameraPos;
+    [SerializeField] Transform skinChangeCameraPos;
 
     GameObject player;
     Vector3 offset;
@@ -24,6 +26,10 @@ public class CameraFollow : MonoBehaviour
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         initAngle = this.transform.eulerAngles;
         offset = Vector3.zero - this.transform.position;//playerの初期位置を原点にする
+
+        //最初のカメラ位置はタイトルの位置にする
+        transform.position = titleCameraPos.position;
+        transform.eulerAngles = titleCameraPos.eulerAngles;
     }
 
     // Update is called once per frame
@@ -31,8 +37,13 @@ public class CameraFollow : MonoBehaviour
     {
         if(gameManager.state == GameManager.GameState.Title)
         {
-            transform.position = Vector3.Lerp(transform.position,titleCameraPos.position, speed);
-            transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, titleCameraPos.eulerAngles, speed);
+            transform.position = Vector3.Lerp(transform.position,titleCameraPos.position, toSkinChangrSpeed);
+            transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, titleCameraPos.eulerAngles, toSkinChangrSpeed);
+        }
+        else if (gameManager.state == GameManager.GameState.SkinChange)
+        {
+            transform.position = Vector3.Lerp(transform.position, skinChangeCameraPos.position, toSkinChangrSpeed);
+            transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, skinChangeCameraPos.eulerAngles, toSkinChangrSpeed);
         }
         else
         {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class PlayerSelect : MonoBehaviour
 {
@@ -13,6 +14,8 @@ public class PlayerSelect : MonoBehaviour
     [SerializeField] float swipeOffsetValue = 0.3f;
     [SerializeField] Text skillEnemyNumText;
     [SerializeField] bool debugCanSwipe = false;
+    [SerializeField] ColorChanger colorChanger;
+    [SerializeField] SkinItemUIManager skinItemUIManager;
 
     PlayerInputAction action;
 
@@ -113,6 +116,12 @@ public class PlayerSelect : MonoBehaviour
                 isInitialize = false;
                 OnDisable();
             }
+
+            if (gameManager.state == GameManager.GameState.SkinChange)
+            {
+                UpdateCharacterPositions(false); // SkinChange中はLerpで滑らかに移動
+            }
+
             return;
         }
 
@@ -121,40 +130,48 @@ public class PlayerSelect : MonoBehaviour
             InitializePlayerPositions();
             OnEnable();
             isInitialize = true;
+            UpdateCharacterPositions(true); // ←★ここで即時配置！
+        }
+        else
+        {
+            UpdateCharacterPositions(false); // 通常のLerp処理
         }
 
-        // キャラクターの表示位置を更新
-        UpdateCharacterPositions();
-
-        // アクティブなキャラクターの切り替え
         UpdateActiveCharacters();
     }
+
 
     /// <summary>
     /// キャラクターの表示位置を更新する。
     /// 現在の count, lastCount, nextCount に基づいて、各キャラクターの位置を計算し、移動させる。
     /// </summary>
-    private void UpdateCharacterPositions()
+    private void UpdateCharacterPositions(bool immediateMove)
     {
-        // lastCount キャラクターの移動
-        CharacterPos(1, lastCount);
-
-        // nextCount キャラクターの移動
-        CharacterPos(-1, nextCount);
-
-        // count キャラクターの移動
-        CharacterPos(0, count);
+        CharacterPos(1, lastCount, immediateMove);
+        CharacterPos(-1, nextCount, immediateMove);
+        CharacterPos(0, count, immediateMove);
     }
 
-    void CharacterPos(int _posX, int _playerNum)
+
+    void CharacterPos(int _posX, int _playerNum, bool immediateMove)
     {
         float targetX = _posX * space + swipeOffset;
-        players[_playerNum].transform.position = Vector3.Lerp(
-            players[_playerNum].transform.position,
-            new Vector3(targetX, 0, 0),
-            Time.deltaTime * lerpSpeed
-        );
+        Vector3 targetPos = new Vector3(targetX, 0, 0);
+
+        if (immediateMove)
+        {
+            players[_playerNum].transform.position = targetPos;
+        }
+        else
+        {
+            players[_playerNum].transform.position = Vector3.Lerp(
+                players[_playerNum].transform.position,
+                targetPos,
+                Time.deltaTime * lerpSpeed
+            );
+        }
     }
+
 
     /// <summary>
     /// アクティブなキャラクターを切り替える。
@@ -240,6 +257,24 @@ public class PlayerSelect : MonoBehaviour
         gameManager.SetPlayer(selectPlayer);
         gameManager.StartGame();
     }
+
+    public void ToSkinChangeSelectedPlayer()
+    {
+        for (int i = 0; i < players.Length; i++)
+        {
+            bool isActive = (i == count);
+            players[i].gameObject.SetActive(isActive);
+
+            if (isActive)
+            {
+                selectPlayer = players[i];
+            }
+        }
+        gameManager.SetPlayer(selectPlayer);
+        colorChanger.SetTargetRenderer(selectPlayer.GetComponent<PlayerController>().renderer);
+        skinItemUIManager.SetTargetPlayer(selectPlayer.GetComponent<SkinItemTarget>());
+    }
+
 
     private void OnPressStarted(InputAction.CallbackContext context)
     {

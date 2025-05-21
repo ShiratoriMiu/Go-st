@@ -103,7 +103,6 @@ MonoBehaviour:
   animator: {fileID: 8520648192612306320}
   enemyRenderers:
   - {fileID: 4815697971163993307}
-  - {fileID: 5618343142907055750}
   enemyCollider: {fileID: 6600563889714299056}
 --- !u!1001 &5308306546003304786
 PrefabInstance:
@@ -124,6 +123,10 @@ PrefabInstance:
     - target: {fileID: 981163442623043622, guid: 8146374d820c3ac45baeed5014144363, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2094006309763957606, guid: 8146374d820c3ac45baeed5014144363, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3698828718276235669, guid: 8146374d820c3ac45baeed5014144363, type: 3}
       propertyPath: m_IsActive
@@ -209,11 +212,6 @@ PrefabInstance:
 --- !u!137 &4815697971163993307 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 828151503421502857, guid: 8146374d820c3ac45baeed5014144363, type: 3}
-  m_PrefabInstance: {fileID: 5308306546003304786}
-  m_PrefabAsset: {fileID: 0}
---- !u!23 &5618343142907055750 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 311515833041055700, guid: 8146374d820c3ac45baeed5014144363, type: 3}
   m_PrefabInstance: {fileID: 5308306546003304786}
   m_PrefabAsset: {fileID: 0}
 --- !u!95 &8520648192612306320 stripped
