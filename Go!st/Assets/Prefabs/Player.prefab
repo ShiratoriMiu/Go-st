@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8671727383890830517}
   - component: {fileID: 8222852990093905152}
   - component: {fileID: 3367667359940621779}
+  - component: {fileID: 8740096998511822999}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -115,6 +116,24 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &8740096998511822999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3239009810834277707}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4dbb76eb3b57114db6b97381152ba1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 2474961265833159470}
+  canvasGroup: {fileID: 3367667359940621779}
+  moveDistance: 3
+  fadeInDuration: 0.5
+  stayDuration: 1
+  fadeOutDuration: 0.5
 --- !u!1 &5025519306843505595
 GameObject:
   m_ObjectHideFlags: 0
@@ -229,6 +248,7 @@ MonoBehaviour:
   maxHP: 5
   stickPrefab: {fileID: 3094963788836493681, guid: 35aed7c20b9a5604d8d48f628bf5ba21, type: 3}
   skillChargeEffect: {fileID: 7890945356539490520}
+  levelUpText: {fileID: 8740096998511822999}
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -240,6 +260,7 @@ MonoBehaviour:
   centerToGrayEffect: {fileID: 0}
   bulletManager: {fileID: 0}
   rendererInit: {fileID: 5743897870420690002}
+  playerSkillAnim: {fileID: 0}
 --- !u!114 &5452021018072248373
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -405,7 +426,6 @@ GameObject:
   - component: {fileID: 2474961265833159470}
   - component: {fileID: 1554336737330053826}
   - component: {fileID: 7311786694629160856}
-  - component: {fileID: 5004237752384508131}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -529,23 +549,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &5004237752384508131
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7205623681682634441}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4dbb76eb3b57114db6b97381152ba1f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveHeight: 0.1
-  moveDuration: 1
-  canvasGroup: {fileID: 3367667359940621779}
-  fadeDuration: 0.5
-  text: {fileID: 2474961265833159470}
 --- !u!1001 &2334290095391703960
 PrefabInstance:
   m_ObjectHideFlags: 0

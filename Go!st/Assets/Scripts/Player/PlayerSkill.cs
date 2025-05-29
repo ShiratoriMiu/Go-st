@@ -89,7 +89,7 @@ public class PlayerSkill : MonoBehaviour
         // 頂点が3つ以上ないと多角形を作れないので、検知を行わない
         if (points.Count < 3)
         {
-            Debug.Log("線の頂点が少なすぎます。");
+            return 0;
         }
 
         // すべてのEnemyTagを持つオブジェクトを検索
@@ -109,14 +109,13 @@ public class PlayerSkill : MonoBehaviour
                 {
                     // 範囲内にあるので、リストに追加
                     detectedEnemies.Add(enemy);
-                    Debug.Log("Enemy Detected: " + enemy.name);
                     
                     // 検知したオブジェクトに対して処理
                     enemy.GetComponent<EnemyController>().Damage(attack);
                 }
             }
         }
-        skillEnemyNumText.text = detectedEnemies.Count.ToString();
+        skillEnemyNumText.text = detectedEnemies.Count.ToString() + "COMBO!";
         Invoke("StopSkillEnemyNumText", 3);
 
         return detectedEnemies.Count;
@@ -154,13 +153,26 @@ public class PlayerSkill : MonoBehaviour
     //囲った範囲の中心を取得
     private Vector3 GetPolygonCenter()
     {
+        if (points == null || points.Count == 0)
+        {
+            Debug.LogWarning("GetPolygonCenter(): pointsが空です。Vector3.zeroを返します。");
+            return Vector3.zero;
+        }
+
         Vector3 center = Vector3.zero;
         foreach (Vector3 point in points)
         {
             center += point;
         }
         center /= points.Count;
+
+        if (float.IsNaN(center.x) || float.IsNaN(center.y) || float.IsNaN(center.z))
+        {
+            Debug.LogError("GetPolygonCenter(): centerがNaNになっています！");
+        }
+
         return center;
     }
+
 
 }

@@ -91,6 +91,7 @@ public class LevelManager : MonoBehaviour
         playerController.SetBulletNum(data.BulletCount);
         playerController.SetAttackSpeed(data.BulletSpeed);
         playerController.SetAttackCooldownTime(data.AttackInterval);
+        if(level != 1) playerController.LevelUpText();
 
         // ìGê›íË
         enemyManager.SetEnemyTypesByLevelData(data);

@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
 using System;
+using Unity.VisualScripting;
+using DG.Tweening;
 
 public class PlayerController : MonoBehaviour
 {
@@ -21,6 +23,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] GameObject stickPrefab;//仮想スティック
     [SerializeField] GameObject skillChargeEffect; //スキル発動可能エフェクト 
+    [SerializeField] LevelUpText levelUpText;
 
     //画面内に移動範囲を制限
     [SerializeField] LayerMask groundLayer; // 地面のレイヤー
@@ -35,6 +38,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] CenterToGrayEffect centerToGrayEffect;
     [SerializeField] private BulletManager bulletManager;
     [SerializeField] Renderer rendererInit;
+    [SerializeField] PlayerSkillAnim playerSkillAnim;
     public Renderer renderer { get; private set; }
 
     PlayerInputAction action;
@@ -54,7 +58,9 @@ public class PlayerController : MonoBehaviour
     private bool isAttack = false;//攻撃中フラグ
     private bool isDamage = false;
     private bool isSkill = false;//必殺技フラグ
+    private bool isSkillEndEffect = false;//必殺技フラグ
     private bool onAutoAim = false;
+    private bool canSkillLine = true;//スキルの線を引ける状態か
 
     private float touchTime = 0;
     //オートエイム用角度変数
@@ -138,9 +144,12 @@ public class PlayerController : MonoBehaviour
         //skill
         if (isSkill)
         {
-            skill.SkillTouchMove();
-            // プレイヤーを四角形の中に制限
-            ConstrainPlayer();
+            if (canSkillLine)
+            {
+                skill.SkillTouchMove();
+                // プレイヤーを四角形の中に制限
+                ConstrainPlayer();
+            }
         }
         else
         {
@@ -373,17 +382,27 @@ public class PlayerController : MonoBehaviour
     void StopSkill()
     {
         // もしすでにスキル状態でなければ、何もしない
-        if (!isSkill) return;
+        if (!isSkill || isSkillEndEffect) return;
 
-        // スキル終了処理
         skill.SkillTouchEnded();
-        isSkill = false;
-        maxSpeed /= 1.5f;
-        moveSpeed /= 1.5f;
-        centerToGrayEffect.Gray(false);
-        lastSkillTime = Time.time; // スキル終了時刻を記録する
-                                   // 衝突を再び有効にする
-        Physics.IgnoreLayerCollision(playerLayer, enemyLayer, false);
+        canSkillLine = false;
+        action.Disable();
+        isSkillEndEffect = true;
+
+        playerSkillAnim.PlayerSkillAnimPlay(() =>
+        {
+            // スキル終了処理
+            isSkill = false;
+            isSkillEndEffect = false;
+            maxSpeed /= 1.5f;
+            moveSpeed /= 1.5f;
+            centerToGrayEffect.Gray(false);
+            lastSkillTime = Time.time; // スキル終了時刻を記録する
+                                       // 衝突を再び有効にする
+            Physics.IgnoreLayerCollision(playerLayer, enemyLayer, false);
+            canSkillLine = true;
+            action.Enable();
+        });
     }
 
 
@@ -564,6 +583,11 @@ public class PlayerController : MonoBehaviour
 
         moveSpeed /= multiplier;
         Debug.Log("速度元に戻った！");
+    }
+
+    public void LevelUpText()
+    {
+        levelUpText.PlayAnimation();
     }
 
     public void SetBulletNum(int _bulletNum)
