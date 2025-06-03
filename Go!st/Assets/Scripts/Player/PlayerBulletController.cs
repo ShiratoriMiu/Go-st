@@ -17,7 +17,7 @@ public class PlayerBulletController : MonoBehaviour
     {
         if (other.CompareTag("Enemy"))
         {
-            other.GetComponent<EnemyController>().Damage(1);
+            other.GetComponent<EnemyBase>().Damage(1);
             Hidden();
         }
     }

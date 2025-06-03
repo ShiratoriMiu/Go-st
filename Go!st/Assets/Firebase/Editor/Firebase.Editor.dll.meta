@@ -52,11 +52,6 @@ PluginImporter:
       settings:
         CPU: None
   - first:
-      : Web
-    second:
-      enabled: 0
-      settings: {}
-  - first:
       : WebStreamed
     second:
       enabled: 0
@@ -105,6 +100,11 @@ PluginImporter:
       enabled: 0
       settings:
         CPU: None
+  - first:
+      WebGL: Web
+    second:
+      enabled: 0
+      settings: {}
   - first:
       Windows Store Apps: WindowsStoreApps
     second:

@@ -2,6 +2,8 @@ using UnityEngine;
 
 public abstract class EnemyBase : MonoBehaviour
 {
+    public event System.Action OnDeath;
+
     protected GameObject player;
     protected Rigidbody rb;
     protected PlayerController playerController;
@@ -71,6 +73,8 @@ public abstract class EnemyBase : MonoBehaviour
             hp = maxHp;
             levelManager?.AddEnemyKill();
             gameManager?.AddEnemiesDefeatedNum();
+
+            OnDeath?.Invoke(); // ƒ{ƒX/ŽG‹›‹¤’Ê‚Å”­‰Î
         }
     }
 

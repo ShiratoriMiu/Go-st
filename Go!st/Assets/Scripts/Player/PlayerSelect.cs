@@ -16,6 +16,7 @@ public class PlayerSelect : MonoBehaviour
     [SerializeField] bool debugCanSwipe = false;
     [SerializeField] ColorChanger colorChanger;
     [SerializeField] SkinItemUIManager skinItemUIManager;
+    [SerializeField] GameObject selectButton;
 
     PlayerInputAction action;
 
@@ -91,13 +92,15 @@ public class PlayerSelect : MonoBehaviour
 
     private void OnEnable()
     {
-        if (debugCanSwipe)
+        if (debugCanSwipe && players.Length > 1)
         {
             action.Enable();
+            selectButton.SetActive(true);
         }
         else
         {
             action.Disable();
+            selectButton.SetActive(false);
         }
     }
 
@@ -119,7 +122,7 @@ public class PlayerSelect : MonoBehaviour
 
             if (gameManager.state == GameManager.GameState.SkinChange)
             {
-                UpdateCharacterPositions(false); // SkinChange’†‚ÍLerp‚ÅŠŠ‚ç‚©‚ÉˆÚ“®
+                if (players.Length > 1) UpdateCharacterPositions(false); // SkinChange’†‚ÍLerp‚ÅŠŠ‚ç‚©‚ÉˆÚ“®
             }
 
             return;
@@ -128,13 +131,12 @@ public class PlayerSelect : MonoBehaviour
         if (!isInitialize)
         {
             InitializePlayerPositions();
-            OnEnable();
             isInitialize = true;
             UpdateCharacterPositions(true); // ©š‚±‚±‚Å‘¦”z’uI
         }
         else
         {
-            UpdateCharacterPositions(false); // ’Êí‚ÌLerpˆ—
+           UpdateCharacterPositions(false); // ’Êí‚ÌLerpˆ—
         }
 
         UpdateActiveCharacters();
@@ -147,8 +149,11 @@ public class PlayerSelect : MonoBehaviour
     /// </summary>
     private void UpdateCharacterPositions(bool immediateMove)
     {
-        CharacterPos(1, lastCount, immediateMove);
-        CharacterPos(-1, nextCount, immediateMove);
+        if(players.Length > 1)
+        {
+            CharacterPos(1, lastCount, immediateMove);
+            CharacterPos(-1, nextCount, immediateMove);
+        }
         CharacterPos(0, count, immediateMove);
     }
 

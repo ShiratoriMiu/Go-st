@@ -1,25 +1,31 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class DashBossController : EnemyBase
 {
-    private float attackIntervalCount = 0;
+    [SerializeField] float attackInterval = 5f;
+    [SerializeField] float dashDistance = 5f;
+    [SerializeField] float dashDuration = 1.5f;
 
-    [SerializeField] private float attackInterval = 5;
-    [SerializeField] private float attackPower = 5;
+    float attackIntervalCount = 0f;
+    enum State { Follow, Charge, Attack }
+    State state = State.Follow;
 
-    enum State
+    LineRenderer lineRenderer;
+
+    private void Start()
     {
-        Wait,
-        Attack,
+        // LineRenderer 初期化
+        lineRenderer = GetComponent<LineRenderer>();
+        lineRenderer.positionCount = 2;
+        lineRenderer.enabled = false;
     }
-    State state = State.Wait;
 
     void FixedUpdate()
     {
         if (!isActive) return;
-
         if (gameManager.state != GameManager.GameState.Game) return;
 
         if (player != gameManager.selectPlayer && gameManager.selectPlayer != null)
@@ -28,42 +34,111 @@ public class DashBossController : EnemyBase
             playerController = player.GetComponent<PlayerController>();
         }
 
-        if (player != null)
+        if (player != null && playerController != null)
         {
             if (!playerController.GetIsSkill())
             {
-                if (state == State.Wait)
+                if (state == State.Charge)
                 {
-                    // プレイヤーの方向を向く
-                    transform.LookAt(player.transform.position);
-
                     attackIntervalCount += Time.deltaTime;
+
+                    // 線を時間に応じて伸ばす
+                    Vector3 dashDirection = transform.forward.normalized;
+                    dashDirection.y = 0;
+
+                    Vector3 startPosition = transform.position;
+                    Vector3 dashTarget = startPosition + dashDirection * dashDistance;
+                    float t = Mathf.Clamp01(attackIntervalCount / attackInterval);
+                    Vector3 currentEnd = Vector3.Lerp(startPosition, dashTarget, t);
+
+                    lineRenderer.SetPosition(0, new Vector3(startPosition.x, 0, startPosition.z));
+                    lineRenderer.SetPosition(1, new Vector3(currentEnd.x, 0, currentEnd.z));
+
                     if (attackIntervalCount > attackInterval)
                     {
-                        state = State.Attack;
                         attackIntervalCount = 0;
+                        state = State.Attack;
+                        animator.SetTrigger("isAttack");
+
+                        lineRenderer.enabled = false;
+
+                        // Rigidbodyとの干渉を防ぐために一時的にKinematic
+                        rb.isKinematic = true;
+
+                        transform.DOMove(dashTarget, dashDuration)
+                            .SetEase(Ease.OutQuad)
+                            .OnComplete(() =>
+                            {
+                                rb.isKinematic = false;
+                                state = State.Follow;
+                                animator.SetTrigger("isWait");
+                            });
                     }
                 }
-                if (state == State.Attack)
+
+                if (state == State.Follow)
                 {
-                    //突進
-                    rb.AddForce(Vector3.forward * attackPower, ForceMode.Impulse);
-
-                    //止まったら
-                    if (rb.velocity == Vector3.zero)
-                    {
-                        state = State.Wait;
-                    }
+                    Vector3 direction = (player.transform.position - transform.position).normalized;
+                    rb.velocity = direction * moveSpeed;
+                    transform.LookAt(player.transform.position);
                 }
-
-                // 常に一定の速度で移動させる
-                Vector3 direction = (player.transform.position - transform.position).normalized;
-                rb.velocity = direction * moveSpeed;
-
-
             }
 
             Stan();
+        }
+    }
+
+    protected override void OnCollisionEnter(Collision collision)
+    {
+        base.OnCollisionEnter(collision);
+
+        if (state != State.Attack) return;
+
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            transform.DOKill(); // DOTween 移動停止
+            rb.isKinematic = false;
+            state = State.Charge;
+            animator.SetTrigger("isWait");
+
+            PrepareDashLine();
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (state != State.Follow) return;
+
+        if (other.gameObject.CompareTag("Player"))
+        {
+            PrepareDashLine();
+            state = State.Charge;
+        }
+    }
+
+    void PrepareDashLine()
+    {
+        // 線を初期化して有効化
+        Vector3 dashDirection = transform.forward.normalized;
+        dashDirection.y = 0;
+
+        Vector3 startPosition = new Vector3(transform.position.x, 0, transform.position.z);
+        Vector3 dashTarget = startPosition + dashDirection * dashDistance;
+
+        lineRenderer.SetPosition(0, startPosition);
+        lineRenderer.SetPosition(1, startPosition); // 最初は0距離
+        lineRenderer.enabled = true;
+
+        attackIntervalCount = 0f;
+    }
+
+    public override void Hidden()
+    {
+        base.Hidden();
+
+        if (lineRenderer != null)
+        {
+            lineRenderer.enabled = false;
         }
     }
 }

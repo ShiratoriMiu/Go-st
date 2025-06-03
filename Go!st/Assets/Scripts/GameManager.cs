@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -39,6 +40,9 @@ public class GameManager : MonoBehaviour
 
     //デバッグ用
     private float initmaxTimeLimit;
+
+    //frebaseビルドが出来ないので一時的にcsvに変更
+    //[SerializeField] ScoreManager scoreManager;
 
     private void Start()
     {
@@ -119,6 +123,7 @@ public class GameManager : MonoBehaviour
     public async void ShowScore()
     {
         int score = CalculateScore();
+        //await scoreManager.WriteScoreDataAsync(score);
         await firebaseController.SaveScoreAsync(score);
         scoreText.text = $"Score : {score}";
     }
@@ -127,9 +132,19 @@ public class GameManager : MonoBehaviour
     public async void ShowRanking()
     {
         List<int> scores = await firebaseController.GetTopScoresAsync();
+        //List<int> scores = scoreManager.LoadScoreData();
+
+        // 降順に並べ替え（高スコア順）
+        scores = scores.OrderByDescending(score => score).ToList();
+
+        // 最大5件まで表示、足りない場合は0で埋める
+        while (scores.Count < 5)
+        {
+            scores.Add(0);
+        }
 
         string rankingResult = "";
-        for (int i = 0; i < scores.Count; i++)
+        for (int i = 0; i < 5; i++)  // 必ず5件表示
         {
             rankingResult += $"{i + 1}位: {scores[i]}\n";
         }
@@ -137,7 +152,6 @@ public class GameManager : MonoBehaviour
         rankingText.text = rankingResult;
         SelectOnUI(rankingPanel);
     }
-
 
     public void EndGame()
     {

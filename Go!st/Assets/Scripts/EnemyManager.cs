@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Playables;
 
 [System.Serializable]
 public class EnemyConfig
@@ -7,7 +8,6 @@ public class EnemyConfig
     public GameObject prefab;
     public int maxCount;
 }
-
 
 public class EnemyManager : MonoBehaviour
 {
@@ -33,6 +33,17 @@ public class EnemyManager : MonoBehaviour
 
     private bool isSpawningEnabled = false;
 
+    [Header("ボス関連設定")]
+    [SerializeField] private List<GameObject> bossPrefabs;
+
+    private Dictionary<GameObject, List<GameObject>> bossPools = new();
+    private Dictionary<GameObject, int> bossMaxCounts = new();
+    [SerializeField] private int bossMaxCountPerPrefab = 1; // ボスは基本1体ずつ
+
+    private int nextBossThreshold = 10;
+    private GameObject currentBossInstance = null;
+    private bool isBossActive = false;
+
     void Start()
     {
         InitializePools();
@@ -44,16 +55,21 @@ public class EnemyManager : MonoBehaviour
         if (gameManager.state != GameManager.GameState.Game) return;
         if (playerController.GetIsSkill()) return;
 
+        // 通常の敵スポーン
         timer += Time.deltaTime;
         if (timer >= spawnTime)
         {
             SpawnEnemy();
             timer = 0f;
         }
+
+        // ボス出現条件をチェック
+        CheckAndSpawnBoss();
     }
 
     public void InitializePools()
     {
+        // 敵プール初期化
         enemyPools.Clear();
         enemyMaxCounts.Clear();
 
@@ -61,10 +77,40 @@ public class EnemyManager : MonoBehaviour
         {
             enemyPools[config.prefab] = new List<GameObject>();
             enemyMaxCounts[config.prefab] = config.maxCount;
+
+            for (int i = 0; i < config.maxCount; i++)
+            {
+                GameObject enemy = Instantiate(config.prefab, this.transform);
+                var controller = enemy.GetComponent<EnemyController>();
+                controller.Initialize(gameManager, levelManager);
+                controller.Hidden();
+                enemyPools[config.prefab].Add(enemy);
+            }
+        }
+
+        // ボスプール初期化
+        bossPools.Clear();
+        bossMaxCounts.Clear();
+
+        foreach (var bossPrefab in bossPrefabs)
+        {
+            bossPools[bossPrefab] = new List<GameObject>();
+            bossMaxCounts[bossPrefab] = bossMaxCountPerPrefab;
+
+            for (int i = 0; i < bossMaxCountPerPrefab; i++)
+            {
+                GameObject boss = Instantiate(bossPrefab, this.transform);
+                var controller = boss.GetComponent<EnemyBase>();
+                controller.Initialize(gameManager, levelManager);
+                controller.Hidden();
+
+                controller.OnDeath -= OnBossDefeated;
+                controller.OnDeath += OnBossDefeated;
+
+                bossPools[bossPrefab].Add(boss);
+            }
         }
     }
-
-
 
     public void SetEnemyTypesByLevelData(LevelData levelData)
     {
@@ -75,7 +121,6 @@ public class EnemyManager : MonoBehaviour
             string[] enemyTypes = enemyName.Split('/');
             for (int i = 0; i < enemyTypes.Length; i++)
             {
-                // enemyConfigs から name 一致する prefab を探す
                 var config = enemyConfigs.Find(c => c.prefab.name == enemyTypes[i]);
                 if (config != null)
                 {
@@ -88,7 +133,6 @@ public class EnemyManager : MonoBehaviour
             }
         }
     }
-
 
     void SpawnEnemy()
     {
@@ -114,22 +158,21 @@ public class EnemyManager : MonoBehaviour
     {
         foreach (var enemy in enemyPools[prefab])
         {
-            if (!enemy.GetComponent<EnemyController>().isActive)
+            var controller = enemy.GetComponent<EnemyController>();
+            if (!controller.isActive)
                 return enemy;
         }
+        return null;
+    }
 
-        // 上限未満なら新規生成
-        if (enemyPools[prefab].Count < enemyMaxCounts[prefab])
+    GameObject GetPooledBoss(GameObject prefab)
+    {
+        foreach (var boss in bossPools[prefab])
         {
-            GameObject newEnemy = Instantiate(prefab, this.transform);
-            var controller = newEnemy.GetComponent<EnemyController>();
-            controller.Initialize(gameManager, levelManager);
-            controller.Hidden();
-            enemyPools[prefab].Add(newEnemy);
-            return newEnemy;
+            var controller = boss.GetComponent<EnemyBase>();
+            if (!controller.isActive)
+                return boss;
         }
-
-        // 上限に達していたらnullを返す
         return null;
     }
 
@@ -149,6 +192,8 @@ public class EnemyManager : MonoBehaviour
     public void ResetEnemies()
     {
         StopSpawning();
+
+        // 敵非表示
         foreach (var pool in enemyPools.Values)
         {
             foreach (var enemy in pool)
@@ -156,6 +201,66 @@ public class EnemyManager : MonoBehaviour
                 var controller = enemy.GetComponent<EnemyController>();
                 controller.Hidden();
             }
+        }
+
+        // ボス非表示
+        foreach (var pool in bossPools.Values)
+        {
+            foreach (var boss in pool)
+            {
+                var controller = boss.GetComponent<EnemyBase>();
+                controller.Hidden();
+            }
+        }
+
+        currentBossInstance = null;
+        isBossActive = false;
+    }
+
+    void CheckAndSpawnBoss()
+    {
+        if (gameManager.enemiesDefeated >= nextBossThreshold && !isBossActive)
+        {
+            SpawnBoss();
+            nextBossThreshold += 10;
+        }
+    }
+
+    void SpawnBoss()
+    {
+        GameObject bossPrefab = bossPrefabs[Random.Range(0, bossPrefabs.Count - 1)];
+
+        GameObject boss = GetPooledBoss(bossPrefab);
+        if (boss == null)
+        {
+            Debug.LogWarning("利用可能なボスがいません");
+            return;
+        }
+
+        Vector2 direction = Random.insideUnitCircle.normalized;
+        float distance = Random.Range(spawnMinDistance, spawnMaxDistance);
+        Vector3 spawnPos = player.transform.position + new Vector3(direction.x, 0, direction.y) * distance;
+
+        boss.transform.position = spawnPos;
+        boss.transform.rotation = Quaternion.identity;
+
+        var controller = boss.GetComponent<EnemyBase>();
+        controller.Display();
+
+        currentBossInstance = boss;
+        isBossActive = true;
+    }
+
+    void OnBossDefeated()
+    {
+        Debug.Log("ボス倒れた");
+        isBossActive = false;
+        currentBossInstance = null;
+
+        if (gameManager.enemiesDefeated >= nextBossThreshold)
+        {
+            SpawnBoss();
+            nextBossThreshold += 10;
         }
     }
 }

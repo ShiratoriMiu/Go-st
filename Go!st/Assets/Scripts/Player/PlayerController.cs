@@ -39,6 +39,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private BulletManager bulletManager;
     [SerializeField] Renderer rendererInit;
     [SerializeField] PlayerSkillAnim playerSkillAnim;
+    [SerializeField] private ParticleSystem levelUpEffect;
     public Renderer renderer { get; private set; }
 
     PlayerInputAction action;
@@ -165,6 +166,11 @@ public class PlayerController : MonoBehaviour
         if (Time.time - lastSkillTime >= skillCooldownTime && !isSkill)
         {
             skillChargeEffect.SetActive(true);
+        }
+
+        if (!levelUpEffect.IsAlive())
+        {
+            levelUpEffect.Stop();
         }
     }
 
@@ -588,6 +594,7 @@ public class PlayerController : MonoBehaviour
     public void LevelUpText()
     {
         levelUpText.PlayAnimation();
+        levelUpEffect.Play();
     }
 
     public void SetBulletNum(int _bulletNum)

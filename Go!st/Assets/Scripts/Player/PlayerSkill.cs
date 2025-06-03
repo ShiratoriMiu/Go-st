@@ -84,6 +84,7 @@ public class PlayerSkill : MonoBehaviour
     private int DetectEnemies()
     {
         // 前回検知したEnemyをクリア
+        Debug.Log("DetectEnemies called. Clearing detectedEnemies.");
         detectedEnemies.Clear();
 
         // 頂点が3つ以上ないと多角形を作れないので、検知を行わない
@@ -94,10 +95,9 @@ public class PlayerSkill : MonoBehaviour
 
         // すべてのEnemyTagを持つオブジェクトを検索
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-        
+
         foreach (GameObject enemy in enemies)
         {
-            // オブジェクトのコライダーを取得
             Collider enemyCollider = enemy.GetComponent<Collider>();
 
             if (enemyCollider != null)
@@ -107,11 +107,14 @@ public class PlayerSkill : MonoBehaviour
                 // X-Z平面上でのポリゴン内判定を行う
                 if (IsPointInsidePolygonXZ(enemyPosition))
                 {
-                    // 範囲内にあるので、リストに追加
-                    detectedEnemies.Add(enemy);
-                    
-                    // 検知したオブジェクトに対して処理
-                    enemy.GetComponent<EnemyController>().Damage(attack);
+                    EnemyBase enemyBase = enemy.GetComponent<EnemyBase>();
+
+                    // isActiveな敵だけを対象にする
+                    if (enemyBase != null && enemyBase.isActive && !detectedEnemies.Contains(enemy))
+                    {
+                        detectedEnemies.Add(enemy);
+                        enemyBase.Damage(attack);
+                    }
                 }
             }
         }
