@@ -14,7 +14,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.2d.common": {
-      "version": "9.0.4",
+      "version": "9.0.7",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -33,11 +33,11 @@
       "dependencies": {}
     },
     "com.unity.2d.spriteshape": {
-      "version": "10.0.4",
+      "version": "10.0.7",
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.unity.2d.common": "9.0.4",
+        "com.unity.2d.common": "9.0.7",
         "com.unity.mathematics": "1.1.0",
         "com.unity.modules.physics2d": "1.0.0"
       },
