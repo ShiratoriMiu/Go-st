@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -29,6 +30,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject scorePanel;
     [SerializeField] private GameObject rankingPanel;
     [SerializeField] private GameObject skinChangePanel;
+
+    [SerializeField] private float resetSelectPlayerRotateLerpSpeed = 1;
 
     [SerializeField] private FirebaseController firebaseController;
 
@@ -180,7 +183,26 @@ public class GameManager : MonoBehaviour
     public void SkinChangeToTitle()
     {
         state = GameState.Title;
+        StartCoroutine(ResetSelectPlayerRotate());
         SelectOnUI(titlePanel);
+    }
+
+    IEnumerator ResetSelectPlayerRotate()
+    {
+        Quaternion targetRotation = Quaternion.identity;
+
+        while (Quaternion.Angle(selectPlayer.transform.rotation, targetRotation) > 0.1f)
+        {
+            selectPlayer.transform.rotation = Quaternion.Lerp(
+                selectPlayer.transform.rotation,
+                targetRotation,
+                Time.deltaTime * resetSelectPlayerRotateLerpSpeed
+            );
+
+            yield return null;
+        }
+
+        selectPlayer.transform.rotation = targetRotation;
     }
 
     private void ResetGame()

@@ -7,56 +7,94 @@ using DG.Tweening;
 
 public class PlayerSelect : MonoBehaviour
 {
-    [SerializeField] GameObject[] players; // キャラリスト
-    [SerializeField] float space = 5f; // キャラ間の距離
-    [SerializeField] float swipeThreshold = 100f; // スワイプ判定の閾値（スマホ向け）
-    [SerializeField] float lerpSpeed = 10f; // スムーズな移動速度
+    [Header("Player Settings")]
+    [SerializeField] GameObject[] players;
+    [SerializeField] float space = 5f;
+    [SerializeField] float lerpSpeed = 10f;
+
+    [Header("Swipe Settings")]
+    [SerializeField] float swipeThreshold = 100f;
     [SerializeField] float swipeOffsetValue = 0.3f;
-    [SerializeField] Text skillEnemyNumText;
+    [SerializeField] float skinChangeRotationSpeed = 0.5f;
     [SerializeField] bool debugCanSwipe = false;
+
+    [Header("UI & References")]
+    [SerializeField] Text skillEnemyNumText;
+    [SerializeField] GameObject selectButton;
     [SerializeField] ColorChanger colorChanger;
     [SerializeField] SkinItemUIManager skinItemUIManager;
-    [SerializeField] GameObject selectButton;
 
-    PlayerInputAction action;
+    public GameObject selectPlayer { get; private set; }
 
-    int count = 0; // 現在選択中のキャラクターのインデックス
+    private PlayerInputAction action;
+    private GameManager gameManager;
 
-    GameManager gameManager;
-    private Vector2 startTouchPoint; // スワイプ開始時のタッチ位置
-    private bool isSwipe = false; // スワイプ中かどうか
-    private bool isPressing = false; // 画面をタッチしているかどうか
-    private float swipeOffset = 0f; // スワイプ中のオフセット量
+    private Vector2 startTouchPoint;
+    private bool isSwipe = false;
+    private bool isPressing = false;
+    private float swipeOffset = 0f;
+    private bool isInitialized = false;
 
-    int lastCount; // 現在選択中のキャラクターの前のキャラクターのインデックス
-    int nextCount; // 現在選択中のキャラクターの次のキャラクターのインデックス
-
-    bool isInitialize = false;
-
-    public GameObject selectPlayer{ get; private set; }
+    private int count = 0;
+    private int lastCount = 0;
+    private int nextCount = 0;
 
     void Awake()
     {
-        // Input Action の初期化
         InitializeInputActions();
-
-        // GameManager の取得
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-
-        // プレイヤーの初期位置設定
         InitializePlayerPositions();
-
-        // lastCount, nextCount の初期化
-        lastCount = players.Length - 1;
-        nextCount = (count + 1) % players.Length;
+        UpdateSelectionIndices(0);
         selectPlayer = players[0];
-
         skillEnemyNumText.gameObject.SetActive(false);
     }
 
-    /// <summary>
-    /// Input Action の初期化を行う。
-    /// </summary>
+    void OnEnable()
+    {
+        if (debugCanSwipe) action.Enable();
+        else action.Disable();
+
+        selectButton.SetActive(players.Length > 1);
+    }
+
+    void OnDisable() => action.Disable();
+
+    void Update()
+    {
+        switch (gameManager.state)
+        {
+            case GameManager.GameState.Title:
+                HandleTitleState();
+                break;
+            case GameManager.GameState.SkinChange:
+                HandleSkinChangeState();
+                break;
+        }
+    }
+
+    private void HandleTitleState()
+    {
+        if (!isInitialized)
+        {
+            InitializePlayerPositions();
+            isInitialized = true;
+            UpdateCharacterPositions(true);
+        }
+        else if (players.Length > 1)
+        {
+            UpdateCharacterPositions(false);
+        }
+
+        UpdateActiveCharacters();
+    }
+
+    private void HandleSkinChangeState()
+    {
+        action.Enable();
+        selectPlayer.transform.position = Vector3.zero;
+        UpdateModelRotation();
+    }
+
     private void InitializeInputActions()
     {
         action = new PlayerInputAction();
@@ -67,196 +105,93 @@ public class PlayerSelect : MonoBehaviour
         action.Title.Press.canceled += OnPressEnded;
     }
 
-    /// <summary>
-    /// プレイヤーの初期位置を設定する。
-    /// </summary>
     private void InitializePlayerPositions()
     {
         for (int i = 0; i < players.Length; i++)
         {
             players[i].transform.position = new Vector3(-i * space, 0, 0);
-            players[i].transform.rotation = new Quaternion(0, 0, 0, 0);
+            players[i].transform.rotation = Quaternion.identity;
             players[i].GetComponent<Rigidbody>().useGravity = false;
             players[i].GetComponent<PlayerSkill>().SetSkillEnemyNumText(skillEnemyNumText);
-
-            if (i == lastCount)
-            {
-                players[i].transform.position = new Vector3(1 * space, 0, 0);
-            }
-            else if (i == nextCount)
-            {
-                players[i].transform.position = new Vector3(-1 * space, 0, 0);
-            }
         }
     }
 
-    private void OnEnable()
+    private void UpdateCharacterPositions(bool immediate)
     {
-        if (debugCanSwipe && players.Length > 1)
-        {
-            action.Enable();
-            selectButton.SetActive(true);
-        }
-        else
-        {
-            action.Disable();
-            selectButton.SetActive(false);
-        }
+        SetCharacterPosition(0, count, immediate);
+        if (count != lastCount) SetCharacterPosition(1, lastCount, immediate);
+        if (count != nextCount) SetCharacterPosition(-1, nextCount, immediate);
     }
 
-    private void OnDisable()
+    private void SetCharacterPosition(int relativeIndex, int playerIndex, bool immediate)
     {
-        action.Disable();
-    }
-
-    void Update()
-    {
-        // タイトル画面以外では処理を行わない
-        if (gameManager.state != GameManager.GameState.Title)
-        {
-            if (action.Title.enabled)
-            {
-                isInitialize = false;
-                OnDisable();
-            }
-
-            if (gameManager.state == GameManager.GameState.SkinChange)
-            {
-                if (players.Length > 1) UpdateCharacterPositions(false); // SkinChange中はLerpで滑らかに移動
-            }
-
-            return;
-        }
-
-        if (!isInitialize)
-        {
-            InitializePlayerPositions();
-            isInitialize = true;
-            UpdateCharacterPositions(true); // ←★ここで即時配置！
-        }
-        else
-        {
-           UpdateCharacterPositions(false); // 通常のLerp処理
-        }
-
-        UpdateActiveCharacters();
-    }
-
-
-    /// <summary>
-    /// キャラクターの表示位置を更新する。
-    /// 現在の count, lastCount, nextCount に基づいて、各キャラクターの位置を計算し、移動させる。
-    /// </summary>
-    private void UpdateCharacterPositions(bool immediateMove)
-    {
-        if(players.Length > 1)
-        {
-            CharacterPos(1, lastCount, immediateMove);
-            CharacterPos(-1, nextCount, immediateMove);
-        }
-        CharacterPos(0, count, immediateMove);
-    }
-
-
-    void CharacterPos(int _posX, int _playerNum, bool immediateMove)
-    {
-        float targetX = _posX * space + swipeOffset;
+        float targetX = relativeIndex * space + swipeOffset;
         Vector3 targetPos = new Vector3(targetX, 0, 0);
 
-        if (immediateMove)
-        {
-            players[_playerNum].transform.position = targetPos;
-        }
+        if (immediate)
+            players[playerIndex].transform.position = targetPos;
         else
-        {
-            players[_playerNum].transform.position = Vector3.Lerp(
-                players[_playerNum].transform.position,
-                targetPos,
-                Time.deltaTime * lerpSpeed
-            );
-        }
+            players[playerIndex].transform.position = Vector3.Lerp(players[playerIndex].transform.position, targetPos, Time.deltaTime * lerpSpeed);
     }
 
+    private void UpdateModelRotation()
+    {
+        if (!isSwipe || selectPlayer == null) return;
 
-    /// <summary>
-    /// アクティブなキャラクターを切り替える。
-    /// count, lastCount, nextCount のキャラクター以外は非表示にする。
-    /// </summary>
+        Vector2 currentTouch = action.Title.Swipe.ReadValue<Vector2>();
+        float rotationAmount = -currentTouch.x * skinChangeRotationSpeed * Time.deltaTime;
+
+        if (Mathf.Abs(rotationAmount) > 0.01f)
+            selectPlayer.transform.Rotate(0f, rotationAmount, 0f);
+    }
+
     private void UpdateActiveCharacters()
     {
         for (int i = 0; i < players.Length; i++)
         {
-            bool shouldBeActive = (i == count || i == lastCount || i == nextCount);
-
-            // 現在の状態と必要な状態が異なる場合のみ SetActive を呼ぶ
-            if (players[i].activeSelf != shouldBeActive)
-            {
-                players[i].SetActive(shouldBeActive);
-            }
+            bool active = (i == count || i == lastCount || i == nextCount);
+            if (players[i].activeSelf != active)
+                players[i].SetActive(active);
         }
     }
 
-    /// <summary>
-    /// 次のキャラクターを選択する。
-    /// count, lastCount, nextCount を更新する。
-    /// </summary>
     public void NextCount()
     {
-        // count の更新
-        count = (count + 1) % players.Length;
+        if (gameManager.state == GameManager.GameState.SkinChange || players.Length <= 1) return;
 
-        // lastCount の更新
-        UpdateLastCount();
+        int newIndex = (count + 1) % players.Length;
+        UpdateSelectionIndices(newIndex);
 
-        // nextCount の更新
-        nextCount = (count + 1) % players.Length;
-
-        // 次のキャラクターを画面外から出現させるための初期位置設定
         players[nextCount].transform.position = new Vector3(-2 * space + swipeOffset, 0, 0);
     }
 
-    /// <summary>
-    /// 前のキャラクターを選択する。
-    /// count, lastCount, nextCount を更新する。
-    /// </summary>
     public void BeforeCount()
     {
-        // count の更新
-        count = (count - 1 + players.Length) % players.Length;
+        if (gameManager.state == GameManager.GameState.SkinChange || players.Length <= 1) return;
 
-        // lastCount の更新
-        UpdateLastCount();
+        int newIndex = (count - 1 + players.Length) % players.Length;
+        UpdateSelectionIndices(newIndex);
 
-        // 前のキャラクターを画面外から出現させるための初期位置設定
         players[lastCount].transform.position = new Vector3(2 * space + swipeOffset, 0, 0);
-
-        // nextCount の更新
-        nextCount = (count + 1) % players.Length;
     }
 
-    /// <summary>
-    /// lastCount を更新する。
-    /// count に基づいて lastCount を計算する。
-    /// </summary>
-    private void UpdateLastCount()
+    private void UpdateSelectionIndices(int newIndex)
     {
-        lastCount = count - 1;
-        if (lastCount < 0)
-        {
-            lastCount = players.Length - 1;
-        }
+        count = newIndex;
+        lastCount = (count - 1 + players.Length) % players.Length;
+        nextCount = (count + 1) % players.Length;
+        selectPlayer = players[count];
     }
 
     public void GameStart()
     {
         for (int i = 0; i < players.Length; i++)
         {
-            players[i].gameObject.SetActive(i == count);
-            if(i == count)
-            {
-                players[i].GetComponent<Rigidbody>().useGravity = true;
-                selectPlayer = players[i];
-            }
+            bool isSelected = (i == count);
+            players[i].SetActive(isSelected);
+            players[i].GetComponent<Rigidbody>().useGravity = isSelected;
+
+            if (isSelected) selectPlayer = players[i];
         }
 
         gameManager.SetPlayer(selectPlayer);
@@ -267,34 +202,47 @@ public class PlayerSelect : MonoBehaviour
     {
         for (int i = 0; i < players.Length; i++)
         {
-            bool isActive = (i == count);
-            players[i].gameObject.SetActive(isActive);
-
-            if (isActive)
-            {
-                selectPlayer = players[i];
-            }
+            bool isSelected = (i == count);
+            players[i].SetActive(isSelected);
+            if (isSelected) selectPlayer = players[i];
         }
+
         gameManager.SetPlayer(selectPlayer);
         colorChanger.SetTargetRenderer(selectPlayer.GetComponent<PlayerController>().renderer);
         skinItemUIManager.SetTargetPlayer(selectPlayer.GetComponent<SkinItemTarget>());
     }
 
-
-    private void OnPressStarted(InputAction.CallbackContext context)
+    public void ResetSelection()
     {
-        isPressing = true;
+        UpdateSelectionIndices(0);
+        isSwipe = false;
+        isPressing = false;
+        swipeOffset = 0f;
+        InitializePlayerPositions();
     }
+
+    public GameObject[] GetPlayers() => players;
+
+    public void SetAutoAim(bool onAutoAim)
+    {
+        foreach (var player in players)
+        {
+            player.GetComponent<PlayerController>().SetAutoAim(onAutoAim);
+        }
+    }
+
+    // --- Input Event Handlers ---
+    private void OnPressStarted(InputAction.CallbackContext context) => isPressing = true;
 
     private void OnPressEnded(InputAction.CallbackContext context)
     {
         isPressing = false;
-        swipeOffset = 0f; // 指を離したらオフセットをリセット
+        swipeOffset = 0f;
     }
 
     private void OnSwipeStarted(InputAction.CallbackContext context)
     {
-        if (isPressing && !isSwipe) // スワイプが開始されていなければ
+        if (isPressing && !isSwipe)
         {
             startTouchPoint = context.ReadValue<Vector2>();
             isSwipe = true;
@@ -303,24 +251,18 @@ public class PlayerSelect : MonoBehaviour
 
     private void OnSwipeEnded(InputAction.CallbackContext context)
     {
-        if (!isPressing && isSwipe) // スワイプが開始されていれば
+        if (!isPressing && isSwipe)
         {
             Vector2 endTouchPoint = context.ReadValue<Vector2>();
             float deltaX = endTouchPoint.x - startTouchPoint.x;
 
             if (Mathf.Abs(deltaX) > swipeThreshold)
             {
-                if (deltaX > 0)
-                {
-                    NextCount(); // 左スワイプ
-                }
-                else
-                {
-                    BeforeCount(); // 右スワイプ
-                }
+                if (deltaX > 0) NextCount();
+                else BeforeCount();
             }
 
-            swipeOffset = 0f; // スワイプ終了時にオフセットをリセット
+            swipeOffset = 0f;
             isSwipe = false;
         }
     }
@@ -332,44 +274,9 @@ public class PlayerSelect : MonoBehaviour
             Vector2 currentTouch = context.ReadValue<Vector2>();
             float direction = currentTouch.x - startTouchPoint.x;
 
-            if (Mathf.Abs(direction) > 0.01f)
-            {
-                // スワイプ方向に基づいてオフセットを変更
-                float swipeDirection = -Mathf.Sign(direction);
-                swipeOffset = swipeDirection * swipeOffsetValue;
-            }
-            else
-            {
-                swipeOffset = 0f;
-            }
-        }
-    }
-
-
-    public GameObject[] GetPlayers()
-    {
-        return players;
-    }
-
-    public void ResetSelection()
-    {
-        count = 0;
-        lastCount = players.Length - 1;
-        nextCount = (count + 1) % players.Length;
-        selectPlayer = players[0];
-
-        isSwipe = false;
-        isPressing = false;
-        swipeOffset = 0f;
-
-        InitializePlayerPositions();
-    }
-
-    public void SetAutoAim(bool _onAutoAim)
-    {
-        foreach (var player in players)
-        {
-            player.GetComponent<PlayerController>().SetAutoAim(_onAutoAim);
+            swipeOffset = Mathf.Abs(direction) > 0.01f
+                ? -Mathf.Sign(direction) * swipeOffsetValue
+                : 0f;
         }
     }
 }

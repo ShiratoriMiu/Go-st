@@ -390,27 +390,38 @@ public class PlayerController : MonoBehaviour
         // もしすでにスキル状態でなければ、何もしない
         if (!isSkill || isSkillEndEffect) return;
 
-        skill.SkillTouchEnded();
+        int enemyNum = skill.SkillTouchEnded();
         canSkillLine = false;
         action.Disable();
         isSkillEndEffect = true;
 
-        playerSkillAnim.PlayerSkillAnimPlay(() =>
+        if(enemyNum > 0)
         {
-            // スキル終了処理
-            isSkill = false;
-            isSkillEndEffect = false;
-            maxSpeed /= 1.5f;
-            moveSpeed /= 1.5f;
-            centerToGrayEffect.Gray(false);
-            lastSkillTime = Time.time; // スキル終了時刻を記録する
-                                       // 衝突を再び有効にする
-            Physics.IgnoreLayerCollision(playerLayer, enemyLayer, false);
-            canSkillLine = true;
-            action.Enable();
-        });
+            playerSkillAnim.PlayerSkillAnimPlay(() =>
+            {
+                StopSkillAnim();
+            });
+        }
+        else
+        {
+            StopSkillAnim();
+        }
     }
 
+    void StopSkillAnim()
+    {
+        // スキル終了処理
+        isSkill = false;
+        isSkillEndEffect = false;
+        maxSpeed /= 1.5f;
+        moveSpeed /= 1.5f;
+        centerToGrayEffect.Gray(false);
+        lastSkillTime = Time.time; // スキル終了時刻を記録する
+                                   // 衝突を再び有効にする
+        Physics.IgnoreLayerCollision(playerLayer, enemyLayer, false);
+        canSkillLine = true;
+        action.Enable();
+    }
 
     //スキル中フラグ取得
     public bool GetIsSkill() { return isSkill; }

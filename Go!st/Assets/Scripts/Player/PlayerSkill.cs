@@ -44,7 +44,7 @@ public class PlayerSkill : MonoBehaviour
         AddPoint();
     }
 
-    public void SkillTouchEnded()
+    public int SkillTouchEnded()
     {
         skillEffect.transform.position = GetPolygonCenter();
         int enemyNum = DetectEnemies(); // ”ÍˆÍ“à‚ÌEnemy‚ğŒŸ’m‚©‚Â‚»‚Ì”‚ğ•Ô‚·
@@ -57,6 +57,8 @@ public class PlayerSkill : MonoBehaviour
         points.Clear(); // ‹OÕ‚ğƒNƒŠƒA
         UpdateLineRenderer();
         skillEnemyNumText.gameObject.SetActive(true);
+
+        return enemyNum;
     }
 
     private void AddPoint()
