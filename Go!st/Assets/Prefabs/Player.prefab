@@ -14745,6 +14745,7 @@ MonoBehaviour:
   attackCooldownTime: 1
   skillCooldownTime: 20
   skillTime: 5
+  skillAddSpeed: 1.5
   maxHP: 5
   stickPrefab: {fileID: 3094963788836493681, guid: 35aed7c20b9a5604d8d48f628bf5ba21, type: 3}
   skillChargeEffect: {fileID: 7890945356539490520}

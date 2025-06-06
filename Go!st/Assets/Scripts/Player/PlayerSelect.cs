@@ -8,21 +8,24 @@ using DG.Tweening;
 public class PlayerSelect : MonoBehaviour
 {
     [Header("Player Settings")]
-    [SerializeField] GameObject[] players;
-    [SerializeField] float space = 5f;
-    [SerializeField] float lerpSpeed = 10f;
+    [SerializeField] private GameObject[] players;
+
+    [SerializeField] private float space = 5f;
+    [SerializeField] private float lerpSpeed = 10f;
 
     [Header("Swipe Settings")]
-    [SerializeField] float swipeThreshold = 100f;
-    [SerializeField] float swipeOffsetValue = 0.3f;
-    [SerializeField] float skinChangeRotationSpeed = 0.5f;
-    [SerializeField] bool debugCanSwipe = false;
+    [SerializeField] private float swipeThreshold = 100f;
+    [SerializeField] private float swipeOffsetValue = 0.3f;
+    [SerializeField] private float skinChangeRotationSpeed = 0.5f;
+    [SerializeField] private float rotationDamping = 5f; // 減速スピード（大きいほど早く止まる）
+
+    [SerializeField] private bool debugCanSwipe = false;
 
     [Header("UI & References")]
-    [SerializeField] Text skillEnemyNumText;
-    [SerializeField] GameObject selectButton;
-    [SerializeField] ColorChanger colorChanger;
-    [SerializeField] SkinItemUIManager skinItemUIManager;
+    [SerializeField] private Text skillEnemyNumText;
+    [SerializeField] private GameObject selectButton;
+    [SerializeField] private ColorChanger colorChanger;
+    [SerializeField] private SkinItemUIManager skinItemUIManager;
 
     public GameObject selectPlayer { get; private set; }
 
@@ -32,12 +35,14 @@ public class PlayerSelect : MonoBehaviour
     private Vector2 startTouchPoint;
     private bool isSwipe = false;
     private bool isPressing = false;
-    private float swipeOffset = 0f;
     private bool isInitialized = false;
 
     private int count = 0;
     private int lastCount = 0;
     private int nextCount = 0;
+
+    private float swipeOffset = 0f;
+    private float currentRotationSpeed = 0f;
 
     void Awake()
     {
@@ -136,13 +141,26 @@ public class PlayerSelect : MonoBehaviour
 
     private void UpdateModelRotation()
     {
-        if (!isSwipe || selectPlayer == null) return;
+        if (selectPlayer == null) return;
 
         Vector2 currentTouch = action.Title.Swipe.ReadValue<Vector2>();
-        float rotationAmount = -currentTouch.x * skinChangeRotationSpeed * Time.deltaTime;
 
-        if (Mathf.Abs(rotationAmount) > 0.01f)
-            selectPlayer.transform.Rotate(0f, rotationAmount, 0f);
+        if (isSwipe)
+        {
+            // スワイプ中は回転スピードを更新
+            currentRotationSpeed = -currentTouch.x * skinChangeRotationSpeed;
+        }
+        else
+        {
+            // スワイプしていない時は回転スピードを減衰させる
+            currentRotationSpeed = Mathf.Lerp(currentRotationSpeed, 0f, Time.deltaTime * rotationDamping);
+        }
+
+        // 実際に回転
+        if (Mathf.Abs(currentRotationSpeed) > 0.01f)
+        {
+            selectPlayer.transform.Rotate(0f, currentRotationSpeed * Time.deltaTime, 0f);
+        }
     }
 
     private void UpdateActiveCharacters()

@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float attackCooldownTime = 1f; // 通常攻撃のクールタイム（秒)
     [SerializeField] float skillCooldownTime = 5f; // 必殺技のクールタイム（秒）
     [SerializeField] float skillTime = 5f; // 必殺技の発動時間（秒）
+    [SerializeField] float skillAddSpeed = 1.5f;
 
     [SerializeField] int maxHP = 10;
 
@@ -62,6 +63,7 @@ public class PlayerController : MonoBehaviour
     private bool isSkillEndEffect = false;//必殺技フラグ
     private bool onAutoAim = false;
     private bool canSkillLine = true;//スキルの線を引ける状態か
+    private bool canControl = false; // プレイヤー操作可能かどうか
 
     private float touchTime = 0;
     //オートエイム用角度変数
@@ -93,7 +95,6 @@ public class PlayerController : MonoBehaviour
         hp = maxHP;
         mainCamera = Camera.main;
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        action.Disable();
         playerLayer = LayerMask.NameToLayer("Player");
         enemyLayer = LayerMask.NameToLayer("Enemy");
         initSkillCooldownTime = skillCooldownTime;
@@ -108,9 +109,9 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            if (!action.Player.enabled)
+            if (!canControl)
             {
-                action.Enable();
+                canControl = true;
                 Init();
             }
         }
@@ -189,7 +190,7 @@ public class PlayerController : MonoBehaviour
     // タッチまたはマウスの開始位置
     public void OnTouchStarted(InputAction.CallbackContext context)
     {
-        if(gameManager.state != GameManager.GameState.Game)return;
+        if(gameManager.state != GameManager.GameState.Game || !canControl) return;
         if (context.started)
         {
             //最初にタッチまたはクリックした場所を保存
@@ -218,6 +219,7 @@ public class PlayerController : MonoBehaviour
     // タッチまたはマウスの現在位置
     public void OnTouchMoved(InputAction.CallbackContext context)
     {
+        if (gameManager.state != GameManager.GameState.Game || !canControl) return;
         if (context.performed && isInteracting)
         {
             currentPosition = context.ReadValue<Vector2>();
@@ -228,9 +230,10 @@ public class PlayerController : MonoBehaviour
     // タッチまたはマウス操作の終了
     public void OnTouchEnded(InputAction.CallbackContext context)
     {
+        if (gameManager.state != GameManager.GameState.Game || !canControl) return;
         if (context.canceled && isInteracting)
         {
-            StopSkill();
+            if(isSkill)StopSkill();
 
             if (touchTime < 0.2f)
             {
@@ -378,8 +381,8 @@ public class PlayerController : MonoBehaviour
         isSkill = true;
         centerToGrayEffect.Gray(true);
         skillChargeEffect.SetActive(false);
-        maxSpeed *= 1.5f;
-        moveSpeed *= 1.5f;
+        maxSpeed *= skillAddSpeed;
+        moveSpeed *= skillAddSpeed;
         // 衝突無効化
         Physics.IgnoreLayerCollision(playerLayer, enemyLayer, true);
         Invoke("StopSkill", skillTime);
@@ -392,7 +395,7 @@ public class PlayerController : MonoBehaviour
 
         int enemyNum = skill.SkillTouchEnded();
         canSkillLine = false;
-        action.Disable();
+        canControl = false;
         isSkillEndEffect = true;
 
         if(enemyNum > 0)
@@ -410,17 +413,17 @@ public class PlayerController : MonoBehaviour
 
     void StopSkillAnim()
     {
+        canControl = true;
         // スキル終了処理
         isSkill = false;
         isSkillEndEffect = false;
-        maxSpeed /= 1.5f;
-        moveSpeed /= 1.5f;
+        maxSpeed /= skillAddSpeed;
+        moveSpeed /= skillAddSpeed;
         centerToGrayEffect.Gray(false);
         lastSkillTime = Time.time; // スキル終了時刻を記録する
                                    // 衝突を再び有効にする
         Physics.IgnoreLayerCollision(playerLayer, enemyLayer, false);
         canSkillLine = true;
-        action.Enable();
     }
 
     //スキル中フラグ取得
