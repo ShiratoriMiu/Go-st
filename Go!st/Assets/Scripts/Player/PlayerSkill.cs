@@ -39,9 +39,9 @@ public class PlayerSkill : MonoBehaviour
         }
     }
 
-    public void SkillTouchMove()
+    public void SkillTouchMove(Vector2 screenPosition)
     {
-        AddPoint();
+        AddPoint(screenPosition);
     }
 
     public int SkillTouchEnded()
@@ -61,15 +61,20 @@ public class PlayerSkill : MonoBehaviour
         return enemyNum;
     }
 
-    private void AddPoint()
+    private void AddPoint(Vector2 screenPosition)
     {
-        Vector3 worldPosition = transform.position;
+        Ray ray = Camera.main.ScreenPointToRay(screenPosition);
+        Plane groundPlane = new Plane(Vector3.up, new Vector3(0, 0.5f, 0)); // Y = 0.5 ŒÅ’è‚Ì•½–Ê
 
-        if (points.Count == 0 || Vector3.Distance(points[points.Count - 1], worldPosition) > 0.1f)
+        if (groundPlane.Raycast(ray, out float enter))
         {
-            worldPosition.y = 0.5f; // ŒÅ’è‚‚³‚ÉÝ’è
-            points.Add(worldPosition);
-            UpdateLineRenderer();
+            Vector3 worldPosition = ray.GetPoint(enter);
+
+            if (points.Count == 0 || Vector3.Distance(points[points.Count - 1], worldPosition) > 0.1f)
+            {
+                points.Add(worldPosition);
+                UpdateLineRenderer();
+            }
         }
     }
 

@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 using System;
 using Unity.VisualScripting;
 using DG.Tweening;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -16,8 +17,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float attackSpeed;//攻撃の速度力
     [SerializeField] float attackDis = 10f;    //オートエイム範囲。お好みで。
     [SerializeField] float attackCooldownTime = 1f; // 通常攻撃のクールタイム（秒)
-    [SerializeField] float skillCooldownTime = 5f; // 必殺技のクールタイム（秒）
-    [SerializeField] float skillTime = 5f; // 必殺技の発動時間（秒）
+    [SerializeField] float maxSkillCooldownTime = 7f; // 必殺技のクールタイム（秒）
     [SerializeField] float skillAddSpeed = 1.5f;
 
     [SerializeField] int maxHP = 10;
@@ -41,6 +41,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] Renderer rendererInit;
     [SerializeField] PlayerSkillAnim playerSkillAnim;
     [SerializeField] private ParticleSystem levelUpEffect;
+    [SerializeField] private Button skillButton;
+
     public Renderer renderer { get; private set; }
 
     PlayerInputAction action;
@@ -70,7 +72,7 @@ public class PlayerController : MonoBehaviour
     private float degreeAttack = 0.0f;
     private float radAttack = 0.0f;
     private float nearestEnemyDis;
-    private float lastSkillTime = -Mathf.Infinity; // 最後にスキルを発動した時間
+    private float skillCooldownTime = 7f; // 必殺技のクールタイム（秒）
 
     private int hp = 0;
     private int bulletNum = 1;
@@ -99,6 +101,9 @@ public class PlayerController : MonoBehaviour
         enemyLayer = LayerMask.NameToLayer("Enemy");
         initSkillCooldownTime = skillCooldownTime;
         renderer = rendererInit;
+        skillCooldownTime = maxSkillCooldownTime;
+
+        skillButton.onClick.AddListener(() => OnClickSkillButton());
     }
 
     private void Update()
@@ -134,7 +139,7 @@ public class PlayerController : MonoBehaviour
         if (isInteracting)
         {
             //移動
-            Move();
+            if(!isSkill)Move();
             //慣性
             Inertia();
             //スティック
@@ -148,7 +153,7 @@ public class PlayerController : MonoBehaviour
         {
             if (canSkillLine)
             {
-                skill.SkillTouchMove();
+                skill.SkillTouchMove(currentPosition);
                 // プレイヤーを四角形の中に制限
                 ConstrainPlayer();
             }
@@ -164,9 +169,16 @@ public class PlayerController : MonoBehaviour
         }
 
         // Skill発動可能時にエフェクト表示
-        if (Time.time - lastSkillTime >= skillCooldownTime && !isSkill)
+        if (!isSkill)
         {
-            skillChargeEffect.SetActive(true);
+            if (skillCooldownTime >= maxSkillCooldownTime)
+            {
+                skillChargeEffect.SetActive(true);
+            }
+            else
+            {
+                skillCooldownTime += Time.deltaTime;
+            }
         }
 
         if (!levelUpEffect.IsAlive())
@@ -209,9 +221,12 @@ public class PlayerController : MonoBehaviour
             {
                 //スタートポジション以外も設定することで前回の位置をリセット
                 currentPosition = startPosition;
-                stickPrefab.SetActive(true);
-                stickPrefab.transform.position = startPosition;
-                stickPrefab.transform.GetChild(0).gameObject.transform.position = startPosition;
+                if (!isSkill)
+                {
+                    stickPrefab.SetActive(true);
+                    stickPrefab.transform.position = startPosition;
+                    stickPrefab.transform.GetChild(0).gameObject.transform.position = startPosition;
+                }
             }
         }
     }
@@ -234,16 +249,6 @@ public class PlayerController : MonoBehaviour
         if (context.canceled && isInteracting)
         {
             if(isSkill)StopSkill();
-
-            if (touchTime < 0.2f)
-            {
-                if (!isSkill)
-                {
-                    // カメラの四隅から地面への交点を取得
-                    CalculateCorners();
-                    Skill();
-                }
-            }
 
             isInteracting = false;
             moveDirection = Vector2.zero;
@@ -376,7 +381,7 @@ public class PlayerController : MonoBehaviour
     void Skill()
     {
         // クールタイム中なら発動できない
-        if (Time.time - lastSkillTime < skillCooldownTime) return;
+        if (skillCooldownTime < maxSkillCooldownTime) return;
 
         isSkill = true;
         centerToGrayEffect.Gray(true);
@@ -385,7 +390,7 @@ public class PlayerController : MonoBehaviour
         moveSpeed *= skillAddSpeed;
         // 衝突無効化
         Physics.IgnoreLayerCollision(playerLayer, enemyLayer, true);
-        Invoke("StopSkill", skillTime);
+        Invoke("StopSkill", maxSkillCooldownTime);
     }
 
     void StopSkill()
@@ -411,6 +416,16 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    void OnClickSkillButton()
+    {
+        if (!isSkill)
+        {
+            // カメラの四隅から地面への交点を取得
+            CalculateCorners();
+            Skill();
+        }
+    }
+
     void StopSkillAnim()
     {
         canControl = true;
@@ -420,8 +435,7 @@ public class PlayerController : MonoBehaviour
         maxSpeed /= skillAddSpeed;
         moveSpeed /= skillAddSpeed;
         centerToGrayEffect.Gray(false);
-        lastSkillTime = Time.time; // スキル終了時刻を記録する
-                                   // 衝突を再び有効にする
+        // 衝突を再び有効にする
         Physics.IgnoreLayerCollision(playerLayer, enemyLayer, false);
         canSkillLine = true;
     }
