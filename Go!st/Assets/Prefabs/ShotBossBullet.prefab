@@ -13,10 +13,10 @@ GameObject:
   - component: {fileID: 2111559394479910601}
   - component: {fileID: 6443913467578313184}
   - component: {fileID: 7397286289572322356}
-  - component: {fileID: -6535809545276428124}
+  - component: {fileID: -6335755046959440006}
   m_Layer: 0
-  m_Name: Bullet
-  m_TagString: PlayerBullet
+  m_Name: ShotBossBullet
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -136,7 +136,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &-6535809545276428124
+--- !u!114 &-6335755046959440006
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -145,9 +145,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2829636624271746724}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 148d504c975a38d458ee27f69bfd5809, type: 3}
+  m_Script: {fileID: 11500000, guid: b0d8dcb3837980449bb98d3ad79d33fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  destroyTime: 1
-  bulletCollider: {fileID: 6443913467578313184}
-  bulletRenderer: {fileID: 2111559394479910601}
+  destroyTime: 3

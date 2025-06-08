@@ -103,8 +103,6 @@ public class DashBossController : EnemyBase
     {
         base.OnCollisionEnter(collision);
 
-        if (state != State.Attack) return;
-
         if (collision.gameObject.CompareTag("Player"))
         {
             transform.DOKill(); // DOTween 移動停止
