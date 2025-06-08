@@ -18,7 +18,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float attackDis = 10f;    //オートエイム範囲。お好みで。
     [SerializeField] float attackCooldownTime = 1f; // 通常攻撃のクールタイム（秒)
     [SerializeField] float maxSkillCooldownTime = 7f; // 必殺技のクールタイム（秒）
-    [SerializeField] float skillAddSpeed = 1.5f;
+    [SerializeField] float skillAddSpeed = 1.5f;//必殺技中にスピードを上げる量
 
     [SerializeField] int maxHP = 10;
 
@@ -42,6 +42,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] PlayerSkillAnim playerSkillAnim;
     [SerializeField] private ParticleSystem levelUpEffect;
     [SerializeField] private Button skillButton;
+    [SerializeField] private Image skillChargeImage;
 
     public Renderer renderer { get; private set; }
 
@@ -64,7 +65,7 @@ public class PlayerController : MonoBehaviour
     private bool isSkill = false;//必殺技フラグ
     private bool isSkillEndEffect = false;//必殺技フラグ
     private bool onAutoAim = false;
-    private bool canSkillLine = true;//スキルの線を引ける状態か
+    private bool canSkillLine = false;//スキルの線を引ける状態か
     private bool canControl = false; // プレイヤー操作可能かどうか
 
     private float touchTime = 0;
@@ -151,7 +152,7 @@ public class PlayerController : MonoBehaviour
         //skill
         if (isSkill)
         {
-            if (canSkillLine)
+            if (canSkillLine && isInteracting)
             {
                 skill.SkillTouchMove(currentPosition);
                 // プレイヤーを四角形の中に制限
@@ -178,7 +179,13 @@ public class PlayerController : MonoBehaviour
             else
             {
                 skillCooldownTime += Time.deltaTime;
+                skillChargeImage.fillAmount = skillCooldownTime / maxSkillCooldownTime;
             }
+        }
+        else
+        {
+            skillCooldownTime -= Time.deltaTime;
+            skillChargeImage.fillAmount = skillCooldownTime / maxSkillCooldownTime;
         }
 
         if (!levelUpEffect.IsAlive())
@@ -380,10 +387,10 @@ public class PlayerController : MonoBehaviour
 
     void Skill()
     {
-        // クールタイム中なら発動できない
-        if (skillCooldownTime < maxSkillCooldownTime) return;
+        if (isSkill) return;
 
         isSkill = true;
+        canSkillLine = true;
         centerToGrayEffect.Gray(true);
         skillChargeEffect.SetActive(false);
         maxSpeed *= skillAddSpeed;
@@ -418,7 +425,7 @@ public class PlayerController : MonoBehaviour
 
     void OnClickSkillButton()
     {
-        if (!isSkill)
+        if (!isSkill && skillCooldownTime >= maxSkillCooldownTime)
         {
             // カメラの四隅から地面への交点を取得
             CalculateCorners();
@@ -576,6 +583,7 @@ public class PlayerController : MonoBehaviour
         StopSkill();
         hp = maxHP;
         playerHpImage.UpdateHp(hp);
+        canSkillLine = false;
     }
 
     public void Damage(int _num)

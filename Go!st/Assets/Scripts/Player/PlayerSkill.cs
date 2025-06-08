@@ -97,6 +97,8 @@ public class PlayerSkill : MonoBehaviour
         // 頂点が3つ以上ないと多角形を作れないので、検知を行わない
         if (points.Count < 3)
         {
+            skillEnemyNumText.text = detectedEnemies.Count.ToString() + "COMBO!";
+            Invoke("StopSkillEnemyNumText", 3);
             return 0;
         }
 

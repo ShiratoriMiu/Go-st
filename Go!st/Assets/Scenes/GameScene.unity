@@ -354,6 +354,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 457394758}
     - target: {fileID: 8893604391217256827, guid: 0ee97adfaaaf7d84daf9b8f9a83a163b, type: 3}
+      propertyPath: skillChargeImage
+      value: 
+      objectReference: {fileID: 332711159}
+    - target: {fileID: 8893604391217256827, guid: 0ee97adfaaaf7d84daf9b8f9a83a163b, type: 3}
       propertyPath: skillCooldownTime
       value: 10
       objectReference: {fileID: 0}
@@ -3230,7 +3234,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0.61228013, b: 0, a: 1}
+  m_Color: {r: 0, g: 0.87275743, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -3238,7 +3242,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_Sprite: {fileID: 21300000, guid: 9d11b6d41971b684bb23524570531608, type: 3}
-  m_Type: 3
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -5221,6 +5225,10 @@ PrefabInstance:
       propertyPath: playerSkillAnim
       value: 
       objectReference: {fileID: 457394758}
+    - target: {fileID: 8893604391217256827, guid: 0ee97adfaaaf7d84daf9b8f9a83a163b, type: 3}
+      propertyPath: skillChargeImage
+      value: 
+      objectReference: {fileID: 332711159}
     - target: {fileID: 8893604391217256827, guid: 0ee97adfaaaf7d84daf9b8f9a83a163b, type: 3}
       propertyPath: centerToGrayEffect
       value: 
@@ -8865,6 +8873,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 457394758}
     - target: {fileID: 8893604391217256827, guid: 0ee97adfaaaf7d84daf9b8f9a83a163b, type: 3}
+      propertyPath: skillChargeImage
+      value: 
+      objectReference: {fileID: 332711159}
+    - target: {fileID: 8893604391217256827, guid: 0ee97adfaaaf7d84daf9b8f9a83a163b, type: 3}
       propertyPath: skillCooldownTime
       value: 10
       objectReference: {fileID: 0}
@@ -11313,6 +11325,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 457394758}
     - target: {fileID: 8893604391217256827, guid: 0ee97adfaaaf7d84daf9b8f9a83a163b, type: 3}
+      propertyPath: skillChargeImage
+      value: 
+      objectReference: {fileID: 332711159}
+    - target: {fileID: 8893604391217256827, guid: 0ee97adfaaaf7d84daf9b8f9a83a163b, type: 3}
       propertyPath: centerToGrayEffect
       value: 
       objectReference: {fileID: 963194230}
@@ -12829,6 +12845,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 457394758}
     - target: {fileID: 8893604391217256827, guid: 0ee97adfaaaf7d84daf9b8f9a83a163b, type: 3}
+      propertyPath: skillChargeImage
+      value: 
+      objectReference: {fileID: 332711159}
+    - target: {fileID: 8893604391217256827, guid: 0ee97adfaaaf7d84daf9b8f9a83a163b, type: 3}
       propertyPath: skillCooldownTime
       value: 10
       objectReference: {fileID: 0}
@@ -13807,11 +13827,11 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 48
+    m_FontSize: 74
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 53
+    m_MaxSize: 74
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -14539,6 +14559,10 @@ PrefabInstance:
       propertyPath: playerSkillAnim
       value: 
       objectReference: {fileID: 457394758}
+    - target: {fileID: 8893604391217256827, guid: 0ee97adfaaaf7d84daf9b8f9a83a163b, type: 3}
+      propertyPath: skillChargeImage
+      value: 
+      objectReference: {fileID: 332711159}
     - target: {fileID: 8893604391217256827, guid: 0ee97adfaaaf7d84daf9b8f9a83a163b, type: 3}
       propertyPath: skillCooldownTime
       value: 10
@@ -16060,6 +16084,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 457394758}
     - target: {fileID: 8893604391217256827, guid: 0ee97adfaaaf7d84daf9b8f9a83a163b, type: 3}
+      propertyPath: skillChargeImage
+      value: 
+      objectReference: {fileID: 332711159}
+    - target: {fileID: 8893604391217256827, guid: 0ee97adfaaaf7d84daf9b8f9a83a163b, type: 3}
       propertyPath: centerToGrayEffect
       value: 
       objectReference: {fileID: 963194230}
@@ -17115,6 +17143,10 @@ PrefabInstance:
       propertyPath: playerSkillAnim
       value: 
       objectReference: {fileID: 457394758}
+    - target: {fileID: 8893604391217256827, guid: 0ee97adfaaaf7d84daf9b8f9a83a163b, type: 3}
+      propertyPath: skillChargeImage
+      value: 
+      objectReference: {fileID: 332711159}
     - target: {fileID: 8893604391217256827, guid: 0ee97adfaaaf7d84daf9b8f9a83a163b, type: 3}
       propertyPath: skillCooldownTime
       value: 10

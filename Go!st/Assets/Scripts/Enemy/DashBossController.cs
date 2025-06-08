@@ -15,6 +15,8 @@ public class DashBossController : EnemyBase
 
     LineRenderer lineRenderer;
 
+    Tween dashTween; // クラスのメンバに保持する
+
     private void Start()
     {
         // LineRenderer 初期化
@@ -36,7 +38,13 @@ public class DashBossController : EnemyBase
 
         if (player != null && playerController != null)
         {
-            if (!playerController.GetIsSkill())
+            if (playerController.GetIsSkill())
+            {
+                Stan();
+                dashTween.Pause();
+                return;
+            }
+            else
             {
                 if (state == State.Charge)
                 {
@@ -65,13 +73,14 @@ public class DashBossController : EnemyBase
                         // Rigidbodyとの干渉を防ぐために一時的にKinematic
                         rb.isKinematic = true;
 
-                        transform.DOMove(dashTarget, dashDuration)
+                        dashTween = transform.DOMove(dashTarget, dashDuration)
                             .SetEase(Ease.OutQuad)
                             .OnComplete(() =>
                             {
                                 rb.isKinematic = false;
                                 state = State.Follow;
                                 animator.SetTrigger("isWait");
+                                dashTween = null;
                             });
                     }
                 }
@@ -82,9 +91,11 @@ public class DashBossController : EnemyBase
                     rb.velocity = direction * moveSpeed;
                     transform.LookAt(player.transform.position);
                 }
-            }
 
-            Stan();
+                if(state == State.Attack && dashTween!= null) {
+                    dashTween.Play();
+                }
+            }
         }
     }
 
@@ -135,6 +146,11 @@ public class DashBossController : EnemyBase
     public override void Hidden()
     {
         base.Hidden();
+        dashTween = null;
+        state = State.Follow;
+        rb.WakeUp();
+        rb.isKinematic = false;
+        animator.SetTrigger("isWait");
 
         if (lineRenderer != null)
         {

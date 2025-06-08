@@ -45,6 +45,7 @@ public abstract class EnemyBase : MonoBehaviour
         if (!previousSkillState && currentSkillState)
         {
             lastVelocity = rb.velocity;
+            rb.velocity = Vector3.zero;
             rb.Sleep();
             animator.speed = 0f;
         }
