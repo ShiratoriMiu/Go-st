@@ -390,7 +390,8 @@ public class PlayerController : MonoBehaviour
         if (isSkill) return;
 
         isSkill = true;
-        canSkillLine = true;
+        //”O‚Ì‚½‚ßƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½”»’è‚Æü‚ğˆø‚­‚½‚ß‚Ìw‚ğ—£‚µ‚½”»’è‚ª‚©‚Ô‚ç‚È‚¢‚æ‚¤‚É‘Ò‚Â
+        Invoke("StartLine", 1f);
         centerToGrayEffect.Gray(true);
         skillChargeEffect.SetActive(false);
         maxSpeed *= skillAddSpeed;
@@ -398,6 +399,11 @@ public class PlayerController : MonoBehaviour
         // Õ“Ë–³Œø‰»
         Physics.IgnoreLayerCollision(playerLayer, enemyLayer, true);
         Invoke("StopSkill", maxSkillCooldownTime);
+    }
+
+    void StartLine()
+    {
+        canSkillLine = true;
     }
 
     void StopSkill()

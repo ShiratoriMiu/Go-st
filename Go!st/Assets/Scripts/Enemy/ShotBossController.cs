@@ -2,13 +2,15 @@ using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class ShotBossController : EnemyBase
 {
     [SerializeField] GameObject bulletPrefab;
-    [SerializeField] int bulletNum = 4;
-    [SerializeField] float attackInterval = 5f;
-    [SerializeField] float bulletSpeed = 5f;
+    [SerializeField, Header("一度に発射する弾の数")] int bulletNum = 4;
+    [SerializeField, Header("敵の索敵範囲に入ってから攻撃するまでの時間")] float attackInterval = 5f;
+    [SerializeField, Header("弾のスピード")] float bulletSpeed = 5f;
+    [SerializeField, Header("上昇距離")] float riseDistance = 5f;
 
     float attackIntervalCount = 0f;
     enum State { Follow, Charge, Attack }
@@ -38,6 +40,8 @@ public class ShotBossController : EnemyBase
                 {
                     attackIntervalCount += Time.deltaTime;
                     animator.SetTrigger("isAttack");
+
+                    
 
                     if (attackIntervalCount > attackInterval)
                     {

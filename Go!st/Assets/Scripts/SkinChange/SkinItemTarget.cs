@@ -7,7 +7,7 @@ public class SkinItemTarget : MonoBehaviour
     public class ItemSlot
     {
         public string itemName;
-        public GameObject itemObject;
+        public Renderer[] itemObjectRenderers;
         public Sprite itemIcon;
     }
 
@@ -16,6 +16,10 @@ public class SkinItemTarget : MonoBehaviour
     private List<string> activeItemNames = new List<string>();
     
     public IReadOnlyList<ItemSlot> ItemSlots => itemSlots;
+
+    public System.Action<ItemSlot> OnItemEquipped;
+    public System.Action<ItemSlot> OnItemUnequipped;
+
 
     private void Start()
     {
@@ -27,8 +31,15 @@ public class SkinItemTarget : MonoBehaviour
         if (activeItemNames.Contains(item.itemName))
         {
             activeItemNames.Remove(item.itemName);
-            item.itemObject.SetActive(false);
+            for(int i = 0; i < item.itemObjectRenderers.Length; i++)
+            {
+                item.itemObjectRenderers[i].enabled = false;
+            }
+            
             Debug.Log($"外した: {item.itemName}");
+
+            // 装備解除通知
+            OnItemUnequipped?.Invoke(item);
         }
         else
         {
@@ -39,8 +50,14 @@ public class SkinItemTarget : MonoBehaviour
             }
 
             activeItemNames.Add(item.itemName);
-            item.itemObject.SetActive(true);
+            for (int i = 0; i < item.itemObjectRenderers.Length; i++)
+            {
+                item.itemObjectRenderers[i].enabled = true;
+            }
             Debug.Log($"装備した: {item.itemName}");
+
+            // コールバック呼び出し
+            OnItemEquipped?.Invoke(item);
         }
     }
 
@@ -48,7 +65,10 @@ public class SkinItemTarget : MonoBehaviour
     {
         foreach (var item in itemSlots)
         {
-            item.itemObject.SetActive(false);
+            for (int i = 0; i < item.itemObjectRenderers.Length; i++)
+            {
+                item.itemObjectRenderers[i].enabled = false;
+            }
         }
         activeItemNames.Clear();
     }
@@ -59,7 +79,14 @@ public class SkinItemTarget : MonoBehaviour
         activeItemNames.Clear();
         foreach (var item in itemSlots)
         {
-            if (item.itemObject != null && item.itemObject.activeSelf)
+            bool isItemActive = true;
+
+            for (int i = 0; i < item.itemObjectRenderers.Length; i++)
+            {
+                if (!item.itemObjectRenderers[i].enabled) isItemActive = false;
+            }
+
+            if (item.itemObjectRenderers != null && isItemActive)
             {
                 activeItemNames.Add(item.itemName);
             }

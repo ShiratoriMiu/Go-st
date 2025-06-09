@@ -16,9 +16,28 @@ public class SkinItemUIManager : MonoBehaviour
 
     private SkinItemTarget currentTarget;
 
+    public Renderer[] selectItem { get; private set; }
+
+    private void Start()
+    {
+        selectItem = null;
+    }
+
     public void SetTargetPlayer(SkinItemTarget target)
     {
         currentTarget = target;
+
+        currentTarget.OnItemEquipped = (item) => {
+            var renderer = item.itemObjectRenderers;
+            if (renderer != null)
+            {
+                selectItem = renderer;
+            }
+        };
+
+        currentTarget.OnItemUnequipped = (item) => {
+            selectItem = null;
+        };
 
         // アイコンの更新とボタンのセット
         for (int i = 0; i < itemButtons.Length; i++)
