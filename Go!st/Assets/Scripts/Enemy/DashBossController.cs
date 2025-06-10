@@ -38,9 +38,9 @@ public class DashBossController : EnemyBase
 
         if (player != null && playerController != null)
         {
+            Stan();
             if (playerController.GetIsSkill())
             {
-                Stan();
                 dashTween.Pause();
                 return;
             }

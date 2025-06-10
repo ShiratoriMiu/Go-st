@@ -14902,27 +14902,32 @@ MonoBehaviour:
     - {fileID: 3721620841466668024}
     - {fileID: 4597225419768086688}
     itemIcon: {fileID: 21300000, guid: 7abf82ab6118c19409919e360f5036ac, type: 3}
+    canColorChange: 1
   - itemName: Cat
     itemObjectRenderers:
     - {fileID: 5886892243296487040}
     - {fileID: 7556699526396112204}
     - {fileID: 6870368134166854616}
     itemIcon: {fileID: 21300000, guid: 220d4438d0c063648850f0c29338e744, type: 3}
+    canColorChange: 1
   - itemName: Devil
     itemObjectRenderers:
     - {fileID: 8152666952814716320}
     - {fileID: 6132117759222505598}
     - {fileID: 8913110806112316252}
     itemIcon: {fileID: 21300000, guid: 57ca586f070821344b43f3240ca65f4c, type: 3}
+    canColorChange: 0
   - itemName: Hat
     itemObjectRenderers:
     - {fileID: 6480315533798639982}
     itemIcon: {fileID: 21300000, guid: d58bd15d10495384b8ede0341a5fdd11, type: 3}
+    canColorChange: 0
   - itemName: Horn
     itemObjectRenderers:
     - {fileID: 2930986848616869988}
     - {fileID: 2930986850615313740}
     itemIcon: {fileID: 21300000, guid: 5e2976d6440fbb54fb6e21164ba3c76f, type: 3}
+    canColorChange: 1
   - itemName: SuperAngelWing
     itemObjectRenderers:
     - {fileID: 1332443729603274501}
@@ -14932,34 +14937,42 @@ MonoBehaviour:
     - {fileID: 3393805902257613207}
     - {fileID: 6684170667154856747}
     itemIcon: {fileID: 21300000, guid: 2c78040038258864d88942c02f7bfc08, type: 3}
+    canColorChange: 1
   - itemName: Axe
     itemObjectRenderers:
     - {fileID: 7795025393940651420}
     itemIcon: {fileID: 21300000, guid: 45bef2cbe3c7c0c4480a64fd2baa5cfc, type: 3}
+    canColorChange: 0
   - itemName: AngelRing
     itemObjectRenderers:
     - {fileID: 6210047163437728216}
     - {fileID: 4533002117601648581}
     - {fileID: 3639206667563744413}
     itemIcon: {fileID: 21300000, guid: 76464ae128a25b247a94cdc6536ce221, type: 3}
+    canColorChange: 0
   - itemName: Beard
     itemObjectRenderers:
     - {fileID: 6601702632718146342}
-    itemIcon: {fileID: 21300000, guid: 727f24756ffbbc44685420c9d313633f, type: 3}
+    itemIcon: {fileID: 21300000, guid: 4782835ac4b66eb4abddf584f12946ba, type: 3}
+    canColorChange: 1
   - itemName: Bunny
     itemObjectRenderers:
     - {fileID: 7275128386820050113}
     - {fileID: 8924356707422623832}
     - {fileID: 857106350519418177}
     itemIcon: {fileID: 21300000, guid: 29fea56b79b956a44b9e92778fe8b131, type: 3}
+    canColorChange: 1
   - itemName: MiniHat
     itemObjectRenderers:
     - {fileID: 7911787983544295953}
     itemIcon: {fileID: 21300000, guid: d8886970827476040ab3422650264103, type: 3}
+    canColorChange: 1
   - itemName: Glass
     itemObjectRenderers:
     - {fileID: 6116392421112654668}
     itemIcon: {fileID: 21300000, guid: 91118f851e15bcb459bf57683c0637b0, type: 3}
+    canColorChange: 1
+  maxItemNum: 2
 --- !u!1 &5128430682029378978
 GameObject:
   m_ObjectHideFlags: 0

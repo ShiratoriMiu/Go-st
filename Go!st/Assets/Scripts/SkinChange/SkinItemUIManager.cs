@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,6 +19,8 @@ public class SkinItemUIManager : MonoBehaviour
 
     public Renderer[] selectItem { get; private set; }
 
+    [SerializeField] private ItemNumTMP itemNumTMP;
+
     private void Start()
     {
         selectItem = null;
@@ -31,7 +34,8 @@ public class SkinItemUIManager : MonoBehaviour
             var renderer = item.itemObjectRenderers;
             if (renderer != null)
             {
-                selectItem = renderer;
+                if(item.canColorChange) selectItem = renderer;
+                else selectItem = null;
             }
         };
 
@@ -51,13 +55,15 @@ public class SkinItemUIManager : MonoBehaviour
                 itemButtons[index].icon.sprite = item.itemIcon;
                 itemButtons[index].button.onClick.RemoveAllListeners();
                 itemButtons[index].button.onClick.AddListener(() => {
-                    currentTarget.ToggleItem(item);
+                    currentTarget.ToggleItem(item , itemNumTMP.UpdateItemNumTMP);
                 });
 
+                //target.ItemSlots.Count‚ÆitemButtons‚Ì”‚É‡‚í‚¹‚ÄActive‚ğØ‚è‘Ö‚¦
                 itemButtons[index].button.gameObject.SetActive(true);
             }
             else
             {
+                //target.ItemSlots.Count‚ÆitemButtons‚Ì”‚É‡‚í‚¹‚ÄActive‚ğØ‚è‘Ö‚¦
                 itemButtons[index].button.gameObject.SetActive(false);
             }
         }

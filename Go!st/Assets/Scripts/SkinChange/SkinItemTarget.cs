@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+using System;
 
 public class SkinItemTarget : MonoBehaviour
 {
@@ -9,6 +11,7 @@ public class SkinItemTarget : MonoBehaviour
         public string itemName;
         public Renderer[] itemObjectRenderers;
         public Sprite itemIcon;
+        public bool canColorChange;
     }
 
     [SerializeField]
@@ -20,44 +23,45 @@ public class SkinItemTarget : MonoBehaviour
     public System.Action<ItemSlot> OnItemEquipped;
     public System.Action<ItemSlot> OnItemUnequipped;
 
+    [SerializeField] int maxItemNum = 2;//装備できる最大のアイテム数
 
     private void Start()
     {
         RefreshActiveItems();
     }
 
-    public void ToggleItem(ItemSlot item)
+    public void ToggleItem(ItemSlot _item, Action<int, int> _updateItemNum)
     {
-        if (activeItemNames.Contains(item.itemName))
+        if (activeItemNames.Contains(_item.itemName))
         {
-            activeItemNames.Remove(item.itemName);
-            for(int i = 0; i < item.itemObjectRenderers.Length; i++)
+            activeItemNames.Remove(_item.itemName);
+            for(int i = 0; i < _item.itemObjectRenderers.Length; i++)
             {
-                item.itemObjectRenderers[i].enabled = false;
+                _item.itemObjectRenderers[i].enabled = false;
             }
             
-            Debug.Log($"外した: {item.itemName}");
-
+            Debug.Log($"外した: {_item.itemName}");
+            _updateItemNum(-1, maxItemNum);//itemNumTMPの更新、1番目の引数は装備のコストに当たるが現状一律で1
             // 装備解除通知
-            OnItemUnequipped?.Invoke(item);
+            OnItemUnequipped?.Invoke(_item);
         }
         else
         {
-            if (activeItemNames.Count >= 2)
+            if (activeItemNames.Count >= maxItemNum)
             {
                 Debug.Log("これ以上装備できません");
                 return;
             }
 
-            activeItemNames.Add(item.itemName);
-            for (int i = 0; i < item.itemObjectRenderers.Length; i++)
+            activeItemNames.Add(_item.itemName);
+            for (int i = 0; i < _item.itemObjectRenderers.Length; i++)
             {
-                item.itemObjectRenderers[i].enabled = true;
+                _item.itemObjectRenderers[i].enabled = true;
             }
-            Debug.Log($"装備した: {item.itemName}");
-
+            Debug.Log($"装備した: {_item.itemName}");
+            _updateItemNum(1, maxItemNum);
             // コールバック呼び出し
-            OnItemEquipped?.Invoke(item);
+            OnItemEquipped?.Invoke(_item);
         }
     }
 

@@ -413,7 +413,6 @@ public class PlayerController : MonoBehaviour
 
         int enemyNum = skill.SkillTouchEnded();
         canSkillLine = false;
-        canControl = false;
         isSkillEndEffect = true;
 
         if(enemyNum > 0)
@@ -441,7 +440,6 @@ public class PlayerController : MonoBehaviour
 
     void StopSkillAnim()
     {
-        canControl = true;
         // ÉXÉLÉãèIóπèàóù
         isSkill = false;
         isSkillEndEffect = false;
@@ -590,6 +588,8 @@ public class PlayerController : MonoBehaviour
         hp = maxHP;
         playerHpImage.UpdateHp(hp);
         canSkillLine = false;
+        skillCooldownTime = maxSkillCooldownTime;
+        skillChargeImage.fillAmount = skillCooldownTime / maxSkillCooldownTime;
     }
 
     public void Damage(int _num)
