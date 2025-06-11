@@ -26,6 +26,7 @@ public class PlayerSelect : MonoBehaviour
     [SerializeField] private GameObject selectButton;
     [SerializeField] private ColorChanger colorChanger;
     [SerializeField] private SkinItemUIManager skinItemUIManager;
+    [SerializeField] private MakeUpManager makeUpManager;
 
     public GameObject selectPlayer { get; private set; }
 
@@ -226,8 +227,10 @@ public class PlayerSelect : MonoBehaviour
         }
 
         gameManager.SetPlayer(selectPlayer);
-        colorChanger.SetTargetRenderer(selectPlayer.GetComponent<PlayerController>().renderer);
+        Renderer renderer = selectPlayer.GetComponent<PlayerController>().renderer;
+        colorChanger.SetTargetRenderer(renderer);
         skinItemUIManager.SetTargetPlayer(selectPlayer.GetComponent<SkinItemTarget>());
+        makeUpManager.SetTargetRenderer(renderer);
     }
 
     public void ResetSelection()

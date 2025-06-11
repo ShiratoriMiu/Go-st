@@ -35,27 +35,27 @@ public class ColorChanger : MonoBehaviour
     {
         if (targetRenderer == null) return;
 
-        Material matInstance = new Material(targetRenderer.material); // マテリアルの複製
-        Image image = skinButton.button.GetComponent<Image>();// Imageの使用
+        Material[] materials = targetRenderer.materials;
 
+        if (materials.Length == 0)
+        {
+            return;
+        }
+
+        // 0番目だけを複製して差し替える
+        Material baseMat = new Material(materials[(int)MaterialSlot.Color]);
+
+        Image image = skinButton.button.GetComponent<Image>();
         if (image != null)
         {
-            matInstance.color = image.color;
+            baseMat.color = image.color;
         }
 
-        if (skinButton.texture != null)
-        {
-            matInstance.mainTexture = skinButton.texture;
-        }
-        else
-        {
-            // デフォルトをセット
-            matInstance.mainTexture = defaultTexture;
-        }
+        baseMat.mainTexture = skinButton.texture != null ? skinButton.texture : defaultTexture;
 
-        targetRenderer.material = matInstance;
+        materials[(int)MaterialSlot.Color] = baseMat; // 0番目だけ差し替え
+        targetRenderer.materials = materials;
     }
-
 
     public void SetTargetRenderer(Renderer _targetRenderer)
     {
