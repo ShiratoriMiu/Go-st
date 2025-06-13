@@ -50,6 +50,10 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+#if UNITY_STANDALONE_WIN
+        PlayerPrefs.DeleteAll();
+        Screen.SetResolution(540, 960, false);
+#endif
         InitGame();
         SelectOnUI(titlePanel);
         centerToGrayEffect = Camera.main.GetComponent<CenterToGrayEffect>();
