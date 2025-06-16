@@ -117,14 +117,20 @@ public class GameManager : MonoBehaviour
     }
 
 
-    public void AddEnemiesDefeatedNum()
+    public void AddEnemiesDefeatedNum(int _value)
     {
-        enemiesDefeated++;
+        enemiesDefeated+= _value;
     }
 
     public int CalculateScore()
     {
-        finalScore = enemiesDefeated + Mathf.FloorToInt(survivalTime);
+        PlayerController playerController = selectPlayer.GetComponent<PlayerController>();
+
+        int getHP = playerController.hp;
+        if (getHP < 0) getHP = 0;
+        Debug.Log("倒した数：" + enemiesDefeated + " / " + "生存時間：" + Mathf.FloorToInt(survivalTime) + " / " + "残りHP：" + getHP);
+        //スコア計算
+        finalScore = enemiesDefeated + Mathf.FloorToInt(survivalTime) + getHP;
         return finalScore;
     }
 

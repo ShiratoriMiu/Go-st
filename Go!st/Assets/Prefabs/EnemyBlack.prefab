@@ -100,6 +100,7 @@ MonoBehaviour:
   moveSpeed: 0.5
   maxHp: 5
   attack: 1
+  defeatedNum: 3
   animator: {fileID: 8520648192612306320}
   enemyRenderers:
   - {fileID: 4815697971163993307}

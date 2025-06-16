@@ -15,8 +15,10 @@ public abstract class EnemyBase : MonoBehaviour
     [SerializeField] protected float moveSpeed = 0;
     [SerializeField] protected int maxHp = 10;
     [SerializeField] protected int attack = 1;
+    [SerializeField] protected int defeatedNum = 1;
 
-    [SerializeField] protected Animator animator;
+
+[SerializeField] protected Animator animator;
     [SerializeField] protected Renderer[] enemyRenderers;
     [SerializeField] protected Collider enemyCollider;
 
@@ -73,7 +75,7 @@ public abstract class EnemyBase : MonoBehaviour
             Hidden();
             hp = maxHp;
             levelManager?.AddEnemyKill();
-            gameManager?.AddEnemiesDefeatedNum();
+            gameManager?.AddEnemiesDefeatedNum(defeatedNum);
 
             OnDeath?.Invoke(); // ƒ{ƒX/ŽG‹›‹¤’Ê‚Å”­‰Î
         }

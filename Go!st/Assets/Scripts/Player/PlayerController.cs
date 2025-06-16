@@ -75,7 +75,7 @@ public class PlayerController : MonoBehaviour
     private float nearestEnemyDis;
     private float skillCooldownTime = 7f; // 必殺技のクールタイム（秒）
 
-    private int hp = 0;
+    public int hp { get; private set; }
     private int bulletNum = 1;
 
     //スキル発動中は敵と当たらなくする
