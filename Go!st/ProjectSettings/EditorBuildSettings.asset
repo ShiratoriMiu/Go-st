@@ -8,4 +8,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/GameScene.unity
     guid: 1fe1f2bf7688b6942a2e2bdacc40d5ad
+  - enabled: 1
+    path: Assets/Scenes/GachaScene.unity
+    guid: bb4696e987240c64cb1f095563ef6941
   m_configObjects: {}
+  m_UseUCBPForAssetBundles: 0

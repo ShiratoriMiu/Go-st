@@ -13,7 +13,7 @@ public class BuffItem : MonoBehaviour
             if (player != null && buffData != null)
             {
                 player.ApplyBuff(buffData);
-                Debug.Log($"バフ「{buffData.buffName}」を適用");
+                Debug.Log($"バフ「{buffData.buffType}」を適用");
 
                 Destroy(gameObject); // アイテムを消す
             }

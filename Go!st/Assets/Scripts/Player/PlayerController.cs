@@ -45,6 +45,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Image skillChargeImage;
 
     public Renderer renderer { get; private set; }
+    public bool canSkill { get; private set; }
 
     PlayerInputAction action;
     Rigidbody rb;
@@ -175,6 +176,7 @@ public class PlayerController : MonoBehaviour
             if (skillCooldownTime >= maxSkillCooldownTime)
             {
                 skillChargeEffect.SetActive(true);
+                canSkill = true;
             }
             else
             {
@@ -394,6 +396,7 @@ public class PlayerController : MonoBehaviour
         Invoke("StartLine", 1f);
         centerToGrayEffect.Gray(true);
         skillChargeEffect.SetActive(false);
+        canSkill = false;
         maxSpeed *= skillAddSpeed;
         moveSpeed *= skillAddSpeed;
         // 衝突無効化
@@ -579,11 +582,11 @@ public class PlayerController : MonoBehaviour
     public void Init()
     {
         skillChargeEffect.SetActive(false);
+        canSkill = false;
         isInteracting = false;
         moveDirection = Vector2.zero;
         currentPosition = Vector2.zero;
         stickPrefab.SetActive(false);
-        skillChargeEffect.SetActive(false);
         StopSkill();
         hp = maxHP;
         playerHpImage.UpdateHp(hp);
@@ -605,21 +608,30 @@ public class PlayerController : MonoBehaviour
 
     public void ApplyBuff(BuffSO buff)
     {
-        // HP回復
-        if (hp < maxHP)
+        if(buff.buffType == BuffType.Heal)
         {
-            hp = Mathf.Min(hp + buff.healAmount, maxHP);
-            playerHpImage.UpdateHp(hp);
-            Debug.Log($"HP回復：{buff.healAmount} → 現在HP: {hp}");
+            // HP回復
+            if (hp < maxHP)
+            {
+                hp = Mathf.Min(hp + buff.healAmount, maxHP);
+                playerHpImage.UpdateHp(hp);
+                Debug.Log($"HP回復：{buff.healAmount} → 現在HP: {hp}");
+            }
         }
-        if (hp > maxHP)
+        else if(buff.buffType == BuffType.SpeedBoost)
         {
-            hp = maxHP;
+            // 速度アップ
+            if (buff.speedMultiplier != 1f)
+                StartCoroutine(SpeedBuffCoroutine(buff.speedMultiplier, buff.duration));
         }
-
-        // 速度アップ
-        if (buff.speedMultiplier != 1f)
-            StartCoroutine(SpeedBuffCoroutine(buff.speedMultiplier, buff.duration));
+        else if(buff.buffType == BuffType.SkillCoolTime)
+        {
+            if (skillCooldownTime < maxSkillCooldownTime)
+            {
+                skillCooldownTime = Mathf.Min(skillCooldownTime + buff.skillCoolTimeAdd, maxSkillCooldownTime);
+                skillChargeImage.fillAmount = skillCooldownTime / maxSkillCooldownTime;
+            }
+        }
     }
 
     private IEnumerator SpeedBuffCoroutine(float multiplier, float duration)

@@ -66,7 +66,7 @@ public class DashBossController : EnemyBase
                     {
                         attackIntervalCount = 0;
                         state = State.Attack;
-                        animator.SetTrigger("isAttack");
+                        animator.SetBool("isWait", false);
 
                         lineRenderer.enabled = false;
 
@@ -79,7 +79,6 @@ public class DashBossController : EnemyBase
                             {
                                 rb.isKinematic = false;
                                 state = State.Follow;
-                                animator.SetTrigger("isWait");
                                 dashTween = null;
                             });
                     }
@@ -108,7 +107,7 @@ public class DashBossController : EnemyBase
             transform.DOKill(); // DOTween 移動停止
             rb.isKinematic = false;
             state = State.Charge;
-            animator.SetTrigger("isWait");
+            animator.SetBool("isWait", false);
 
             PrepareDashLine();
         }
@@ -121,6 +120,7 @@ public class DashBossController : EnemyBase
         if (other.gameObject.CompareTag("Player"))
         {
             PrepareDashLine();
+            animator.SetBool("isWait", true);
             state = State.Charge;
         }
     }
@@ -148,7 +148,7 @@ public class DashBossController : EnemyBase
         state = State.Follow;
         rb.WakeUp();
         rb.isKinematic = false;
-        animator.SetTrigger("isWait");
+        animator.SetBool("isWait", false);
 
         if (lineRenderer != null)
         {
