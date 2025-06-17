@@ -18,7 +18,7 @@ public abstract class EnemyBase : MonoBehaviour
     [SerializeField] protected int defeatedNum = 1;
 
 
-[SerializeField] protected Animator animator;
+    [SerializeField] protected Animator animator;
     [SerializeField] protected Renderer[] enemyRenderers;
     [SerializeField] protected Collider enemyCollider;
 
@@ -64,6 +64,7 @@ public abstract class EnemyBase : MonoBehaviour
 
     public virtual void Damage(int _damage)
     {
+        animator.SetTrigger("isHit");
         hp -= _damage;
         Dead();
     }
