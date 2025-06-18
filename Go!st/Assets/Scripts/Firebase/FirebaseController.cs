@@ -67,11 +67,12 @@ public class FirebaseController : MonoBehaviour
         {
             DataSnapshot snapshot = await reference.Child("scores")
                                                    .OrderByValue()
-                                                   .LimitToLast(5)
+                                                   .LimitToLast(100)
                                                    .GetValueAsync();
 
             foreach (DataSnapshot scoreSnapshot in snapshot.Children)
             {
+                Debug.Log($"éÊìæÉfÅ[É^ Key={scoreSnapshot.Key}, Value={scoreSnapshot.Value} (å^={scoreSnapshot.Value?.GetType()})");
                 int score = Convert.ToInt32(scoreSnapshot.Value);
                 topScores.Add(score);
             }

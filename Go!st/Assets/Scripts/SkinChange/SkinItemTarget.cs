@@ -30,7 +30,7 @@ public class SkinItemTarget : MonoBehaviour
         RefreshActiveItems();
     }
 
-    public void ToggleItem(ItemSlot _item, Action<int, int> _updateItemNum)
+    public void ToggleItem(ItemSlot _item, Action<int, int> _updateItemNum, Action buttonPressedColor, Action buttonColorReset)
     {
         if (activeItemNames.Contains(_item.itemName))
         {
@@ -41,6 +41,7 @@ public class SkinItemTarget : MonoBehaviour
             }
             
             Debug.Log($"外した: {_item.itemName}");
+            buttonColorReset();
             _updateItemNum(-1, maxItemNum);//itemNumTMPの更新、1番目の引数は装備のコストに当たるが現状一律で1
             // 装備解除通知
             OnItemUnequipped?.Invoke(_item);
@@ -59,6 +60,7 @@ public class SkinItemTarget : MonoBehaviour
                 _item.itemObjectRenderers[i].enabled = true;
             }
             Debug.Log($"装備した: {_item.itemName}");
+            buttonPressedColor();
             _updateItemNum(1, maxItemNum);
             // コールバック呼び出し
             OnItemEquipped?.Invoke(_item);

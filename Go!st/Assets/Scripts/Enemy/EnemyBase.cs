@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public abstract class EnemyBase : MonoBehaviour
@@ -11,6 +12,8 @@ public abstract class EnemyBase : MonoBehaviour
     protected GameManager gameManager;
     protected Vector3 lastVelocity;
     protected float hp;
+    protected bool canMove = true;
+    protected bool isDead = false;
 
     [SerializeField] protected float moveSpeed = 0;
     [SerializeField] protected int maxHp = 10;
@@ -64,22 +67,37 @@ public abstract class EnemyBase : MonoBehaviour
 
     public virtual void Damage(int _damage)
     {
+        if (!isActive || isDead) return;
         animator.SetTrigger("isHit");
+        StartCoroutine(StopMoveCoroutine());
         hp -= _damage;
-        Dead();
-    }
-
-    protected virtual void Dead()
-    {
         if (hp <= 0)
         {
-            Hidden();
-            hp = maxHp;
-            levelManager?.AddEnemyKill();
-            gameManager?.AddEnemiesDefeatedNum(defeatedNum);
-
-            OnDeath?.Invoke(); // ƒ{ƒX/ŽG‹›‹¤’Ê‚Å”­‰Î
+            animator.speed = 1f;
+            isDead = true;
+            animator.SetTrigger("isDead");
+            //OnDeath?.Invoke(); // ƒ{ƒX/ŽG‹›‹¤’Ê‚Å”­‰Î
+            enemyCollider.enabled = false;
+            rb.useGravity = false;
         }
+    }
+
+    private IEnumerator StopMoveCoroutine()
+    {
+        canMove = false;       // ˆÚ“®‹ÖŽ~‚É‚·‚é
+        rb.velocity = Vector3.zero;  // ”O‚Ì‚½‚ßƒ[ƒ‚É
+
+        yield return new WaitForSeconds(0.5f);  // 0.5•b’âŽ~
+
+        canMove = true;        // ˆÚ“®ÄŠJ
+    }
+
+    public virtual void Dead()
+    {
+        Hidden();
+        hp = maxHp;
+        levelManager?.AddEnemyKill();
+        gameManager?.AddEnemiesDefeatedNum(defeatedNum);
     }
 
     protected virtual void OnCollisionEnter(Collision collision)
@@ -115,5 +133,6 @@ public abstract class EnemyBase : MonoBehaviour
             renderer.enabled = false;
         }
         rb.useGravity = false;
+        isDead = false;
     }
 }

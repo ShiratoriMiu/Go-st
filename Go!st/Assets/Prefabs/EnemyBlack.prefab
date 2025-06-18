@@ -208,7 +208,10 @@ PrefabInstance:
     - {fileID: 5954301793336381631, guid: 8146374d820c3ac45baeed5014144363, type: 3}
     - {fileID: 2197159603984583343, guid: 8146374d820c3ac45baeed5014144363, type: 3}
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3698828718276235669, guid: 8146374d820c3ac45baeed5014144363, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8638263070893941949}
   m_SourcePrefab: {fileID: 100100000, guid: 8146374d820c3ac45baeed5014144363, type: 3}
 --- !u!137 &4815697971163993307 stripped
 SkinnedMeshRenderer:
@@ -225,3 +228,35 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4581718618250850182, guid: 8146374d820c3ac45baeed5014144363, type: 3}
   m_PrefabInstance: {fileID: 5308306546003304786}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &8862527382745395399 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3698828718276235669, guid: 8146374d820c3ac45baeed5014144363, type: 3}
+  m_PrefabInstance: {fileID: 5308306546003304786}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8638263070893941949
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8862527382745395399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d421acd619666e42ba889c8bbceddab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onAnimationEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 7934102601632362932}
+        m_TargetAssemblyTypeName: EnemyBase, Assembly-CSharp
+        m_MethodName: Dead
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2

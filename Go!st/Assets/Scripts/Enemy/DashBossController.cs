@@ -27,7 +27,7 @@ public class DashBossController : EnemyBase
 
     void FixedUpdate()
     {
-        if (!isActive) return;
+        if (!isActive || isDead) return;
         if (gameManager.state != GameManager.GameState.Game) return;
 
         if (player != gameManager.selectPlayer && gameManager.selectPlayer != null)

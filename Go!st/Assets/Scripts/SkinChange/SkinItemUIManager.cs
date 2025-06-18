@@ -11,6 +11,7 @@ public class SkinItemUIManager : MonoBehaviour
     {
         public Button button;
         public Image icon;
+        [HideInInspector] public TogglePressedLookButton togglePressedLook;
     }
 
     [SerializeField] private ItemButton[] itemButtons;
@@ -24,6 +25,11 @@ public class SkinItemUIManager : MonoBehaviour
     private void Start()
     {
         selectItem = null;
+
+        foreach(ItemButton itemButton in itemButtons)
+        {
+            itemButton.togglePressedLook = itemButton.button.GetComponent<TogglePressedLookButton>();
+        }
     }
 
     public void SetTargetPlayer(SkinItemTarget target)
@@ -55,7 +61,7 @@ public class SkinItemUIManager : MonoBehaviour
                 itemButtons[index].icon.sprite = item.itemIcon;
                 itemButtons[index].button.onClick.RemoveAllListeners();
                 itemButtons[index].button.onClick.AddListener(() => {
-                    currentTarget.ToggleItem(item , itemNumTMP.UpdateItemNumTMP);
+                    currentTarget.ToggleItem(item , itemNumTMP.UpdateItemNumTMP, itemButtons[index].togglePressedLook.SetPressedLook, itemButtons[index].togglePressedLook.ResetButtonLook);
                 });
 
                 //target.ItemSlots.Count‚ÆitemButtons‚Ì”‚É‡‚í‚¹‚ÄActive‚ğØ‚è‘Ö‚¦
