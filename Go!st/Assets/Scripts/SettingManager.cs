@@ -23,7 +23,7 @@ public class SettingManager : MonoBehaviour
 
     void ToTitle()
     {
-        gameManager.RankingToTitle();
+        gameManager.ToTitle();
     }
 
     void Restart()

@@ -45,7 +45,7 @@ public class CameraFollow : MonoBehaviour
             transform.position = Vector3.Lerp(transform.position, skinChangeCameraPos.position, toSkinChangrSpeed);
             transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, skinChangeCameraPos.eulerAngles, toSkinChangrSpeed);
         }
-        else
+        else if(gameManager.state == GameManager.GameState.Game)
         {
             if(oldState != gameManager.state)
             {

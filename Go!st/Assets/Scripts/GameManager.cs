@@ -8,7 +8,7 @@ using TMPro;
 
 public class GameManager : MonoBehaviour
 {
-    public enum GameState { Title, Game, Score, Ranking, SkinChange }
+    public enum GameState { Title, Game, Score, Ranking, SkinChange, Help, Setting }
     public GameState state;
 
     public PlayerManager playerManager;
@@ -26,11 +26,22 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Text remainingTimeText;   // 残り時間表示用
     [SerializeField] private Text rankingText;         //ランキング表示用
 
-    [SerializeField] private GameObject gamePanel;
-    [SerializeField] private GameObject titlePanel;
-    [SerializeField] private GameObject scorePanel;
-    [SerializeField] private GameObject rankingPanel;
-    [SerializeField] private GameObject skinChangePanel;
+
+    [System.Serializable]
+    public class UIPanelEntry
+    {
+        public GameManager.GameState state;
+        public GameObject panel;
+    }
+    [SerializeField] private List<UIPanelEntry> uiPanelEntries;
+    private Dictionary<GameState, GameObject> uiPanels;
+
+    //[SerializeField] private GameObject gamePanel;
+    //[SerializeField] private GameObject titlePanel;
+    //[SerializeField] private GameObject scorePanel;
+    //[SerializeField] private GameObject rankingPanel;
+    //[SerializeField] private GameObject skinChangePanel;
+    //[SerializeField] private GameObject helpPanel;
 
     [SerializeField] private float resetSelectPlayerRotateLerpSpeed = 1;
 
@@ -48,6 +59,23 @@ public class GameManager : MonoBehaviour
     //frebaseビルドが出来ないので一時的にcsvに変更
     //[SerializeField] ScoreManager scoreManager;
 
+    private void Awake()
+    {
+        uiPanels = new Dictionary<GameManager.GameState, GameObject>();
+        foreach (var entry in uiPanelEntries)
+        {
+            if (!uiPanels.ContainsKey(entry.state))
+            {
+                uiPanels.Add(entry.state, entry.panel);
+            }
+            else
+            {
+                Debug.LogWarning($"Duplicate GameState key found: {entry.state}");
+            }
+        }
+    }
+
+
     private void Start()
     {
 #if UNITY_STANDALONE_WIN
@@ -55,7 +83,7 @@ public class GameManager : MonoBehaviour
         Screen.SetResolution(540, 960, false);
 #endif
         InitGame();
-        SelectOnUI(titlePanel);
+        SwitchUIPanel(GameState.Title);
         centerToGrayEffect = Camera.main.GetComponent<CenterToGrayEffect>();
         initmaxTimeLimit = maxTimeLimit;
     }
@@ -85,26 +113,25 @@ public class GameManager : MonoBehaviour
     public void StartGame()
     {
         state = GameState.Game;
-        SelectOnUI(gamePanel);
+        SwitchUIPanel(GameState.Game);
         levelManager.InitializeLevel();
         enemyManager.SetEnemyTypesByLevelData(levelManager.levelDataDict[1]);
         playerManager.InitializePlayer(Vector3.zero);
         enemyManager.StartSpawning();
     }
 
-    void SelectOnUI(GameObject _obj)
+    private void SwitchUIPanel(GameState state)
     {
-        // UIを全て非表示にする
-        titlePanel.SetActive(false);
-        gamePanel.SetActive(false);
-        scorePanel.SetActive(false);
-        rankingPanel.SetActive(false);
-        skinChangePanel.SetActive(false);
+        foreach (var panel in uiPanels.Values)
+        {
+            panel.SetActive(false);
+        }
 
-        // 引数で渡されたUIオブジェクトのみを表示
-        _obj.SetActive(true);
+        if (uiPanels.TryGetValue(state, out var panelToActivate))
+        {
+            panelToActivate.SetActive(true);
+        }
     }
-
 
     private void UpdateTimeUI(float time)
     {
@@ -134,68 +161,34 @@ public class GameManager : MonoBehaviour
         return finalScore;
     }
 
-    public async void ShowScore()
+    private async void ShowScore()
     {
         int score = CalculateScore();
         //await scoreManager.WriteScoreDataAsync(score);
-        await firebaseController.SaveScoreAsync(score);
+        await firebaseController.SaveMyScoreAsync(score);
         scoreText.text = $"Score : {score}";
     }
 
 
-    public async void ShowRanking()
+    private async void ShowRanking()
     {
-        List<int> scores = await firebaseController.GetTopScoresAsync();
-        //List<int> scores = scoreManager.LoadScoreData();
-
-        // 降順に並べ替え（高スコア順）
-        scores = scores.OrderByDescending(score => score).ToList();
-
-        // 最大5件まで表示、足りない場合は0で埋める
-        while (scores.Count < 5)
-        {
-            scores.Add(0);
+        var topRanks = await firebaseController.GetTopRankingsAsync();
+        string rankText = "";
+        for (int i = 0; i < topRanks.Count; ++i) {
+            if (i == 0) rankText += $"{topRanks[i].name}: {topRanks[i].score}";
+            else rankText += $"\n{topRanks[i].name}: {topRanks[i].score}";
         }
-
-        string rankingResult = "";
-        for (int i = 0; i < 5; i++)  // 必ず5件表示
-        {
-            rankingResult += $"{i + 1}位: {scores[i]}\n";
-        }
-
-        rankingText.text = rankingResult;
-        SelectOnUI(rankingPanel);
+        rankingText.text = rankText;
     }
 
     public void EndGame()
     {
         if (state != GameState.Game) return;
 
-        state = GameState.Score;
-        SelectOnUI(scorePanel);
+        ToScore();
         enemyManager.StopSpawning();
-        ShowScore();
         remainingTimeText.text = "00 : 00";
         centerToGrayEffect.ResetGrey();
-    }
-
-    public void ScoreToRanking()
-    {
-        ShowRanking();
-    }
-
-    public void RankingToTitle()
-    {
-        state = GameState.Title;
-        SelectOnUI(titlePanel);
-        ResetGame();
-    }
-
-    public void SkinChangeToTitle()
-    {
-        state = GameState.Title;
-        StartCoroutine(ResetSelectPlayerRotate());
-        SelectOnUI(titlePanel);
     }
 
     IEnumerator ResetSelectPlayerRotate()
@@ -249,9 +242,30 @@ public class GameManager : MonoBehaviour
         maxTimeLimit = initmaxTimeLimit;
     }
 
-    public void ToSkinChange()
+    public void ToTitle()
     {
-        state = GameState.SkinChange;
-        SelectOnUI(skinChangePanel);
+        ChangeGameState(GameState.Title);
+        ResetGame();
+        StartCoroutine(ResetSelectPlayerRotate());
+    }
+    public void ToGame() => ChangeGameState(GameState.Game);
+    public void ToScore() 
+    {
+        ChangeGameState(GameState.Score);
+        ShowScore();
+    }
+    public void ToRanking()
+    {
+        ShowRanking();
+        ChangeGameState(GameState.Ranking);
+    }
+    public void ToSkinChange() => ChangeGameState(GameState.SkinChange);
+    public void ToHelp() => ChangeGameState(GameState.Help);
+    public void ToSetting() => ChangeGameState(GameState.Setting);
+
+    void ChangeGameState(GameState _gameState)
+    {
+        state = _gameState;
+        SwitchUIPanel(_gameState);
     }
 }

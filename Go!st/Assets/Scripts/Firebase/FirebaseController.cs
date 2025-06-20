@@ -1,90 +1,149 @@
-using Firebase;
 using Firebase.Database;
-using Firebase.Extensions;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
+[Serializable]
+public class RankingData
+{
+    public string displayName;
+    public int bestScore;
+
+    public RankingData(string name, int score)
+    {
+        displayName = name;
+        bestScore = score;
+    }
+}
+
+[Serializable]
+public class ScoreEntry
+{
+    public int score;
+    public string timestamp;
+
+    public ScoreEntry(int score)
+    {
+        this.score = score;
+        this.timestamp = DateTime.UtcNow.ToString("o");
+    }
+}
+
+
 public class FirebaseController : MonoBehaviour
 {
-    private DatabaseReference reference;
-    bool isFirebaseReady = false;
+    // LoginControllerのインスタンスからユーザー情報を取得する想定
+    LoginController login => LoginController.Instance;
 
-    void Start()
+    // isFirebaseReady と user チェックをLoginController側で行う
+    bool IsReady => login != null && login.IsFirebaseReady && login.User != null;
+
+    DatabaseReference reference => login?.DbReference;
+    Firebase.Auth.FirebaseUser user => login?.User;
+
+    // ? スコア保存：自己履歴 + 自己ベスト + ランキング更新
+    public async Task SaveMyScoreAsync(int newScore)
     {
-        FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task => {
-            if (task.Result == DependencyStatus.Available)
+        if (!IsReady) return;
+
+        string uid = user.UserId;
+        var userRef = reference.Child("users").Child(uid);
+        var scoresRef = userRef.Child("scores");
+
+        var scoreEntry = new ScoreEntry(newScore);
+        string jsonScore = JsonUtility.ToJson(scoreEntry);
+        Debug.Log("保存するスコアJSON: " + jsonScore);
+
+        await scoresRef.Push().SetRawJsonValueAsync(jsonScore);
+
+        // ベストスコア更新チェック
+        var bestSnapshot = await userRef.Child("bestScore").GetValueAsync();
+        int best = 0;
+        if (bestSnapshot.Exists)
+            int.TryParse(bestSnapshot.Value.ToString(), out best);
+        if (newScore > best)
+        {
+            await userRef.Child("bestScore").SetValueAsync(newScore);
+
+            try
             {
-                Debug.Log("Firebase 依存関係チェック成功");
+                string displayName = user.DisplayName ?? "NoName";
+                var data = new RankingData(displayName, newScore);
+                string json = JsonUtility.ToJson(data);
 
-                // FirebaseApp 初期化
-                FirebaseApp app = FirebaseApp.DefaultInstance;
+                Debug.Log("書き込むJSON: " + json); // ← ここで中身が正しいか確認！
 
-                // 明示的にDatabaseURL付きでインスタンス取得
-                //var db = FirebaseDatabase.GetInstance("https://go-st-63ded-default-rtdb.firebaseio.com/");
-                //reference = db.RootReference;
-                reference = FirebaseDatabase.DefaultInstance.RootReference;
-                isFirebaseReady = true;
-
-                Debug.Log("Firebase 初期化完了しました");
+                await reference.Child("rankings").Child(uid).SetRawJsonValueAsync(json);
+                Debug.Log("ランキング保存成功");
             }
-            else
+            catch (Exception e)
             {
-                Debug.LogError("Firebase 初期化失敗: " + task.Result);
+                Debug.LogError("ランキング保存失敗: " + e.Message);
             }
-        });
+
+        }
+
+
+        Debug.Log("スコア保存完了: " + newScore);
     }
 
-
-    // Firebase にスコアを非同期保存
-    public async Task SaveScoreAsync(int score)
+    // ? 総合ランキング取得（上位N件）
+    public async Task<List<(string name, int score)>> GetTopRankingsAsync(int limit = 5)
     {
-        if (!isFirebaseReady)
+        var rankings = new List<(string name, int score)>();
+
+        if (!IsReady) return rankings;
+
+        var snapshot = await reference.Child("rankings")
+            .OrderByChild("bestScore").LimitToLast(limit)
+            .GetValueAsync();
+
+        foreach (var userEntry in snapshot.Children)
         {
-            Debug.LogWarning("Firebaseがまだ初期化されていません。");
-            return;
+            string name = userEntry.Child("displayName").Value?.ToString() ?? "NoName";
+            int score = int.Parse(userEntry.Child("bestScore").Value?.ToString() ?? "0");
+            rankings.Add((name, score));
         }
 
-        string key = reference.Child("scores").Push().Key;
-        try
-        {
-            await reference.Child("scores").Child(key).SetValueAsync(score);
-            Debug.Log("スコア送信完了: " + score);
-        }
-        catch (Exception e)
-        {
-            Debug.LogError("スコア送信失敗: " + e);
-        }
+        // 降順にソート（Firebaseは昇順なので）
+        rankings.Sort((a, b) => b.score.CompareTo(a.score));
+        return rankings;
     }
 
-    // Firebase から上位スコアを取得
-    public async Task<List<int>> GetTopScoresAsync()
+    // ? 自己ランキング取得（順位＋スコア）
+    public async Task<(int rank, int score)> GetMyRankingAsync()
     {
-        List<int> topScores = new List<int>();
+        if (!IsReady) return (-1, 0);
 
-        try
+        string uid = user.UserId;
+        int myScore = 0;
+        int rank = 1;
+
+        // 全ランキング取得
+        var snapshot = await reference.Child("rankings").OrderByChild("bestScore").GetValueAsync();
+
+        List<(string uid, int score)> all = new List<(string, int)>();
+
+        foreach (var entry in snapshot.Children)
         {
-            DataSnapshot snapshot = await reference.Child("scores")
-                                                   .OrderByValue()
-                                                   .LimitToLast(100)
-                                                   .GetValueAsync();
+            string entryUid = entry.Key;
+            int score = int.Parse(entry.Child("bestScore").Value.ToString());
+            all.Add((entryUid, score));
+        }
 
-            foreach (DataSnapshot scoreSnapshot in snapshot.Children)
+        all.Sort((a, b) => b.score.CompareTo(a.score));
+
+        for (int i = 0; i < all.Count; i++)
+        {
+            if (all[i].uid == uid)
             {
-                Debug.Log($"取得データ Key={scoreSnapshot.Key}, Value={scoreSnapshot.Value} (型={scoreSnapshot.Value?.GetType()})");
-                int score = Convert.ToInt32(scoreSnapshot.Value);
-                topScores.Add(score);
+                myScore = all[i].score;
+                rank = i + 1;
+                break;
             }
-
-            // 高い順に並び替え
-            topScores.Sort((a, b) => b.CompareTo(a));
-        }
-        catch (Exception e)
-        {
-            Debug.LogError("スコア取得失敗: " + e);
         }
 
-        return topScores;
+        return (rank, myScore);
     }
 }
