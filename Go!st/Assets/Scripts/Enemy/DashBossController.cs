@@ -155,4 +155,14 @@ public class DashBossController : EnemyBase
             lineRenderer.enabled = false;
         }
     }
+
+    public override void Damage(int _damage)
+    {
+        base.Damage(_damage);
+
+        if(hp <= 0)
+        {
+            Dead();
+        }
+    }
 }

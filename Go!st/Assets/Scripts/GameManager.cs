@@ -24,8 +24,9 @@ public class GameManager : MonoBehaviour
     [Header("UI")]
     [SerializeField] private Text scoreText;           // スコア表示用
     [SerializeField] private Text remainingTimeText;   // 残り時間表示用
-    [SerializeField] private Text rankingText;         //ランキング表示用
 
+    [SerializeField] private GameObject rankingTextBase;//世界ランキングのテキストを生成する親オブジェクト
+    [SerializeField] private GameObject rankingTextPrefab;
 
     [System.Serializable]
     public class UIPanelEntry
@@ -36,12 +37,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private List<UIPanelEntry> uiPanelEntries;
     private Dictionary<GameState, GameObject> uiPanels;
 
-    //[SerializeField] private GameObject gamePanel;
-    //[SerializeField] private GameObject titlePanel;
-    //[SerializeField] private GameObject scorePanel;
-    //[SerializeField] private GameObject rankingPanel;
-    //[SerializeField] private GameObject skinChangePanel;
-    //[SerializeField] private GameObject helpPanel;
+    private List<Text> rankingTextList = new List<Text>();
 
     [SerializeField] private float resetSelectPlayerRotateLerpSpeed = 1;
 
@@ -52,6 +48,7 @@ public class GameManager : MonoBehaviour
     public GameObject selectPlayer { get; private set; }
 
     private int finalScore;
+    private int rankingDisplayNum = 100;//ランキングの何位まで表示するか
 
     //デバッグ用
     private float initmaxTimeLimit;
@@ -72,6 +69,12 @@ public class GameManager : MonoBehaviour
             {
                 Debug.LogWarning($"Duplicate GameState key found: {entry.state}");
             }
+        }
+
+        //ランキング用テキストの生成
+        for(int i = 0; i < rankingDisplayNum; ++i)
+        {
+            rankingTextList.Add(Instantiate(rankingTextPrefab,rankingTextBase.transform).GetComponentInChildren<Text>());
         }
     }
 
@@ -173,12 +176,10 @@ public class GameManager : MonoBehaviour
     private async void ShowRanking()
     {
         var topRanks = await firebaseController.GetTopRankingsAsync();
-        string rankText = "";
+        //else topRanks = await firebaseController.GetMyRankingAsync();
         for (int i = 0; i < topRanks.Count; ++i) {
-            if (i == 0) rankText += $"{topRanks[i].name}: {topRanks[i].score}";
-            else rankText += $"\n{topRanks[i].name}: {topRanks[i].score}";
+            rankingTextList[i].text = $"{topRanks[i].name}: {topRanks[i].score}";
         }
-        rankingText.text = rankText;
     }
 
     public void EndGame()
@@ -195,6 +196,7 @@ public class GameManager : MonoBehaviour
     {
         Quaternion targetRotation = Quaternion.identity;
 
+        if (selectPlayer == null) yield break;
         while (Quaternion.Angle(selectPlayer.transform.rotation, targetRotation) > 0.1f)
         {
             selectPlayer.transform.rotation = Quaternion.Lerp(
