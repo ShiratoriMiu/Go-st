@@ -8,7 +8,7 @@ using TMPro;
 
 public class GameManager : MonoBehaviour
 {
-    public enum GameState { Title, Game, Score, Ranking, SkinChange, Help, Setting }
+    public enum GameState { Title, Game, Score, Ranking, SkinChange, Help, Setting, Profile }
     public GameState state;
 
     public PlayerManager playerManager;
@@ -264,6 +264,7 @@ public class GameManager : MonoBehaviour
     public void ToSkinChange() => ChangeGameState(GameState.SkinChange);
     public void ToHelp() => ChangeGameState(GameState.Help);
     public void ToSetting() => ChangeGameState(GameState.Setting);
+    public void ToProfile() => ChangeGameState(GameState.Profile);
 
     void ChangeGameState(GameState _gameState)
     {
