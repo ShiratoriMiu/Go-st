@@ -37,14 +37,14 @@ public class SettingManager : MonoBehaviour
         {
             foreach(var player in players)
             {
-                player.SetSkillCooldownTime(0);
+                //player.SetSkillCooldownTime(0);
             }
         }
         else
         {
             foreach (var player in players)
             {
-                player.ResetSetSkillCooldownTime();
+                //player.ResetSetSkillCooldownTime();
             }
         }
     }

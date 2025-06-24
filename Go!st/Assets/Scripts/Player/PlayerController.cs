@@ -17,8 +17,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float attackSpeed;//攻撃の速度力
     [SerializeField] float attackDis = 10f;    //オートエイム範囲。お好みで。
     [SerializeField] float attackCooldownTime = 1f; // 通常攻撃のクールタイム（秒)
-    [SerializeField] float maxSkillCooldownTime = 7f; // 必殺技のクールタイム（秒）
     [SerializeField] float skillAddSpeed = 1.5f;//必殺技中にスピードを上げる量
+    [SerializeField] float maxSkillTime = 7f; // 必殺技の最大継続時間
+    [SerializeField,Header("ゲージの高さ")] private float maxSkillChargeImageHeight = 400f;
 
     [SerializeField] int maxHP = 10;
 
@@ -42,7 +43,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] PlayerSkillAnim playerSkillAnim;
     [SerializeField] private ParticleSystem levelUpEffect;
     [SerializeField] private Button skillButton;
-    [SerializeField] private Image skillChargeImage;
+    [SerializeField] private RectTransform skillChargeImage;
 
     public Renderer renderer { get; private set; }
     public bool canSkill { get; private set; }
@@ -74,7 +75,6 @@ public class PlayerController : MonoBehaviour
     private float degreeAttack = 0.0f;
     private float radAttack = 0.0f;
     private float nearestEnemyDis;
-    private float skillCooldownTime = 7f; // 必殺技のクールタイム（秒）
 
     public int hp { get; private set; }
     private int bulletNum = 1;
@@ -82,9 +82,6 @@ public class PlayerController : MonoBehaviour
     //スキル発動中は敵と当たらなくする
     private int playerLayer;
     private int enemyLayer;
-
-    //デバッグ用
-    private float initSkillCooldownTime;
 
     // Start is called before the first frame update
     void Awake()
@@ -101,9 +98,7 @@ public class PlayerController : MonoBehaviour
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         playerLayer = LayerMask.NameToLayer("Player");
         enemyLayer = LayerMask.NameToLayer("Enemy");
-        initSkillCooldownTime = skillCooldownTime;
         renderer = rendererInit;
-        skillCooldownTime = maxSkillCooldownTime;
 
         skillButton.onClick.AddListener(() => OnClickSkillButton());
     }
@@ -173,27 +168,35 @@ public class PlayerController : MonoBehaviour
         // Skill発動可能時にエフェクト表示
         if (!isSkill)
         {
-            if (skillCooldownTime >= maxSkillCooldownTime)
+            if (skill.coolTime >= 1)
             {
                 skillChargeEffect.SetActive(true);
                 canSkill = true;
             }
             else
             {
-                skillCooldownTime += Time.deltaTime;
-                skillChargeImage.fillAmount = skillCooldownTime / maxSkillCooldownTime;
+                skill.AddSkillCoolTime();
             }
         }
         else
         {
-            skillCooldownTime -= Time.deltaTime;
-            skillChargeImage.fillAmount = skillCooldownTime / maxSkillCooldownTime;
+            if (skill.coolTime <= 0)
+            {
+                StopSkill();
+            }
         }
+        UpdateSkillChargeImagePosition();
 
         if (!levelUpEffect.IsAlive())
         {
             levelUpEffect.Stop();
         }
+    }
+
+    private void UpdateSkillChargeImagePosition()
+    {
+        float y = skill.coolTime * maxSkillChargeImageHeight;
+        skillChargeImage.anchoredPosition = new Vector2(skillChargeImage.anchoredPosition.x, y);
     }
 
     private void OnEnable()
@@ -401,7 +404,7 @@ public class PlayerController : MonoBehaviour
         moveSpeed *= skillAddSpeed;
         // 衝突無効化
         Physics.IgnoreLayerCollision(playerLayer, enemyLayer, true);
-        Invoke("StopSkill", maxSkillCooldownTime);
+        Invoke("StopSkill", maxSkillTime);
     }
 
     void StartLine()
@@ -433,7 +436,7 @@ public class PlayerController : MonoBehaviour
 
     void OnClickSkillButton()
     {
-        if (!isSkill && skillCooldownTime >= maxSkillCooldownTime)
+        if (!isSkill && skill.coolTime >= 1)
         {
             // カメラの四隅から地面への交点を取得
             CalculateCorners();
@@ -591,8 +594,8 @@ public class PlayerController : MonoBehaviour
         hp = maxHP;
         playerHpImage.UpdateHp(hp);
         canSkillLine = false;
-        skillCooldownTime = maxSkillCooldownTime;
-        skillChargeImage.fillAmount = skillCooldownTime / maxSkillCooldownTime;
+        skill.ResetSkillCoolTime();
+        UpdateSkillChargeImagePosition();
     }
 
     public void Damage(int _num)
@@ -626,11 +629,13 @@ public class PlayerController : MonoBehaviour
         }
         else if(buff.buffType == BuffType.SkillCoolTime)
         {
+            /*
             if (skillCooldownTime < maxSkillCooldownTime)
             {
                 skillCooldownTime = Mathf.Min(skillCooldownTime + buff.skillCoolTimeAdd, maxSkillCooldownTime);
                 skillChargeImage.fillAmount = skillCooldownTime / maxSkillCooldownTime;
             }
+            */
         }
     }
 
@@ -669,16 +674,5 @@ public class PlayerController : MonoBehaviour
     public void SetAutoAim(bool _onAutoAim)
     {
         onAutoAim = _onAutoAim;
-    }
-
-    //デバッグ用
-    public void SetSkillCooldownTime(float _skillCooldownTime)
-    {
-        skillCooldownTime = _skillCooldownTime;
-    }
-
-    public void ResetSetSkillCooldownTime()
-    {
-        skillCooldownTime = initSkillCooldownTime;
     }
 }

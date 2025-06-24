@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class PlayerSkill : MonoBehaviour
 {
@@ -8,13 +9,16 @@ public class PlayerSkill : MonoBehaviour
     private List<Vector3> points = new List<Vector3>(); // 線の頂点を記録するリスト
     private List<GameObject> detectedEnemies = new List<GameObject>(); // 検知したEnemyを格納するリスト
 
-    [SerializeField]
-    int attack = 0;
+    [SerializeField] int attack = 0;
+    [SerializeField] float maxLineLength = 0;
+    [SerializeField] float maxSkillCoolTime = 7f; // 必殺技のクールタイム（秒）
 
     [SerializeField]
     ParticleSystem skillEffect;
 
     Text skillEnemyNumText;
+
+    public float coolTime { get; private set; }
 
     void Start()
     {
@@ -64,7 +68,7 @@ public class PlayerSkill : MonoBehaviour
     private void AddPoint(Vector2 screenPosition)
     {
         Ray ray = Camera.main.ScreenPointToRay(screenPosition);
-        Plane groundPlane = new Plane(Vector3.up, new Vector3(0, 0.5f, 0)); // Y = 0.5 固定の平面
+        Plane groundPlane = new Plane(Vector3.up, new Vector3(0, this.transform.position.y + 0.5f, 0)); //y = プレイヤーの足元の位置 + プレイヤーの中心までの距離
 
         if (groundPlane.Raycast(ray, out float enter))
         {
@@ -74,6 +78,8 @@ public class PlayerSkill : MonoBehaviour
             {
                 points.Add(worldPosition);
                 UpdateLineRenderer();
+
+                UpdateCoolTime();//クールタイムのUI更新
             }
         }
     }
@@ -186,5 +192,33 @@ public class PlayerSkill : MonoBehaviour
         return center;
     }
 
+    //引いた線の長さを取得
+    private float GetLineLength()
+    {
+        float length = 0f;
 
+        for (int i = 1; i < points.Count; i++)
+        {
+            length += Vector3.Distance(points[i - 1], points[i]);
+        }
+
+        return length;
+    }
+
+    //スキル中に線の長さに合わせてクールタイムを減少
+    private void UpdateCoolTime()
+    {
+        float length = GetLineLength();
+        coolTime = 1 - Mathf.Clamp01(length / maxLineLength);
+    }
+
+    public void AddSkillCoolTime()
+    {
+        coolTime+= Mathf.Clamp01(Time.deltaTime / maxSkillCoolTime);
+    }
+
+    public void ResetSkillCoolTime()
+    {
+        coolTime = 1;
+    }
 }

@@ -138,13 +138,13 @@ public class GameManager : MonoBehaviour
 
     private void UpdateTimeUI(float time)
     {
-        // 時間を分と秒に変換
-        int minutes = Mathf.FloorToInt(time / 60);
-        int seconds = Mathf.CeilToInt(time % 60);
+        int totalSeconds = Mathf.CeilToInt(time); // 秒数を整数に切り上げ
+        int minutes = totalSeconds / 60;
+        int seconds = totalSeconds % 60;
 
-        // フォーマットして表示（2桁表示）
         remainingTimeText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
     }
+
 
 
     public void AddEnemiesDefeatedNum(int _value)
