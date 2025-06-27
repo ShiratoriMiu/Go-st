@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class LevelManager : MonoBehaviour
 {
     [SerializeField] private Text levelText;
-    [SerializeField] private PlayerSelect playerSelect;
+    [SerializeField] private PlayerManager playerManager;
     [SerializeField] private EnemyManager enemyManager;
 
     public Dictionary<int, LevelData> levelDataDict = new Dictionary<int, LevelData>();
@@ -87,7 +87,7 @@ public class LevelManager : MonoBehaviour
         }
         print("levelup");
         // ÉvÉåÉCÉÑÅ[ê›íË
-        PlayerController playerController = playerSelect.selectPlayer.GetComponent<PlayerController>();
+        PlayerController playerController = playerManager.Player.GetComponent<PlayerController>();
         playerController.SetBulletNum(data.BulletCount);
         playerController.SetAttackSpeed(data.BulletSpeed);
         playerController.SetAttackCooldownTime(data.AttackInterval);

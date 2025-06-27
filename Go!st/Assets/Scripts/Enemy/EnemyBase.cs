@@ -10,6 +10,7 @@ public abstract class EnemyBase : MonoBehaviour
     protected PlayerController playerController;
     protected LevelManager levelManager;
     protected GameManager gameManager;
+    protected PlayerManager playerManager;
     protected Vector3 lastVelocity;
     protected float hp;
     protected bool canMove = true;
@@ -35,10 +36,12 @@ public abstract class EnemyBase : MonoBehaviour
         hp = maxHp;
     }
 
-    public virtual void Initialize(GameManager _gameManager, LevelManager _levelManager)
+    public virtual void Initialize(GameManager _gameManager, LevelManager _levelManager, GameObject _player, PlayerController _playerController)
     {
         gameManager = _gameManager;
         levelManager = _levelManager;
+        player = _player;
+        playerController = _playerController;
     }
 
     protected virtual void Stan()

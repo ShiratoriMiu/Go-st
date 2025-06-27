@@ -48,7 +48,6 @@ public class PlayerController : MonoBehaviour
     public Renderer renderer { get; private set; }
     public bool canSkill { get; private set; }
 
-    PlayerInputAction action;
     Rigidbody rb;
     PlayerSkill skill;
     Camera mainCamera; // 使用するカメラ
@@ -88,11 +87,6 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         skill = GetComponent<PlayerSkill>();
-        action = new PlayerInputAction();
-        // ActionMaps[Player]の中のActionに紐づくイベントリスナーを登録
-        action.Player.Touch.performed += OnTouchMoved;
-        action.Player.TouchClick.started += OnTouchStarted;
-        action.Player.TouchClick.canceled += OnTouchEnded;
         hp = maxHP;
         mainCamera = Camera.main;
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
@@ -101,6 +95,14 @@ public class PlayerController : MonoBehaviour
         renderer = rendererInit;
 
         skillButton.onClick.AddListener(() => OnClickSkillButton());
+    }
+
+    private void Start()
+    {
+        // イベント登録
+        InputManager.Instance.OnTouchStart += OnTouchStart;
+        InputManager.Instance.OnTouchMove += OnTouchMove;
+        InputManager.Instance.OnTouchEnd += OnTouchEnd;
     }
 
     private void Update()
@@ -202,70 +204,63 @@ public class PlayerController : MonoBehaviour
     private void OnEnable()
     {
         // Inputアクションを有効化
-        action.Enable();
+        InputManager.Instance.OnTouchStart += OnTouchStart;
+        InputManager.Instance.OnTouchMove += OnTouchMove;
+        InputManager.Instance.OnTouchEnd += OnTouchEnd;
     }
 
     private void OnDisable()
     {
         // Inputアクションを無効化
-        action.Disable();
+        OnDestroy();
+    }
+
+    private void OnDestroy()
+    {
+        // イベント解除
+        if (InputManager.Instance != null)
+        {
+            InputManager.Instance.OnTouchStart -= OnTouchStart;
+            InputManager.Instance.OnTouchMove -= OnTouchMove;
+            InputManager.Instance.OnTouchEnd -= OnTouchEnd;
+        }
     }
 
     // タッチまたはマウスの開始位置
-    public void OnTouchStarted(InputAction.CallbackContext context)
+    private void OnTouchStart(Vector2 position)
     {
-        if(gameManager.state != GameManager.GameState.Game || !canControl) return;
-        if (context.started)
+        if (gameManager.state != GameManager.GameState.Game || !canControl) return;
+
+        startPosition = position;
+        currentPosition = startPosition;
+        isInteracting = true;
+
+        if (!isSkill)
         {
-            //最初にタッチまたはクリックした場所を保存
-            // タッチデバイスがアクティブならタッチ座標を取得
-            if (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.isPressed)
-            {
-                startPosition = Touchscreen.current.primaryTouch.position.ReadValue();
-            }
-            else if (Mouse.current != null)
-            {
-                // それ以外はマウス座標を取得
-                startPosition = Mouse.current.position.ReadValue();
-            }
-            isInteracting = true;
-            if (isInteracting)
-            {
-                //スタートポジション以外も設定することで前回の位置をリセット
-                currentPosition = startPosition;
-                if (!isSkill)
-                {
-                    stickPrefab.SetActive(true);
-                    stickPrefab.transform.position = startPosition;
-                    stickPrefab.transform.GetChild(0).gameObject.transform.position = startPosition;
-                }
-            }
+            stickPrefab.SetActive(true);
+            stickPrefab.transform.position = startPosition;
+            stickPrefab.transform.GetChild(0).position = startPosition;
         }
     }
 
     // タッチまたはマウスの現在位置
-    public void OnTouchMoved(InputAction.CallbackContext context)
+    private void OnTouchMove(Vector2 position)
     {
-        if (gameManager.state != GameManager.GameState.Game || !canControl) return;
-        if (context.performed && isInteracting)
-        {
-            currentPosition = context.ReadValue<Vector2>();
-            moveDirection = (currentPosition - startPosition).normalized;
-        }
+        if (gameManager.state != GameManager.GameState.Game || !canControl || !isInteracting) return;
+
+        currentPosition = position;
+        moveDirection = (currentPosition - startPosition).normalized;
     }
 
     // タッチまたはマウス操作の終了
-    public void OnTouchEnded(InputAction.CallbackContext context)
+    private void OnTouchEnd()
     {
-        if (gameManager.state != GameManager.GameState.Game || !canControl) return;
-        if (context.canceled && isInteracting)
-        {
-            if(isSkill)StopSkill();
+        if (gameManager.state != GameManager.GameState.Game || !canControl || !isInteracting) return;
 
-            isInteracting = false;
-            moveDirection = Vector2.zero;
-            stickPrefab.SetActive(false);
-        }
+        if (isSkill) StopSkill();
+        isInteracting = false;
+        moveDirection = Vector2.zero;
+        stickPrefab.SetActive(false);
     }
 
     //移動update
@@ -589,6 +584,7 @@ public class PlayerController : MonoBehaviour
         isInteracting = false;
         moveDirection = Vector2.zero;
         currentPosition = Vector2.zero;
+        transform.position = Vector2.zero;
         stickPrefab.SetActive(false);
         StopSkill();
         hp = maxHP;
@@ -604,7 +600,6 @@ public class PlayerController : MonoBehaviour
         playerHpImage.UpdateHp(hp);
         if (hp <= 0)
         {
-            action.Disable();
             gameManager.EndGame();
         }
     }

@@ -17,7 +17,7 @@ public class SkillChargeEffect : MonoBehaviour
     private Vector3 startScale = Vector3.zero;
     private Vector3 endScale;
 
-    [SerializeField] GameManager gameManager;
+    [SerializeField] PlayerManager playerManager;
 
     private GameObject oldPlayer;//保存用プレイヤー(プレイヤーが前回と異なっているかの判定用)
     private PlayerController playerController;
@@ -36,8 +36,8 @@ public class SkillChargeEffect : MonoBehaviour
         // 初期はstartScale（0）にしておく
         rectTransform.localScale = startScale;
 
-        oldPlayer = gameManager.selectPlayer;
-        playerController = gameManager.selectPlayer.GetComponent<PlayerController>();
+        oldPlayer = playerManager.Player;
+        playerController = playerManager.Player.GetComponent<PlayerController>();
     }
 
     private void OnDisplay()
@@ -68,9 +68,9 @@ public class SkillChargeEffect : MonoBehaviour
             transform.Rotate(0f, 0f, rotationSpeed * Time.deltaTime);
         }
 
-        if(gameManager.selectPlayer != oldPlayer)
+        if(playerManager.Player != oldPlayer)
         {
-            playerController = gameManager.selectPlayer.GetComponent<PlayerController>();
+            playerController = playerManager.Player.GetComponent<PlayerController>();
         }
 
         if(image.enabled == true && !playerController.canSkill)
@@ -82,6 +82,6 @@ public class SkillChargeEffect : MonoBehaviour
             OnDisplay();
         }
 
-        oldPlayer = gameManager.selectPlayer;
+        oldPlayer = playerManager.Player;
     }
 }

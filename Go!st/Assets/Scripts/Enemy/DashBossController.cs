@@ -30,12 +30,6 @@ public class DashBossController : EnemyBase
         if (!isActive || isDead) return;
         if (gameManager.state != GameManager.GameState.Game) return;
 
-        if (player != gameManager.selectPlayer && gameManager.selectPlayer != null)
-        {
-            player = gameManager.selectPlayer;
-            playerController = player.GetComponent<PlayerController>();
-        }
-
         if (player != null && playerController != null)
         {
             Stan();

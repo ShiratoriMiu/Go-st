@@ -45,8 +45,6 @@ public class GameManager : MonoBehaviour
 
     CenterToGrayEffect centerToGrayEffect;
 
-    public GameObject selectPlayer { get; private set; }
-
     private int finalScore;
     private int rankingDisplayNum = 100;//ƒ‰ƒ“ƒLƒ“ƒO‚Ì‰½ˆÊ‚Ü‚Å•\¦‚·‚é‚©
 
@@ -113,7 +111,7 @@ public class GameManager : MonoBehaviour
         ResetGame(); // ‰‰ñ‚àŠÜ‚ß‚Ä–ˆ‰ñ‰Šú‰»
     }
 
-    public void StartGame()
+    void StartGame()
     {
         state = GameState.Game;
         SwitchUIPanel(GameState.Game);
@@ -154,7 +152,7 @@ public class GameManager : MonoBehaviour
 
     public int CalculateScore()
     {
-        PlayerController playerController = selectPlayer.GetComponent<PlayerController>();
+        PlayerController playerController = playerManager.Player.GetComponent<PlayerController>();
 
         int getHP = playerController.hp;
         if (getHP < 0) getHP = 0;
@@ -196,11 +194,11 @@ public class GameManager : MonoBehaviour
     {
         Quaternion targetRotation = Quaternion.identity;
 
-        if (selectPlayer == null) yield break;
-        while (Quaternion.Angle(selectPlayer.transform.rotation, targetRotation) > 0.1f)
+        if (playerManager.Player == null) yield break;
+        while (Quaternion.Angle(playerManager.Player.transform.rotation, targetRotation) > 0.1f)
         {
-            selectPlayer.transform.rotation = Quaternion.Lerp(
-                selectPlayer.transform.rotation,
+            playerManager.Player.transform.rotation = Quaternion.Lerp(
+                playerManager.Player.transform.rotation,
                 targetRotation,
                 Time.deltaTime * resetSelectPlayerRotateLerpSpeed
             );
@@ -208,7 +206,7 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
 
-        selectPlayer.transform.rotation = targetRotation;
+        playerManager.Player.transform.rotation = targetRotation;
     }
 
     private void ResetGame()
@@ -220,11 +218,6 @@ public class GameManager : MonoBehaviour
         enemyManager.ResetEnemies();
         levelManager.ResetLevel();
         playerManager.ResetPlayer();
-    }
-
-    public void SetPlayer(GameObject _selectedPlayer)
-    {
-        selectPlayer = _selectedPlayer;
     }
 
     public void Restart()
@@ -250,7 +243,15 @@ public class GameManager : MonoBehaviour
         ResetGame();
         StartCoroutine(ResetSelectPlayerRotate());
     }
-    public void ToGame() => ChangeGameState(GameState.Game);
+    public void ToGame(bool _isReset) 
+    {
+        if (_isReset)
+        {
+            playerManager.PlayerGameStart();
+            StartGame();
+        }
+        ChangeGameState(GameState.Game);
+    }
     public void ToScore() 
     {
         ChangeGameState(GameState.Score);

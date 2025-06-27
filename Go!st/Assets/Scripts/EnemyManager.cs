@@ -19,7 +19,7 @@ public class EnemyManager : MonoBehaviour
     [SerializeField] private float spawnMinDistance = 5f;
     [SerializeField] private float spawnMaxDistance = 10f;
 
-    [SerializeField] private PlayerSelect playerSelect;
+    [SerializeField] private PlayerManager playerManager;
 
     [SerializeField] private GameManager gameManager;
     [SerializeField] private LevelManager levelManager;
@@ -43,11 +43,6 @@ public class EnemyManager : MonoBehaviour
     private int nextBossThreshold = 10;
     private GameObject currentBossInstance = null;
     private bool isBossActive = false;
-
-    void Start()
-    {
-        InitializePools();
-    }
 
     void Update()
     {
@@ -82,7 +77,7 @@ public class EnemyManager : MonoBehaviour
             {
                 GameObject enemy = Instantiate(config.prefab, this.transform);
                 var controller = enemy.GetComponent<EnemyController>();
-                controller.Initialize(gameManager, levelManager);
+                controller.Initialize(gameManager, levelManager, player, playerController);
                 controller.Hidden();
                 enemyPools[config.prefab].Add(enemy);
             }
@@ -101,7 +96,7 @@ public class EnemyManager : MonoBehaviour
             {
                 GameObject boss = Instantiate(bossPrefab, this.transform);
                 var controller = boss.GetComponent<EnemyBase>();
-                controller.Initialize(gameManager, levelManager);
+                controller.Initialize(gameManager, levelManager, player, playerController);
                 controller.Hidden();
 
                 controller.OnDeath -= OnBossDefeated;
@@ -180,8 +175,10 @@ public class EnemyManager : MonoBehaviour
     {
         isSpawningEnabled = true;
         timer = 0f;
-        player = playerSelect.selectPlayer;
+        player = playerManager.Player;
         playerController = player.GetComponent<PlayerController>();
+
+        InitializePools();
     }
 
     public void StopSpawning()
