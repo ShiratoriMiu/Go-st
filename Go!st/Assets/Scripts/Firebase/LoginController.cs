@@ -53,6 +53,8 @@ public class LoginController : MonoBehaviour
         {
             Debug.LogError("Start中にエラー発生: " + e.Message);
         }
+
+        await EnsureRankingEntry();
     }
 
     // ? async対応版 SetUserName
@@ -76,6 +78,34 @@ public class LoginController : MonoBehaviour
         catch (Exception e)
         {
             Debug.LogError("ユーザー名設定失敗: " + e.Message);
+        }
+    }
+
+    public string GetUserName()
+    {
+        if (User == null)
+        {
+            Debug.LogWarning("ユーザーがログインしていません");
+            return "NoName";
+        }
+
+        string name = User.DisplayName ?? "NoName";
+        Debug.Log($"現在のユーザー名: {name}");
+        return name;
+    }
+
+    private async Task EnsureRankingEntry()
+    {
+        if (User == null || DbReference == null) return;
+
+        var snapshot = await DbReference.Child("rankings").Child(User.UserId).GetValueAsync();
+        if (!snapshot.Exists)
+        {
+            string name = User.DisplayName ?? "NoName";
+            var data = new RankingData(name, 0);
+            string json = JsonUtility.ToJson(data);
+            await DbReference.Child("rankings").Child(User.UserId).SetRawJsonValueAsync(json);
+            Debug.Log("ランキングエントリを初期化しました。");
         }
     }
 }

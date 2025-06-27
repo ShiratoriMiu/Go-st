@@ -8,7 +8,7 @@ using TMPro;
 
 public class GameManager : MonoBehaviour
 {
-    public enum GameState { Title, Game, Score, Ranking, SkinChange, Help, Setting, Profile }
+    public enum GameState { Title, Game, Score, Ranking, SkinChange, Help, Setting, GameSetting, Profile }
     public GameState state;
 
     public PlayerManager playerManager;
@@ -46,7 +46,7 @@ public class GameManager : MonoBehaviour
     CenterToGrayEffect centerToGrayEffect;
 
     private int finalScore;
-    private int rankingDisplayNum = 100;//ランキングの何位まで表示するか
+    [SerializeField,Header("表示するランキング数")] private int rankingDisplayNum = 100;//ランキングの何位まで表示するか
 
     //デバッグ用
     private float initmaxTimeLimit;
@@ -165,7 +165,6 @@ public class GameManager : MonoBehaviour
     private async void ShowScore()
     {
         int score = CalculateScore();
-        //await scoreManager.WriteScoreDataAsync(score);
         await firebaseController.SaveMyScoreAsync(score);
         scoreText.text = $"Score : {score}";
     }
@@ -174,9 +173,8 @@ public class GameManager : MonoBehaviour
     private async void ShowRanking()
     {
         var topRanks = await firebaseController.GetTopRankingsAsync();
-        //else topRanks = await firebaseController.GetMyRankingAsync();
         for (int i = 0; i < topRanks.Count; ++i) {
-            rankingTextList[i].text = $"{topRanks[i].name}: {topRanks[i].score}";
+            rankingTextList[i].text = $"{topRanks[i].rank}位: {topRanks[i].name}: {topRanks[i].score}";
         }
     }
 
@@ -265,6 +263,7 @@ public class GameManager : MonoBehaviour
     public void ToSkinChange() => ChangeGameState(GameState.SkinChange);
     public void ToHelp() => ChangeGameState(GameState.Help);
     public void ToSetting() => ChangeGameState(GameState.Setting);
+    public void ToGameSetting() => ChangeGameState(GameState.GameSetting);
     public void ToProfile() => ChangeGameState(GameState.Profile);
 
     void ChangeGameState(GameState _gameState)
