@@ -18902,8 +18902,6 @@ MonoBehaviour:
   maxTimeLimit: 90
   scoreText: {fileID: 1008488438}
   remainingTimeText: {fileID: 1397179318}
-  rankingTextBase: {fileID: 32715301}
-  rankingTextPrefab: {fileID: 856124388551408697, guid: a7a414584ce472341b47020076e0d014, type: 3}
   uiPanelEntries:
   - state: 0
     panel: {fileID: 2033015495}
@@ -18925,7 +18923,7 @@ MonoBehaviour:
     panel: {fileID: 1009966774}
   resetSelectPlayerRotateLerpSpeed: 5
   firebaseController: {fileID: 1905739031}
-  rankingDisplayNum: 100
+  rankingManager: {fileID: 1708701841}
 --- !u!4 &1657942954
 Transform:
   m_ObjectHideFlags: 0
@@ -19278,6 +19276,54 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1703864987}
   m_CullTransparentMesh: 1
+--- !u!1 &1708701840
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1708701842}
+  - component: {fileID: 1708701841}
+  m_Layer: 0
+  m_Name: RankingManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1708701841
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1708701840}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2951ef3c577d91142892f530fafc672a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  firebaseController: {fileID: 1905739031}
+  rankingTextBase: {fileID: 32715301}
+  rankingTextPrefab: {fileID: 856124388551408697, guid: a7a414584ce472341b47020076e0d014, type: 3}
+  rankingDisplayNum: 100
+--- !u!4 &1708701842
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1708701840}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.0239999, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1717943651
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -25289,3 +25335,4 @@ SceneRoots:
   - {fileID: 844758459}
   - {fileID: 521312257}
   - {fileID: 1217730897}
+  - {fileID: 1708701842}

@@ -201,14 +201,6 @@ public class PlayerController : MonoBehaviour
         skillChargeImage.anchoredPosition = new Vector2(skillChargeImage.anchoredPosition.x, y);
     }
 
-    private void OnEnable()
-    {
-        // Inputアクションを有効化
-        InputManager.Instance.OnTouchStart += OnTouchStart;
-        InputManager.Instance.OnTouchMove += OnTouchMove;
-        InputManager.Instance.OnTouchEnd += OnTouchEnd;
-    }
-
     private void OnDisable()
     {
         // Inputアクションを無効化

@@ -25,9 +25,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Text scoreText;           // スコア表示用
     [SerializeField] private Text remainingTimeText;   // 残り時間表示用
 
-    [SerializeField] private GameObject rankingTextBase;//世界ランキングのテキストを生成する親オブジェクト
-    [SerializeField] private GameObject rankingTextPrefab;
-
     [System.Serializable]
     public class UIPanelEntry
     {
@@ -37,17 +34,18 @@ public class GameManager : MonoBehaviour
     [SerializeField] private List<UIPanelEntry> uiPanelEntries;
     private Dictionary<GameState, GameObject> uiPanels;
 
-    private List<Text> rankingTextList = new List<Text>();
+
 
     [SerializeField] private float resetSelectPlayerRotateLerpSpeed = 1;
 
     [SerializeField] private FirebaseController firebaseController;
 
+    [SerializeField] private RankingManager rankingManager;
+
     CenterToGrayEffect centerToGrayEffect;
 
     private int finalScore;
-    [SerializeField,Header("表示するランキング数")] private int rankingDisplayNum = 100;//ランキングの何位まで表示するか
-
+    
     //デバッグ用
     private float initmaxTimeLimit;
 
@@ -68,12 +66,6 @@ public class GameManager : MonoBehaviour
                 Debug.LogWarning($"Duplicate GameState key found: {entry.state}");
             }
         }
-
-        //ランキング用テキストの生成
-        for(int i = 0; i < rankingDisplayNum; ++i)
-        {
-            rankingTextList.Add(Instantiate(rankingTextPrefab,rankingTextBase.transform).GetComponentInChildren<Text>());
-        }
     }
 
 
@@ -87,6 +79,7 @@ public class GameManager : MonoBehaviour
         SwitchUIPanel(GameState.Title);
         centerToGrayEffect = Camera.main.GetComponent<CenterToGrayEffect>();
         initmaxTimeLimit = maxTimeLimit;
+        playerManager.ToSkinChangeSelectedPlayer();
     }
 
     private void Update()
@@ -169,15 +162,6 @@ public class GameManager : MonoBehaviour
         scoreText.text = $"Score : {score}";
     }
 
-
-    private async void ShowRanking()
-    {
-        var topRanks = await firebaseController.GetTopRankingsAsync();
-        for (int i = 0; i < topRanks.Count; ++i) {
-            rankingTextList[i].text = $"{topRanks[i].rank}位: {topRanks[i].name}: {topRanks[i].score}";
-        }
-    }
-
     public void EndGame()
     {
         if (state != GameState.Game) return;
@@ -257,7 +241,7 @@ public class GameManager : MonoBehaviour
     }
     public void ToRanking()
     {
-        ShowRanking();
+        rankingManager.OnRankingButtonClicked();
         ChangeGameState(GameState.Ranking);
     }
     public void ToSkinChange() => ChangeGameState(GameState.SkinChange);

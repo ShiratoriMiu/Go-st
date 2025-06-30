@@ -1,7 +1,6 @@
 using Firebase;
 using Firebase.Auth;
 using Firebase.Database;
-using Firebase.Extensions;
 using UnityEngine;
 using System;
 using System.Threading.Tasks;
@@ -14,21 +13,39 @@ public class LoginController : MonoBehaviour
     public DatabaseReference DbReference { get; private set; }
     public bool IsFirebaseReady { get; private set; } = false;
 
-    void Awake()
+    private TaskCompletionSource<bool> firebaseReadyTcs = new TaskCompletionSource<bool>();
+    public Task WaitForFirebaseReadyAsync() => firebaseReadyTcs.Task;
+
+    private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
-    // ? async対応版 Start()
-    async void Start()
+    private async void Start()
+    {
+        await InitializeFirebaseAsync();
+    }
+
+    /// <summary>
+    /// Firebaseの初期化・匿名ログイン・ユーザー名設定まで行い準備完了を通知
+    /// </summary>
+    private async Task InitializeFirebaseAsync()
     {
         try
         {
-            var result = await FirebaseApp.CheckAndFixDependenciesAsync();
-            if (result != DependencyStatus.Available)
+            var dependencyStatus = await FirebaseApp.CheckAndFixDependenciesAsync();
+            if (dependencyStatus != DependencyStatus.Available)
             {
-                Debug.LogError($"Firebase 初期化失敗: {result}");
+                Debug.LogError($"Firebase初期化失敗: {dependencyStatus}");
+                firebaseReadyTcs.TrySetException(new Exception($"Firebase initialization failed: {dependencyStatus}"));
                 return;
             }
 
@@ -38,6 +55,7 @@ public class LoginController : MonoBehaviour
             if (loginResult == null || auth.CurrentUser == null)
             {
                 Debug.LogError("匿名ログイン失敗（ユーザー情報がnull）");
+                firebaseReadyTcs.TrySetException(new Exception("Anonymous login failed"));
                 return;
             }
 
@@ -45,22 +63,33 @@ public class LoginController : MonoBehaviour
             DbReference = FirebaseDatabase.DefaultInstance.RootReference;
             IsFirebaseReady = true;
 
-            Debug.Log("匿名ログイン成功: " + User.UserId);
+            Debug.Log($"匿名ログイン成功: {User.UserId}");
 
-            await SetUserName("Player"); // ? 非同期で名前設定
+            // 名前が未設定の場合のみデフォルト名を設定する（必要に応じて任意名に置き換え可能）
+            if (string.IsNullOrEmpty(User.DisplayName))
+            {
+                await SetUserName("Player");
+            }
+
+            firebaseReadyTcs.TrySetResult(true);
         }
         catch (Exception e)
         {
-            Debug.LogError("Start中にエラー発生: " + e.Message);
+            Debug.LogError($"Firebase初期化中にエラー発生: {e}");
+            firebaseReadyTcs.TrySetException(e);
         }
-
-        await EnsureRankingEntry();
     }
 
-    // ? async対応版 SetUserName
+    /// <summary>
+    /// Firebaseユーザーの表示名を設定する
+    /// </summary>
     public async Task SetUserName(string newName)
     {
-        if (User == null || DbReference == null) return;
+        if (User == null || DbReference == null)
+        {
+            Debug.LogWarning("ユーザー情報がnullのため名前設定不可");
+            return;
+        }
 
         try
         {
@@ -77,10 +106,13 @@ public class LoginController : MonoBehaviour
         }
         catch (Exception e)
         {
-            Debug.LogError("ユーザー名設定失敗: " + e.Message);
+            Debug.LogError($"ユーザー名設定失敗: {e}");
         }
     }
 
+    /// <summary>
+    /// 現在のユーザー名を取得（未ログイン時は "NoName" を返す）
+    /// </summary>
     public string GetUserName()
     {
         if (User == null)
@@ -89,23 +121,6 @@ public class LoginController : MonoBehaviour
             return "NoName";
         }
 
-        string name = User.DisplayName ?? "NoName";
-        Debug.Log($"現在のユーザー名: {name}");
-        return name;
-    }
-
-    private async Task EnsureRankingEntry()
-    {
-        if (User == null || DbReference == null) return;
-
-        var snapshot = await DbReference.Child("rankings").Child(User.UserId).GetValueAsync();
-        if (!snapshot.Exists)
-        {
-            string name = User.DisplayName ?? "NoName";
-            var data = new RankingData(name, 0);
-            string json = JsonUtility.ToJson(data);
-            await DbReference.Child("rankings").Child(User.UserId).SetRawJsonValueAsync(json);
-            Debug.Log("ランキングエントリを初期化しました。");
-        }
+        return User.DisplayName ?? "NoName";
     }
 }
