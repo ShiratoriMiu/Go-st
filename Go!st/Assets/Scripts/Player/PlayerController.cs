@@ -138,7 +138,7 @@ public class PlayerController : MonoBehaviour
         if (isInteracting)
         {
             //移動
-            if(!isSkill)Move();
+            if(!isSkill && !skill.isOneHand || skill.isOneHand) Move();
             //慣性
             Inertia();
             //スティック
@@ -227,11 +227,20 @@ public class PlayerController : MonoBehaviour
         currentPosition = startPosition;
         isInteracting = true;
 
-        if (!isSkill)
+        if (skill.isOneHand)
         {
             stickPrefab.SetActive(true);
             stickPrefab.transform.position = startPosition;
             stickPrefab.transform.GetChild(0).position = startPosition;
+        }
+        else
+        {
+            if (!isSkill)
+            {
+                stickPrefab.SetActive(true);
+                stickPrefab.transform.position = startPosition;
+                stickPrefab.transform.GetChild(0).position = startPosition;
+            }
         }
     }
 

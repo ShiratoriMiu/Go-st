@@ -1,76 +1,48 @@
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Threading.Tasks;
 
 public class RankingManager : MonoBehaviour
 {
-    [Header("Firebase Controller")]
     [SerializeField] private FirebaseController firebaseController;
 
-    [Header("ランキング表示設定")]
-    [SerializeField] private GameObject rankingTextBase;
-    [SerializeField] private GameObject rankingTextPrefab;
-    [SerializeField] private int rankingDisplayNum = 100;
+    [Header("ランキングUI設定")]
+    [SerializeField] private Transform rankingContainer; // VerticalLayoutGroup / GridLayoutGroup 推奨
+    [SerializeField] private GameObject rankingTextBGPrefab;
+    [SerializeField] private int maxDisplayCount = 100;
 
-    private readonly List<Text> rankingTextList = new List<Text>();
+    private List<Text> rankingTextList = new List<Text>();
     private Task initializationTask;
-    private Task firebaseReadyTask;
 
     private async void Start()
     {
-        GenerateRankingTextUI();
-
         Debug.Log("[RankingManager] Firebase準備完了待機中...");
-        firebaseReadyTask = LoginController.Instance.WaitForFirebaseReadyAsync();
-        await firebaseReadyTask;
-        Debug.Log("[RankingManager] Firebase準備完了。ランキング初期化開始...");
+        await LoginController.Instance.WaitForFirebaseReadyAsync();
+        Debug.Log("[RankingManager] Firebase準備完了。ランキングエントリ初期化開始...");
 
-        initializationTask = InitializeRankingEntryAsync();
+        initializationTask = firebaseController.EnsureRankingEntryAsync();
         await initializationTask;
-        Debug.Log("[RankingManager] ランキング初期化完了。");
+
+        Debug.Log("[RankingManager] ランキングエントリ初期化完了。");
+
+        GenerateRankingTextUI();
     }
 
-
-    /// <summary>
-    /// 指定数分のランキング表示用Textオブジェクトを生成
-    /// </summary>
     private void GenerateRankingTextUI()
     {
-        for (int i = 0; i < rankingDisplayNum; ++i)
+        for (int i = 0; i < maxDisplayCount; i++)
         {
-            var text = Instantiate(rankingTextPrefab, rankingTextBase.transform)
-                .GetComponentInChildren<Text>();
-            rankingTextList.Add(text);
+            GameObject bg = Instantiate(rankingTextBGPrefab, rankingContainer);
+            Text rankingText = bg.GetComponentInChildren<Text>();
+            rankingText.text = $"{i + 1}位 --- : ---";
+            rankingTextList.Add(rankingText);
         }
     }
 
-    /// <summary>
-    /// 起動時ランキングエントリ初期化
-    /// </summary>
-    private async Task InitializeRankingEntryAsync()
-    {
-        if (firebaseController == null)
-        {
-            Debug.LogError("[RankingManager] FirebaseControllerがセットされていません");
-            return;
-        }
-
-        await firebaseController.EnsureRankingEntryAsync();
-    }
-
-    /// <summary>
-    /// ランキングボタンが押されたときに呼ばれる
-    /// </summary>
     public async void OnRankingButtonClicked()
     {
         Debug.Log("[RankingManager] ランキングボタン押下。初期化完了待機開始...");
-
-        if (firebaseReadyTask != null)
-        {
-            await firebaseReadyTask;
-            firebaseReadyTask = null;
-        }
 
         if (initializationTask != null)
         {
@@ -80,29 +52,58 @@ public class RankingManager : MonoBehaviour
 
         Debug.Log("[RankingManager] 初期化完了。ランキング取得開始...");
 
-        var topRanks = await firebaseController.GetTopRankingsAsync();
-        Debug.Log($"取得したランキング数: {topRanks.Count}");
-        DisplayRanking(topRanks);
+        const int MaxRetryCount = 3;
+        int retryCount = 0;
+        List<(int rank, string name, int score)> topRanks = null;
 
-        Debug.Log("[RankingManager] ランキング表示完了。");
-    }
-
-
-    /// <summary>
-    /// ランキング情報をUIに表示
-    /// </summary>
-    private void DisplayRanking(List<(int rank, string name, int score)> rankings)
-    {
-        int displayCount = Mathf.Min(rankings.Count, rankingDisplayNum);
-
-        for (int i = 0; i < displayCount; i++)
+        while (retryCount < MaxRetryCount)
         {
-            rankingTextList[i].text = $"{rankings[i].rank}位: {rankings[i].name}: {rankings[i].score}";
+            topRanks = await firebaseController.GetTopRankingsAsync(maxDisplayCount);
+
+            if (topRanks.Count > 0)
+            {
+                Debug.Log($"[RankingManager] ランキング取得成功（試行回数: {retryCount + 1}） 件数: {topRanks.Count}");
+                break;
+            }
+            else
+            {
+                Debug.LogWarning($"[RankingManager] ランキング取得結果が0件、再取得試行中 ({retryCount + 1}/{MaxRetryCount})...");
+                await Task.Delay(500);
+            }
+
+            retryCount++;
         }
 
-        for (int i = displayCount; i < rankingDisplayNum; i++)
+        if (topRanks == null || topRanks.Count == 0)
         {
-            rankingTextList[i].text = string.Empty;
+            Debug.LogError("[RankingManager] ランキング取得失敗: データが存在しません。");
+
+            for (int i = 0; i < rankingTextList.Count; i++)
+            {
+                rankingTextList[i].text = $"{i + 1}位 --- : ---";
+            }
+        }
+        else
+        {
+            DisplayRanking(topRanks);
+        }
+
+        Debug.Log("[RankingManager] ランキング表示処理完了。");
+    }
+
+    private void DisplayRanking(List<(int rank, string name, int score)> rankings)
+    {
+        for (int i = 0; i < rankingTextList.Count; i++)
+        {
+            if (i < rankings.Count)
+            {
+                var entry = rankings[i];
+                rankingTextList[i].text = $"{entry.rank}位 {entry.name} : {entry.score}";
+            }
+            else
+            {
+                rankingTextList[i].text = $"{i + 1}位 --- : ---";
+            }
         }
     }
 }

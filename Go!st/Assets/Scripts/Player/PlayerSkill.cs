@@ -20,6 +20,8 @@ public class PlayerSkill : MonoBehaviour
 
     public float coolTime { get; private set; }
 
+    public bool isOneHand = false; // true: プレイヤー基準(片手モード), false: タッチ位置基準(両手モード)
+
     void Start()
     {
         if (lineRenderer == null)
@@ -45,7 +47,14 @@ public class PlayerSkill : MonoBehaviour
 
     public void SkillTouchMove(Vector2 screenPosition)
     {
-        AddPoint(screenPosition);
+        if (isOneHand)
+        {
+            AddPoint();
+        }
+        else
+        {
+            AddPoint(screenPosition);
+        }
     }
 
     public int SkillTouchEnded()
@@ -65,6 +74,7 @@ public class PlayerSkill : MonoBehaviour
         return enemyNum;
     }
 
+    //両手モード
     private void AddPoint(Vector2 screenPosition)
     {
         Ray ray = Camera.main.ScreenPointToRay(screenPosition);
@@ -83,6 +93,22 @@ public class PlayerSkill : MonoBehaviour
             }
         }
     }
+
+    //片手モード
+    private void AddPoint()
+    {
+        Vector3 worldPosition = transform.position;
+
+        if (points.Count == 0 || Vector3.Distance(points[points.Count - 1], worldPosition) > 0.1f)
+        {
+            worldPosition.y = 0.5f; // 固定高さに設定
+            points.Add(worldPosition);
+            UpdateLineRenderer();
+
+            UpdateCoolTime();
+        }
+    }
+
 
     private void UpdateLineRenderer()
     {
