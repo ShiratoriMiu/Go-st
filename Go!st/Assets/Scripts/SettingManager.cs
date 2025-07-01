@@ -3,54 +3,46 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+[System.Serializable]
+public class GameUIPanelData
+{
+    public GameObject panelRoot;
+    public Button skillButton;
+    public RectTransform skillGaugeImage; 
+}
+
 public class SettingManager : MonoBehaviour
 {
-    [SerializeField] Toggle noSkillCoolTimeToggle;
-    [SerializeField] InputField timelimitInputField;
-    [SerializeField] Button titleButton;
-    [SerializeField] Button restartButton;
-    [SerializeField] GameManager gameManager;
-    [SerializeField] PlayerController[] players;
+    [SerializeField] Toggle leftHandModeToggle;
+
+    [SerializeField] PlayerManager playerManager;
+
+    [SerializeField] GameUIPanelData leftHandModePanelData;
+    [SerializeField] GameUIPanelData rightHandModePanelData;
+
+    private PlayerController playerController;
 
     // Start is called before the first frame update
     void Start()
     {
-        titleButton.onClick.AddListener(ToTitle);
-        restartButton.onClick.AddListener(Restart);
-        noSkillCoolTimeToggle.onValueChanged.AddListener(OnToggleChanged);
-        timelimitInputField.onValueChanged.AddListener(OnInputValueChanged);
-    }
+        leftHandModeToggle.onValueChanged.AddListener(OnToggleChanged);
 
-    void ToTitle()
-    {
-        gameManager.ToTitle();
-    }
-
-    void Restart()
-    {
-        gameManager.Restart();
+        playerController = playerManager.Player.GetComponent<PlayerController>();
     }
 
     void OnToggleChanged(bool isOn)
     {
-        if (isOn)
-        {
-            foreach(var player in players)
-            {
-                //player.SetSkillCooldownTime(0);
-            }
+        leftHandModePanelData.panelRoot.SetActive(isOn);
+        rightHandModePanelData.panelRoot.SetActive(!isOn);
+
+        if (isOn) {
+            playerController.SetSkillChargeImage(leftHandModePanelData.skillGaugeImage);
+            playerController.SetSkillButton(leftHandModePanelData.skillButton);
         }
         else
         {
-            foreach (var player in players)
-            {
-                //player.ResetSetSkillCooldownTime();
-            }
+            playerController.SetSkillChargeImage(rightHandModePanelData.skillGaugeImage);
+            playerController.SetSkillButton(rightHandModePanelData.skillButton);
         }
-    }
-
-    void OnInputValueChanged(string newText)
-    {
-        gameManager.SetMaxTimeLimit(float.Parse(newText));
     }
 }

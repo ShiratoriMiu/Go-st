@@ -43,7 +43,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] PlayerSkillAnim playerSkillAnim;
     [SerializeField] private ParticleSystem levelUpEffect;
     [SerializeField] private Button skillButton;
-    [SerializeField] private RectTransform skillChargeImage;
+    [SerializeField] private RectTransform skillGaugeImage;
 
     public Renderer renderer { get; private set; }
     public bool canSkill { get; private set; }
@@ -198,7 +198,7 @@ public class PlayerController : MonoBehaviour
     private void UpdateSkillChargeImagePosition()
     {
         float y = skill.coolTime * maxSkillChargeImageHeight;
-        skillChargeImage.anchoredPosition = new Vector2(skillChargeImage.anchoredPosition.x, y);
+        skillGaugeImage.anchoredPosition = new Vector2(skillGaugeImage.anchoredPosition.x, y);
     }
 
     private void OnDisable()
@@ -661,5 +661,22 @@ public class PlayerController : MonoBehaviour
     public void SetAutoAim(bool _onAutoAim)
     {
         onAutoAim = _onAutoAim;
+    }
+
+    public void SetSkillChargeImage(RectTransform _skillGaugeImage)
+    {
+        skillGaugeImage = _skillGaugeImage;
+    }
+
+    public void SetSkillButton(Button _skillButton)
+    {
+        if (skillButton != null)
+        {
+            // 前のボタンのリスナーを削除
+            skillButton.onClick.RemoveAllListeners();
+        }
+
+        skillButton = _skillButton;
+        skillButton.onClick.AddListener(() => OnClickSkillButton());
     }
 }

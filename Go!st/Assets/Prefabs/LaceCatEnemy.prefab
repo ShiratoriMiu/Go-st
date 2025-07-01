@@ -637,7 +637,7 @@ GameObject:
   - component: {fileID: 6880640630189763685}
   - component: {fileID: 1442323512089166367}
   m_Layer: 11
-  m_Name: DashBossEnemy
+  m_Name: LaceCatEnemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
