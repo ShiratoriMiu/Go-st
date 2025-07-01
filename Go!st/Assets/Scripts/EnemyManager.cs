@@ -23,6 +23,7 @@ public class EnemyManager : MonoBehaviour
 
     [SerializeField] private GameManager gameManager;
     [SerializeField] private LevelManager levelManager;
+    [SerializeField] private EnemyDeadEffectManager enemyDeadEffectManager;
 
     private GameObject player;
     private PlayerController playerController;
@@ -77,7 +78,7 @@ public class EnemyManager : MonoBehaviour
             {
                 GameObject enemy = Instantiate(config.prefab, this.transform);
                 var controller = enemy.GetComponent<EnemyController>();
-                controller.Initialize(gameManager, levelManager, player, playerController);
+                controller.Initialize(gameManager, levelManager, player, playerController, enemyDeadEffectManager);
                 controller.Hidden();
                 enemyPools[config.prefab].Add(enemy);
             }
@@ -96,7 +97,7 @@ public class EnemyManager : MonoBehaviour
             {
                 GameObject boss = Instantiate(bossPrefab, this.transform);
                 var controller = boss.GetComponent<EnemyBase>();
-                controller.Initialize(gameManager, levelManager, player, playerController);
+                controller.Initialize(gameManager, levelManager, player, playerController, enemyDeadEffectManager);
                 controller.Hidden();
                 Debug.Log("ボス死亡関数セット");
                 controller.OnDeath -= OnBossDefeated;

@@ -11,6 +11,7 @@ public abstract class EnemyBase : MonoBehaviour
     protected LevelManager levelManager;
     protected GameManager gameManager;
     protected PlayerManager playerManager;
+    protected EnemyDeadEffectManager enemyDeadEffectManager;
     protected Vector3 lastVelocity;
     protected float hp;
     protected bool canMove = true;
@@ -36,12 +37,14 @@ public abstract class EnemyBase : MonoBehaviour
         hp = maxHp;
     }
 
-    public virtual void Initialize(GameManager _gameManager, LevelManager _levelManager, GameObject _player, PlayerController _playerController)
+    public virtual void Initialize(GameManager _gameManager, LevelManager _levelManager,
+        GameObject _player, PlayerController _playerController, EnemyDeadEffectManager _enemyDeadEffectManager)
     {
         gameManager = _gameManager;
         levelManager = _levelManager;
         player = _player;
         playerController = _playerController;
+        enemyDeadEffectManager = _enemyDeadEffectManager;
     }
 
     protected virtual void Stan()
@@ -102,6 +105,7 @@ public abstract class EnemyBase : MonoBehaviour
         hp = maxHp;
         levelManager?.AddEnemyKill();
         gameManager?.AddEnemiesDefeatedNum(defeatedNum);
+        enemyDeadEffectManager.PlayEffect(this.transform.position);
     }
 
     protected virtual void OnCollisionEnter(Collision collision)

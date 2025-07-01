@@ -11,6 +11,7 @@ public class ShotBossController : EnemyBase
     [SerializeField, Header("敵の索敵範囲に入ってから攻撃するまでの時間")] float attackInterval = 5f;
     [SerializeField, Header("弾のスピード")] float bulletSpeed = 5f;
     [SerializeField, Header("上昇距離")] float riseDistance = 5f;
+    [SerializeField, Header("弾の発射位置の高さ調整")] float offsetY = 0.5f;
 
     float attackIntervalCount = 0f;
     enum State { Follow, Charge, Attack }
@@ -50,7 +51,7 @@ public class ShotBossController : EnemyBase
 
                             Vector3 bulletMoveDirection = new Vector3(bulletDirX, 0, bulletDirZ).normalized;
 
-                            GameObject bullet = Instantiate(bulletPrefab, this.transform.position, Quaternion.identity);
+                            GameObject bullet = Instantiate(bulletPrefab, this.transform.position + new Vector3(0, offsetY, 0), Quaternion.identity);
                             Rigidbody bulletRb = bullet.GetComponent<Rigidbody>();
                             if (bulletRb != null)
                             {
@@ -96,7 +97,7 @@ public class ShotBossController : EnemyBase
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerStay(Collider other)
     {
         if (state != State.Follow) return;
 

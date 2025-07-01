@@ -1,55 +1,70 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyDeadEffectManager : MonoBehaviour
 {
-    [SerializeField] GameObject deathEffectPrefab;
-    public int poolSize = 10; // 敵数に合わせて設定
+    [Header("設定")]
+    [SerializeField] private GameObject effectPrefab;
+    [SerializeField] private int poolSize = 100;
+    [SerializeField] private float offsetY = 0.5f;
 
-    private List<GameObject> effectPool = new List<GameObject>();
+    private Queue<ParticleSystem> effectPool = new Queue<ParticleSystem>();
 
     void Awake()
     {
+        InitializePool();
+    }
+
+    private void InitializePool()
+    {
         for (int i = 0; i < poolSize; i++)
         {
-            GameObject obj = Instantiate(deathEffectPrefab);
+            GameObject obj = Instantiate(effectPrefab, transform);
             obj.SetActive(false);
-            effectPool.Add(obj);
+
+            ParticleSystem ps = obj.GetComponent<ParticleSystem>();
+
+            var returner = obj.AddComponent<ParticleReturner>();
+            returner.Manager = this;
+            returner.ParticleSystem = ps;
+
+            effectPool.Enqueue(ps);
         }
     }
 
     public void PlayEffect(Vector3 position)
     {
-        foreach (var obj in effectPool)
+        if (effectPool.Count > 0)
         {
-            if (!obj.activeInHierarchy)
-            {
-                obj.transform.position = position;
-                obj.SetActive(true);
-
-                // ParticleSystem用
-                ParticleSystem ps = obj.GetComponent<ParticleSystem>();
-                if (ps != null)
-                {
-                    ps.Play();
-                    StartCoroutine(DisableAfterTime(obj, ps.main.duration));
-                }
-                else
-                {
-                    // Animator用の場合はアニメーションイベントで非アクティブ化してもOK
-                    StartCoroutine(DisableAfterTime(obj, 1f)); // 仮で1秒
-                }
-                return;
-            }
+            ParticleSystem ps = effectPool.Dequeue();
+            ps.transform.position = position + new Vector3(0, offsetY,0);
+            ps.gameObject.SetActive(true);
+            ps.Play();
         }
-
-        Debug.LogWarning("プールが足りません。poolSizeを増やしてください。");
+        else
+        {
+            Debug.LogWarning("[EnemyDeadEffectManager] プールが不足しています");
+        }
     }
 
-    private System.Collections.IEnumerator DisableAfterTime(GameObject obj, float time)
+    public void ReturnToPool(ParticleSystem ps)
     {
-        yield return new WaitForSeconds(time);
-        obj.SetActive(false);
+        ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        ps.gameObject.SetActive(false);
+        effectPool.Enqueue(ps);
+    }
+}
+
+public class ParticleReturner : MonoBehaviour
+{
+    public EnemyDeadEffectManager Manager;
+    public ParticleSystem ParticleSystem;
+
+    void Update()
+    {
+        if (ParticleSystem.isPlaying == false && gameObject.activeSelf)
+        {
+            Manager.ReturnToPool(ParticleSystem);
+        }
     }
 }
