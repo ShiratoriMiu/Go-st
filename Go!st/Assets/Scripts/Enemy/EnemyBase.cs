@@ -79,7 +79,7 @@ public abstract class EnemyBase : MonoBehaviour
             animator.speed = 1f;
             isDead = true;
             animator.SetTrigger("isDead");
-            //OnDeath?.Invoke(); // ボス/雑魚共通で発火
+            OnDeath?.Invoke(); // ボス/雑魚共通で発火
             enemyCollider.enabled = false;
             rb.useGravity = false;
         }
@@ -95,6 +95,7 @@ public abstract class EnemyBase : MonoBehaviour
         canMove = true;        // 移動再開
     }
 
+    //死亡アニメーションのアニメーションイベントで呼ぶ
     public virtual void Dead()
     {
         Hidden();

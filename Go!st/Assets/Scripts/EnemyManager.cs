@@ -98,7 +98,7 @@ public class EnemyManager : MonoBehaviour
                 var controller = boss.GetComponent<EnemyBase>();
                 controller.Initialize(gameManager, levelManager, player, playerController);
                 controller.Hidden();
-
+                Debug.Log("ボス死亡関数セット");
                 controller.OnDeath -= OnBossDefeated;
                 controller.OnDeath += OnBossDefeated;
 
@@ -219,13 +219,13 @@ public class EnemyManager : MonoBehaviour
         if (gameManager.enemiesDefeated >= nextBossThreshold && !isBossActive)
         {
             SpawnBoss();
-            nextBossThreshold += 10;
+            Debug.Log("ボススポーン");
         }
     }
 
     void SpawnBoss()
     {
-        GameObject bossPrefab = bossPrefabs[Random.Range(0, bossPrefabs.Count - 1)];
+        GameObject bossPrefab = bossPrefabs[Random.Range(0, bossPrefabs.Count)];
 
         GameObject boss = GetPooledBoss(bossPrefab);
         if (boss == null)
@@ -254,10 +254,12 @@ public class EnemyManager : MonoBehaviour
         isBossActive = false;
         currentBossInstance = null;
 
+        nextBossThreshold += 10; // ボスを倒したタイミングで次の閾値に更新
+
+        // 撃破数が既に次の閾値を超えていた場合、即次のボスを出現させる
         if (gameManager.enemiesDefeated >= nextBossThreshold)
         {
             SpawnBoss();
-            nextBossThreshold += 10;
         }
     }
 }

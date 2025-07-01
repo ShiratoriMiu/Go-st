@@ -33,9 +33,7 @@ public class ShotBossController : EnemyBase
                 if (state == State.Charge)
                 {
                     attackIntervalCount += Time.deltaTime;
-                    animator.SetTrigger("isAttack");
-
-                    
+                    //animator.SetTrigger("isAttack");
 
                     if (attackIntervalCount > attackInterval)
                     {
@@ -61,7 +59,7 @@ public class ShotBossController : EnemyBase
 
                             angle += angleStep;
                         }
-                        animator.SetTrigger("isWait");
+                        //animator.SetTrigger("isWait");
                         state = State.Follow; // 攻撃後はFollow状態に戻るなど必要に応じて
                     }
                 }
@@ -80,7 +78,7 @@ public class ShotBossController : EnemyBase
     {
         state = State.Follow;
         rb.isKinematic = false;
-        animator.SetTrigger("isWait");
+        //animator.SetTrigger("isWait");
     }
 
     protected override void OnCollisionEnter(Collision collision)
@@ -94,7 +92,7 @@ public class ShotBossController : EnemyBase
             transform.DOKill(); // DOTween 移動停止
             rb.isKinematic = false;
             state = State.Charge;
-            animator.SetTrigger("isWait");
+            //animator.SetTrigger("isWait");
         }
     }
 
@@ -113,5 +111,15 @@ public class ShotBossController : EnemyBase
         base.Hidden();
         rb.WakeUp();
         Reset();
+    }
+
+    public override void Damage(int _damage)
+    {
+        base.Damage(_damage);
+
+        if (hp <= 0)
+        {
+            Dead();
+        }
     }
 }
