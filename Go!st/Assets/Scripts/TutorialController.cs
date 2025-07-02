@@ -37,4 +37,10 @@ public class TutorialController : MonoBehaviour
     {
         tutorialUI.SetActive(false);
     }
+
+    public void ActiveTutorial()
+    {
+        InputManager.Instance.OnAnyTouchDown += HandleTutorialTouch;
+        tutorialUI.SetActive(true);
+    }
 }
