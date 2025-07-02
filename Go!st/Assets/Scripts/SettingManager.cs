@@ -13,6 +13,7 @@ public class GameUIPanelData
 
 public class SettingManager : MonoBehaviour
 {
+    [SerializeField] Toggle oneHandModeToggle;
     [SerializeField] Toggle leftHandModeToggle;
 
     [SerializeField] PlayerManager playerManager;
@@ -21,16 +22,19 @@ public class SettingManager : MonoBehaviour
     [SerializeField] GameUIPanelData rightHandModePanelData;
 
     private PlayerController playerController;
+    private PlayerSkill playerSkill;
 
     // Start is called before the first frame update
     void Start()
     {
-        leftHandModeToggle.onValueChanged.AddListener(OnToggleChanged);
+        leftHandModeToggle.onValueChanged.AddListener(OnLeftHandModeToggleChanged);
+        oneHandModeToggle.onValueChanged.AddListener(OnOneHandModeToggleChanged);
 
         playerController = playerManager.Player.GetComponent<PlayerController>();
+        playerSkill = playerManager.Player.GetComponent<PlayerSkill>();
     }
 
-    void OnToggleChanged(bool isOn)
+    void OnLeftHandModeToggleChanged(bool isOn)
     {
         leftHandModePanelData.panelRoot.SetActive(isOn);
         rightHandModePanelData.panelRoot.SetActive(!isOn);
@@ -44,5 +48,10 @@ public class SettingManager : MonoBehaviour
             playerController.SetSkillChargeImage(rightHandModePanelData.skillGaugeImage);
             playerController.SetSkillButton(rightHandModePanelData.skillButton);
         }
+    }
+
+    void OnOneHandModeToggleChanged(bool isOn)
+    {
+        playerSkill.isOneHand = isOn;
     }
 }
