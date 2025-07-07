@@ -35,7 +35,7 @@ public class RankingManager : MonoBehaviour
         {
             GameObject bg = Instantiate(rankingTextBGPrefab, rankingContainer);
             Text rankingText = bg.GetComponentInChildren<Text>();
-            rankingText.text = $"{i + 1}位 --- : ---";
+            rankingText.text = $"No.{i + 1}  --- : ---";
             rankingTextList.Add(rankingText);
         }
     }
@@ -43,6 +43,7 @@ public class RankingManager : MonoBehaviour
     public async void OnRankingButtonClicked()
     {
         Debug.Log("[RankingManager] ランキングボタン押下。初期化完了待機開始...");
+        await Task.Delay(2000);
 
         if (initializationTask != null)
         {
@@ -80,7 +81,7 @@ public class RankingManager : MonoBehaviour
 
             for (int i = 0; i < rankingTextList.Count; i++)
             {
-                rankingTextList[i].text = $"{i + 1}位 --- : ---";
+                rankingTextList[i].text = $"No.{i + 1} --- : ---";
             }
         }
         else
@@ -98,11 +99,11 @@ public class RankingManager : MonoBehaviour
             if (i < rankings.Count)
             {
                 var entry = rankings[i];
-                rankingTextList[i].text = $"{entry.rank}位 {entry.name} : {entry.score}";
+                rankingTextList[i].text = $"No.{entry.rank} {entry.name} : {entry.score}";
             }
             else
             {
-                rankingTextList[i].text = $"{i + 1}位 --- : ---";
+                rankingTextList[i].text = $"No.{i + 1} --- : ---";
             }
         }
     }
