@@ -40,12 +40,10 @@ public class SettingManager : MonoBehaviour
         rightHandModePanelData.panelRoot.SetActive(!isOn);
 
         if (isOn) {
-            playerController.SetSkillChargeImage(leftHandModePanelData.skillGaugeImage);
             playerController.SetSkillButton(leftHandModePanelData.skillButton);
         }
         else
         {
-            playerController.SetSkillChargeImage(rightHandModePanelData.skillGaugeImage);
             playerController.SetSkillButton(rightHandModePanelData.skillButton);
         }
     }

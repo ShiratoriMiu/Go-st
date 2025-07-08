@@ -11,17 +11,9 @@ using UnityEngine.UI;
 public class PlayerController : MonoBehaviour
 {
     //移動
-    [SerializeField] float moveSpeed = 1f;
-    [SerializeField] float maxSpeed = 10f;
-    [SerializeField] float damping = 0.98f; // 減衰率（1に近いほどゆっくり減衰）
-    [SerializeField] float attackSpeed;//攻撃の速度力
-    [SerializeField] float attackDis = 10f;    //オートエイム範囲。お好みで。
-    [SerializeField] float attackCooldownTime = 1f; // 通常攻撃のクールタイム（秒)
     [SerializeField] float skillAddSpeed = 1.5f;//必殺技中にスピードを上げる量
     [SerializeField] float maxSkillTime = 7f; // 必殺技の最大継続時間
     [SerializeField,Header("ゲージの高さ")] private float maxSkillChargeImageHeight = 400f;
-
-    [SerializeField] int maxHP = 10;
 
     [SerializeField] GameObject stickController;//仮想スティック
     [SerializeField] GameObject skillChargeEffect; //スキル発動可能エフェクト 
@@ -35,15 +27,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField, Range(0f, 1f)] float topOffset = 0.9f;    // 上端のオフセット
     [SerializeField, Range(0f, 1f)] float bottomOffset = 0.1f; // 下端のオフセット
 
-    [SerializeField] PlayerHpImage playerHpImage;
-
     [SerializeField] CenterToGrayEffect centerToGrayEffect;
-    [SerializeField] private BulletManager bulletManager;
     [SerializeField] Renderer rendererInit;
     [SerializeField] PlayerSkillAnim playerSkillAnim;
     [SerializeField] private ParticleSystem levelUpEffect;
     [SerializeField] private Button skillButton;
     [SerializeField] private RectTransform skillGaugeImage;
+    [SerializeField] private GameManager gameManager;
 
     public Renderer renderer { get; private set; }
     public bool canSkill { get; private set; }
@@ -51,12 +41,10 @@ public class PlayerController : MonoBehaviour
     Rigidbody rb;
     PlayerSkill skill;
     Camera mainCamera; // 使用するカメラ
-    GameManager gameManager;
     RectTransform stickControllerRect;
 
     private Vector2 startPosition;
     private Vector2 currentPosition;
-    private Vector2 moveDirection;
     private Vector2 stickControllerInitPos;
 
     private Vector3 velocity;
@@ -72,30 +60,27 @@ public class PlayerController : MonoBehaviour
     private bool canControl = false; // プレイヤー操作可能かどうか
 
     private float touchTime = 0;
-    //オートエイム用角度変数
-    private float degreeAttack = 0.0f;
-    private float radAttack = 0.0f;
-    private float nearestEnemyDis;
-
-    public int hp { get; private set; }
-    private int bulletNum = 1;
 
     //スキル発動中は敵と当たらなくする
     private int playerLayer;
     private int enemyLayer;
+
+    //リファクタリング後
+    [SerializeField] PlayerAttack playerAttack;
+    [SerializeField] PlayerSkill playerSkill;
+    [SerializeField] PlayerHealth playerHealth;
+    [SerializeField] PlayerMove playerMove;
 
     // Start is called before the first frame update
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         skill = GetComponent<PlayerSkill>();
-        hp = maxHP;
         mainCamera = Camera.main;
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         playerLayer = LayerMask.NameToLayer("Player");
         enemyLayer = LayerMask.NameToLayer("Enemy");
         renderer = rendererInit;
-
+        playerHealth.Init();
         stickControllerRect = stickController.GetComponent<RectTransform>();
         stickControllerInitPos = stickControllerRect.anchoredPosition;
 
@@ -143,13 +128,13 @@ public class PlayerController : MonoBehaviour
         if (isInteracting)
         {
             //移動
-            if(!isSkill && !skill.isOneHand || skill.isOneHand) Move();
+            if(!isSkill && !skill.isOneHand || skill.isOneHand) playerMove.Move();
             //慣性
-            Inertia();
+            playerMove.Inertia(isDamage);
             //スティック
             Stick();
             //移動方向を向く
-            LookMoveDirection();
+            playerMove.LookMoveDirection();
         }
 
         //skill
@@ -167,8 +152,10 @@ public class PlayerController : MonoBehaviour
             //attack
             if (!isAttack)
             {
-                nearestEnemyDis = attackDis;
-                Attack();
+                isAttack = true;
+                playerAttack.Attack();
+
+                Invoke("StopAttack", playerAttack.GetAttackCooldownTime());
             }
         }
 
@@ -259,7 +246,7 @@ public class PlayerController : MonoBehaviour
         if (gameManager.state != GameManager.GameState.Game || !canControl || !isInteracting) return;
 
         currentPosition = position;
-        moveDirection = (currentPosition - startPosition).normalized;
+        playerMove.UpdateMoveDir(currentPosition, startPosition);
     }
 
     // タッチまたはマウス操作の終了
@@ -269,45 +256,8 @@ public class PlayerController : MonoBehaviour
 
         if (isSkill) StopSkill();
         isInteracting = false;
-        moveDirection = Vector2.zero;
+        playerMove.Init();
         InitializeStick();
-    }
-
-    //移動update
-    void Move()
-    {
-        Vector3 moveDir = new Vector3(moveDirection.x, 0, moveDirection.y);
-        rb.AddForce(moveDir * moveSpeed, ForceMode.Force);
-        //水平方向の移動が最大スピードを超えないように
-        Vector3 horizontalVelocity = new Vector3(rb.velocity.x, 0, rb.velocity.z); // 水平方向のみ計算
-        if (horizontalVelocity.magnitude > maxSpeed)
-        {
-            horizontalVelocity = horizontalVelocity.normalized * maxSpeed;
-            rb.velocity = new Vector3(horizontalVelocity.x, rb.velocity.y, horizontalVelocity.z);
-        }
-    }
-
-    //慣性
-    void Inertia()
-    {
-        if (isDamage)
-        {
-            rb.velocity = Vector2.zero;
-        }
-        //入力がなくなった時または攻撃中にX軸の慣性の調整
-        else if (moveDirection == Vector2.zero)
-        {
-            // 現在のvelocityを取得し減衰を適用
-            velocity = rb.velocity;
-            velocity.x *= damping;
-            rb.velocity = velocity;
-
-            // 一定以下の速度になったら完全に停止
-            if (rb.velocity.x < 0.01f && rb.velocity.x > -0.01f)
-            {
-                rb.velocity = new Vector2(rb.velocity.x * damping, rb.velocity.y);
-            }
-        }
     }
 
     private void InitializeStick()
@@ -322,79 +272,6 @@ public class PlayerController : MonoBehaviour
         //スティックの位置がタッチした位置から離れすぎないように
         Vector2 stickPos = Vector2.ClampMagnitude(currentPosition - startPosition, 50);
         stickController.transform.GetChild(0).gameObject.transform.position = startPosition + stickPos;
-    }
-
-    void Attack()
-    {
-        if (isAttack == false)
-        {
-            isAttack = true;
-
-            if (onAutoAim)
-            {
-                GameObject nearestEnemy = null;    //前回の攻撃で一番近かった敵をリセット
-                nearestEnemy = AutoAim();
-                if (nearestEnemy != null)  //オートエイム有効nullチェック。10f以内にタグEnemy存在。
-                {
-                    Vector3 baseDirection = (nearestEnemy.transform.position - this.transform.position).normalized;
-
-                    Shot(baseDirection);
-                }
-                else
-                {
-                    Shot(transform.forward);
-                }
-            }
-            else
-            {
-                Shot(transform.forward);
-            }
-            
-        }
-    }
-
-    void Shot(Vector3 _aimDirection)
-    {
-        for (int i = 0; i < bulletNum; i++)
-        {
-            GameObject attackObj = bulletManager.GetBullet();
-            attackObj.transform.position = this.transform.position;
-            attackObj.transform.rotation = Quaternion.identity;
-
-            PlayerBulletController attackObjPlayerBullet = attackObj.GetComponent<PlayerBulletController>();
-            Rigidbody attackObjRb = attackObj.GetComponent<Rigidbody>();
-
-            attackObjPlayerBullet.Display();
-
-            // 念のため、前の速度をゼロにする
-            attackObjRb.velocity = Vector3.zero;
-
-            float angle = 90f * i;
-            Vector3 rotatedDirection = Quaternion.AngleAxis(angle, Vector3.up) * _aimDirection;
-            attackObjRb.velocity = rotatedDirection * attackSpeed;
-        }
-
-        Invoke("StopAttack", attackCooldownTime);
-    }
-
-
-    GameObject AutoAim()
-    {
-        //  タグEnemyのオブジェクトをすべて取得し、10f以内の最も近いエネミーを取得する。
-        GameObject nearestEnemy = null;    //前回の攻撃で一番近かった敵をリセット
-        GameObject[] enemys = GameObject.FindGameObjectsWithTag("Enemy");//Enemyタグがついたオブジェクトをすべて配列に格納。
-        foreach (GameObject enemy in enemys)    //全Enemyオブジェクト入り配列をひとつづつループ。
-        {
-            float dis = Vector3.Distance(transform.position, enemy.transform.position);    //プレイヤーキャラとループ中の敵オブジェクトの距離を引き算して差を出す。
-
-            if (dis < nearestEnemyDis)    //オートエイム範囲(10f)以内か確認
-            {
-                nearestEnemyDis = dis;    //今んとこ一番近い敵との距離更新。次のループ用。
-                nearestEnemy = enemy;    //今んとこ一番近い敵オブジェクト更新。
-            }
-        }
-        return nearestEnemy;
-        // foreach　が終わった時、nearestEnemyにプレイヤーキャラから一番近い敵が入ってる。
     }
 
     void StopAttack()
@@ -413,8 +290,8 @@ public class PlayerController : MonoBehaviour
         skillChargeEffect.SetActive(false);
         if (!skill.isOneHand) stickController.SetActive(false);
         canSkill = false;
-        maxSpeed *= skillAddSpeed;
-        moveSpeed *= skillAddSpeed;
+        //maxSpeed *= skillAddSpeed;
+        //moveSpeed *= skillAddSpeed;
         // 衝突無効化
         Physics.IgnoreLayerCollision(playerLayer, enemyLayer, true);
         Invoke("StopSkill", maxSkillTime);
@@ -462,8 +339,8 @@ public class PlayerController : MonoBehaviour
         // スキル終了処理
         isSkill = false;
         isSkillEndEffect = false;
-        maxSpeed /= skillAddSpeed;
-        moveSpeed /= skillAddSpeed;
+        //maxSpeed /= skillAddSpeed;
+        //moveSpeed /= skillAddSpeed;
         centerToGrayEffect.Gray(false);
         if (!skill.isOneHand) {
             stickController.SetActive(true); 
@@ -587,30 +464,17 @@ public class PlayerController : MonoBehaviour
         return segmentStart + t * segment;
     }
 
-    void LookMoveDirection()
-    {
-        Vector3 moveDir = new Vector3(moveDirection.x, 0, moveDirection.y);
-        // 移動方向がゼロでない場合に回転
-        if (moveDir.magnitude > 0.1f)
-        {
-            // 移動方向に向く
-            Quaternion targetRotation = Quaternion.LookRotation(moveDir);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
-        }
-    }
-
     public void Init()
     {
         skillChargeEffect.SetActive(false);
         canSkill = false;
         isInteracting = false;
-        moveDirection = Vector2.zero;
+        playerMove.Init();
         currentPosition = Vector2.zero;
         transform.position = Vector2.zero;
         InitializeStick();
         StopSkill();
-        hp = maxHP;
-        playerHpImage.UpdateHp(hp);
+        playerHealth.Init();
         canSkillLine = false;
         skill.ResetSkillCoolTime();
         UpdateSkillChargeImagePosition();
@@ -618,25 +482,14 @@ public class PlayerController : MonoBehaviour
 
     public void Damage(int _num)
     {
-        hp -= _num;
-        playerHpImage.UpdateHp(hp);
-        if (hp <= 0)
-        {
-            gameManager.EndGame();
-        }
+        playerHealth.Damage(_num);
     }
 
     public void ApplyBuff(BuffSO buff)
     {
         if(buff.buffType == BuffType.Heal)
         {
-            // HP回復
-            if (hp < maxHP)
-            {
-                hp = Mathf.Min(hp + buff.healAmount, maxHP);
-                playerHpImage.UpdateHp(hp);
-                Debug.Log($"HP回復：{buff.healAmount} → 現在HP: {hp}");
-            }
+            playerHealth.ApplyBuff(buff);
         }
         else if(buff.buffType == BuffType.SpeedBoost)
         {
@@ -658,12 +511,12 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator SpeedBuffCoroutine(float multiplier, float duration)
     {
-        moveSpeed *= multiplier;
+        playerMove.AddSpeed(multiplier);
         Debug.Log($"速度アップ：{multiplier}倍");
 
         yield return new WaitForSeconds(duration);
 
-        moveSpeed /= multiplier;
+        playerMove.RemoveSpeed(multiplier);
         Debug.Log("速度元に戻った！");
     }
 
@@ -673,19 +526,11 @@ public class PlayerController : MonoBehaviour
         levelUpEffect.Play();
     }
 
-    public void SetBulletNum(int _bulletNum)
+    public void SetAttackParameters(int _bulletNum, float _attackSpeed, float _attackCooldownTime)
     {
-        bulletNum = _bulletNum;
-    }
-
-    public void SetAttackSpeed(float _attackSpeed)
-    {
-        attackSpeed = _attackSpeed;
-    }
-
-    public void SetAttackCooldownTime(float _attackCooldownTime)
-    {
-        attackCooldownTime = _attackCooldownTime;
+        playerAttack.SetBulletNum(_bulletNum);
+        playerAttack.SetAttackSpeed(_attackSpeed);
+        playerAttack.SetAttackCooldownTime(_attackCooldownTime);
     }
 
     public void SetAutoAim(bool _onAutoAim)
@@ -709,4 +554,6 @@ public class PlayerController : MonoBehaviour
         skillButton = _skillButton;
         skillButton.onClick.AddListener(() => OnClickSkillButton());
     }
+
+    public int GetHP() => playerHealth.GetHp();
 }

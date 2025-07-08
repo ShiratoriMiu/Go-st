@@ -147,7 +147,7 @@ public class GameManager : MonoBehaviour
     {
         PlayerController playerController = playerManager.Player.GetComponent<PlayerController>();
 
-        int getHP = playerController.hp;
+        int getHP = playerController.GetHP();
         if (getHP < 0) getHP = 0;
         Debug.Log("倒した数：" + enemiesDefeated + " / " + "生存時間：" + Mathf.FloorToInt(survivalTime) + " / " + "残りHP：" + getHP);
         //スコア計算

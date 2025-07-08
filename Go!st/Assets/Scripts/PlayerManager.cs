@@ -89,18 +89,12 @@ public class PlayerManager : MonoBehaviour
         player.transform.position = spawnPosition;
         playerRb.velocity = Vector3.zero;
         playerRb.useGravity = true;
-        SetAutoAim();
     }
 
     public void ResetPlayer()
     {
         playerRb.useGravity = false;
         playerController.Init();
-    }
-
-    public void SetAutoAim()
-    {
-        playerController.SetAutoAim(onAutoAim);
     }
 
     public void ToSkinChangeSelectedPlayer()
