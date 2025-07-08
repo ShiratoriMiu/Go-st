@@ -2,30 +2,38 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
+
+[System.Serializable]
+public class TabGroup
+{
+    public GameObject[] tabs;
+}
 
 public class TabsManager : MonoBehaviour
 {
-    [SerializeField] GameObject[] tabs;
+    [SerializeField] List<TabGroup> tabList = new List<TabGroup>();
 
     public void SwitchToTab(int _tabID)
     {
-        foreach(GameObject go in tabs)
+        // 全てのタブを非表示
+        foreach (TabGroup group in tabList)
         {
-            go.SetActive(false);
+            foreach (GameObject tab in group.tabs)
+            {
+                tab.SetActive(false);
+            }
         }
-        tabs[_tabID].SetActive(true);
+
+        // 対象タブを表示
+        foreach (GameObject tab in tabList[_tabID].tabs)
+        {
+            tab.SetActive(true);
+        }
     }
 
-    // Start is called before the first frame update
     void Start()
     {
-        //最初はtabs[0]を表示
         SwitchToTab(0);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

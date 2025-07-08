@@ -225,7 +225,7 @@ public class FirebaseController : MonoBehaviour
                 for (int i = 0; i < 20; i++)
                 {
                     var confirmSnapshot = await rankingRef.GetValueAsync();
-                    if (confirmSnapshot.Exists)
+                    if (confirmSnapshot.Exists && confirmSnapshot.Child("bestScore").Exists)
                     {
                         Debug.Log("[FirebaseController] ランキングエントリの反映確認完了");
                         return;
@@ -241,6 +241,7 @@ public class FirebaseController : MonoBehaviour
             Debug.LogError($"[FirebaseController] EnsureRankingEntryAsync エラー: {e}");
         }
     }
+
 
     public async Task<List<(int rank, string name, int score)>> GetTopRankingsFromServerAsync()
     {

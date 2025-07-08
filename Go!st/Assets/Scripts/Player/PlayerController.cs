@@ -23,7 +23,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] int maxHP = 10;
 
-    [SerializeField] GameObject stickPrefab;//仮想スティック
+    [SerializeField] GameObject stickController;//仮想スティック
     [SerializeField] GameObject skillChargeEffect; //スキル発動可能エフェクト 
     [SerializeField] LevelUpText levelUpText;
 
@@ -52,10 +52,12 @@ public class PlayerController : MonoBehaviour
     PlayerSkill skill;
     Camera mainCamera; // 使用するカメラ
     GameManager gameManager;
+    RectTransform stickControllerRect;
 
     private Vector2 startPosition;
     private Vector2 currentPosition;
     private Vector2 moveDirection;
+    private Vector2 stickControllerInitPos;
 
     private Vector3 velocity;
     private Vector3[] corners = new Vector3[4]; // 四角形の頂点
@@ -93,6 +95,9 @@ public class PlayerController : MonoBehaviour
         playerLayer = LayerMask.NameToLayer("Player");
         enemyLayer = LayerMask.NameToLayer("Enemy");
         renderer = rendererInit;
+
+        stickControllerRect = stickController.GetComponent<RectTransform>();
+        stickControllerInitPos = stickControllerRect.anchoredPosition;
 
         skillButton.onClick.AddListener(() => OnClickSkillButton());
     }
@@ -229,17 +234,21 @@ public class PlayerController : MonoBehaviour
 
         if (skill.isOneHand)
         {
-            stickPrefab.SetActive(true);
-            stickPrefab.transform.position = startPosition;
-            stickPrefab.transform.GetChild(0).position = startPosition;
+            // スティック背景を指定位置へ
+            stickController.transform.position = startPosition;
+
+            // スティック内部ノブ（子オブジェクト）を同じ位置へ
+            stickController.transform.GetChild(0).position = startPosition;
         }
         else
         {
             if (!isSkill)
             {
-                stickPrefab.SetActive(true);
-                stickPrefab.transform.position = startPosition;
-                stickPrefab.transform.GetChild(0).position = startPosition;
+                // スティック背景を指定位置へ
+                stickController.transform.position = startPosition;
+
+                // スティック内部ノブ（子オブジェクト）を同じ位置へ
+                stickController.transform.GetChild(0).position = startPosition;
             }
         }
     }
@@ -261,7 +270,7 @@ public class PlayerController : MonoBehaviour
         if (isSkill) StopSkill();
         isInteracting = false;
         moveDirection = Vector2.zero;
-        stickPrefab.SetActive(false);
+        InitializeStick();
     }
 
     //移動update
@@ -301,11 +310,18 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void InitializeStick()
+    {
+        stickControllerRect.anchoredPosition = stickControllerInitPos;
+        stickController.transform.GetChild(0).gameObject.transform.position = stickControllerRect.transform.position;
+    }
+
+
     void Stick()
     {
         //スティックの位置がタッチした位置から離れすぎないように
         Vector2 stickPos = Vector2.ClampMagnitude(currentPosition - startPosition, 50);
-        stickPrefab.transform.GetChild(0).gameObject.transform.position = startPosition + stickPos;
+        stickController.transform.GetChild(0).gameObject.transform.position = startPosition + stickPos;
     }
 
     void Attack()
@@ -395,6 +411,7 @@ public class PlayerController : MonoBehaviour
         Invoke("StartLine", 1f);
         centerToGrayEffect.Gray(true);
         skillChargeEffect.SetActive(false);
+        if (!skill.isOneHand) stickController.SetActive(false);
         canSkill = false;
         maxSpeed *= skillAddSpeed;
         moveSpeed *= skillAddSpeed;
@@ -448,9 +465,13 @@ public class PlayerController : MonoBehaviour
         maxSpeed /= skillAddSpeed;
         moveSpeed /= skillAddSpeed;
         centerToGrayEffect.Gray(false);
+        if (!skill.isOneHand) {
+            stickController.SetActive(true); 
+        }
         // 衝突を再び有効にする
         Physics.IgnoreLayerCollision(playerLayer, enemyLayer, false);
         canSkillLine = true;
+        OnTouchEnd();//スキル終了時に強制的にタッチ解除
     }
 
     //スキル中フラグ取得
@@ -586,7 +607,7 @@ public class PlayerController : MonoBehaviour
         moveDirection = Vector2.zero;
         currentPosition = Vector2.zero;
         transform.position = Vector2.zero;
-        stickPrefab.SetActive(false);
+        InitializeStick();
         StopSkill();
         hp = maxHP;
         playerHpImage.UpdateHp(hp);

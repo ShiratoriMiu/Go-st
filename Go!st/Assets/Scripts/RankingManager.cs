@@ -31,6 +31,13 @@ public class RankingManager : MonoBehaviour
 
     private void GenerateRankingTextUI()
     {
+        // すでに生成済みのUIを削除
+        foreach (Transform child in rankingContainer)
+        {
+            Destroy(child.gameObject);
+        }
+        rankingTextList.Clear();
+
         for (int i = 0; i < maxDisplayCount; i++)
         {
             GameObject bg = Instantiate(rankingTextBGPrefab, rankingContainer);
@@ -43,7 +50,6 @@ public class RankingManager : MonoBehaviour
     public async void OnRankingButtonClicked()
     {
         Debug.Log("[RankingManager] ランキングボタン押下。初期化完了待機開始...");
-        await Task.Delay(2000);
 
         if (initializationTask != null)
         {
@@ -53,7 +59,7 @@ public class RankingManager : MonoBehaviour
 
         Debug.Log("[RankingManager] 初期化完了。ランキング取得開始...");
 
-        const int MaxRetryCount = 3;
+        const int MaxRetryCount = 10; // 最大10回再取得（約5秒）
         int retryCount = 0;
         List<(int rank, string name, int score)> topRanks = null;
 
@@ -69,7 +75,7 @@ public class RankingManager : MonoBehaviour
             else
             {
                 Debug.LogWarning($"[RankingManager] ランキング取得結果が0件、再取得試行中 ({retryCount + 1}/{MaxRetryCount})...");
-                await Task.Delay(500);
+                await Task.Delay(500); // 0.5秒待機
             }
 
             retryCount++;
