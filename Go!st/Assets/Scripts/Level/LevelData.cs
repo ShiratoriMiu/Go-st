@@ -11,4 +11,8 @@ public class LevelData
     public int YellowEnemyHP;
     public int RedEnemyHP;
     public int BlackEnemyHP;
+    public int RedBulletHP;
+    public int BlackBulletHP;
+    public int NextLevelEnemyNum;
+    public int BossSpawn;
 }

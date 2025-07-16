@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2096601638509324295}
   - component: {fileID: 7934102601632362932}
   m_Layer: 11
-  m_Name: EnemyBlack
+  m_Name: BlackBullet
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -106,7 +106,7 @@ MonoBehaviour:
   - {fileID: 4815697971163993307}
   enemyCollider: {fileID: 6600563889714299056}
   bulletPrefab: {fileID: 2829636624271746724, guid: d3473a9451274a84383199f321dcb87e, type: 3}
-  isShot: 0
+  isShot: 1
   shotCoolTime: 5
   bulletSpeed: 10
 --- !u!1001 &5308306546003304786

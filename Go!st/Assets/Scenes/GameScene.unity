@@ -34049,12 +34049,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyConfigs:
   - prefab: {fileID: 4874350126175269579, guid: 7a72de3970972314288c9cd2561022c5, type: 3}
-    maxCount: 30
+    maxCount: 100
   - prefab: {fileID: 1644533220947773365, guid: cd6a8e3b9c623d243a7c775d3bba785e, type: 3}
-    maxCount: 30
+    maxCount: 100
   - prefab: {fileID: 2423467936922655989, guid: bd5142a0ec7705b49a2c2e474e75bd6b, type: 3}
-    maxCount: 30
-  maxPoolSize: 100
+    maxCount: 100
+  - prefab: {fileID: 1644533220947773365, guid: cdb3f2af4a4cdff4a9261a4e5513dac2, type: 3}
+    maxCount: 100
+  - prefab: {fileID: 4874350126175269579, guid: acda844b2ec735a4f9b7659452d14eaa, type: 3}
+    maxCount: 100
+  maxPoolSize: 500
   spawnTime: 0.5
   spawnMinDistance: 7
   spawnMaxDistance: 10
@@ -67417,6 +67421,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4756003171135936, guid: 64b9fdd8926ce144fbdc31c4044b55f1, type: 3}
   m_PrefabInstance: {fileID: 248752406}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2000698458 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7890945356539490520, guid: 0ee97adfaaaf7d84daf9b8f9a83a163b, type: 3}
+  m_PrefabInstance: {fileID: 2358291889710794711}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2000716890
 GameObject:
   m_ObjectHideFlags: 0
@@ -72568,6 +72577,14 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5452021018072248373, guid: 0ee97adfaaaf7d84daf9b8f9a83a163b, type: 3}
+      propertyPath: skillPower
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5452021018072248373, guid: 0ee97adfaaaf7d84daf9b8f9a83a163b, type: 3}
+      propertyPath: skillButton
+      value: 
+      objectReference: {fileID: 429265384}
+    - target: {fileID: 5452021018072248373, guid: 0ee97adfaaaf7d84daf9b8f9a83a163b, type: 3}
       propertyPath: skillEffect
       value: 
       objectReference: {fileID: 871591345}
@@ -72576,8 +72593,24 @@ PrefabInstance:
       value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 5452021018072248373, guid: 0ee97adfaaaf7d84daf9b8f9a83a163b, type: 3}
+      propertyPath: playerSkillAnim
+      value: 
+      objectReference: {fileID: 457394758}
+    - target: {fileID: 5452021018072248373, guid: 0ee97adfaaaf7d84daf9b8f9a83a163b, type: 3}
       propertyPath: skillChargeImage
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5452021018072248373, guid: 0ee97adfaaaf7d84daf9b8f9a83a163b, type: 3}
+      propertyPath: skillChargeEffect
+      value: 
+      objectReference: {fileID: 2000698458}
+    - target: {fileID: 5452021018072248373, guid: 0ee97adfaaaf7d84daf9b8f9a83a163b, type: 3}
+      propertyPath: centerToGrayEffect
+      value: 
+      objectReference: {fileID: 963194230}
+    - target: {fileID: 5452021018072248373, guid: 0ee97adfaaaf7d84daf9b8f9a83a163b, type: 3}
+      propertyPath: groundLayer.m_Bits
+      value: 64
       objectReference: {fileID: 0}
     - target: {fileID: 5743897869606241171, guid: 0ee97adfaaaf7d84daf9b8f9a83a163b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

@@ -17,6 +17,8 @@ public class LevelManager : MonoBehaviour
 
     public int CurrentLevel => level;
 
+    private int nextLevelEnemyNum = 1;//次のレベルに必要な敵を倒す数
+
     public void LoadLevelData()
     {
         TextAsset csvFile = Resources.Load<TextAsset>("LevelData");
@@ -43,7 +45,11 @@ public class LevelManager : MonoBehaviour
                 EnemyTypes = new List<string>(values[4].Split('/')),
                 YellowEnemyHP = int.Parse(values[5]),
                 RedEnemyHP = int.Parse(values[6]),
-                BlackEnemyHP = int.Parse(values[7])
+                BlackEnemyHP = int.Parse(values[7]),
+                RedBulletHP = int.Parse(values[8]),
+                BlackBulletHP = int.Parse(values[9]),
+                NextLevelEnemyNum = int.Parse(values[10]),
+                BossSpawn = int.Parse(values[11]),
             };
 
             levelDataDict[data.Level] = data;
@@ -63,10 +69,10 @@ public class LevelManager : MonoBehaviour
         enemyKillCount++;
 
         // レベルアップ条件（例：level * 5体倒す）
-        if (enemyKillCount >= level * 5)
+        if (enemyKillCount >= nextLevelEnemyNum)
         {
             level++;
-            enemyKillCount = 0;
+            enemyKillCount -= nextLevelEnemyNum;
             UpdateLevelUI();
             ApplyLevelParameters(level);
         }
@@ -93,6 +99,8 @@ public class LevelManager : MonoBehaviour
 
         // 敵設定
         enemyManager.SetEnemyTypesByLevelData(data);
+
+        nextLevelEnemyNum = data.NextLevelEnemyNum;
     }
 
     public void ResetLevel()

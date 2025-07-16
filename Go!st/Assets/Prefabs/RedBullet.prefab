@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 535866174196229017}
   - component: {fileID: 1482835451932221631}
   m_Layer: 11
-  m_Name: EnemyRed
+  m_Name: RedBullet
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -106,7 +106,7 @@ MonoBehaviour:
   - {fileID: 8750368255907882383}
   enemyCollider: {fileID: 4529864787827551751}
   bulletPrefab: {fileID: 2829636624271746724, guid: d3473a9451274a84383199f321dcb87e, type: 3}
-  isShot: 0
+  isShot: 1
   shotCoolTime: 5
   bulletSpeed: 10
 --- !u!1001 &5609285259822924224
