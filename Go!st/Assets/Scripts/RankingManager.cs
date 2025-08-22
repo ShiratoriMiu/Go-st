@@ -15,6 +15,8 @@ public class RankingManager : MonoBehaviour
     private List<Text> rankingTextList = new List<Text>();
     private Task initializationTask;
 
+    private bool _isFetchingTopRankings = false; // 連打防止用フラグ
+
     private async void Start()
     {
         Debug.Log("[RankingManager] Firebase準備完了待機中...");
@@ -49,6 +51,9 @@ public class RankingManager : MonoBehaviour
 
     public async void OnRankingButtonClicked()
     {
+        if (_isFetchingTopRankings) return; // 連打防止
+        _isFetchingTopRankings = true;
+
         Debug.Log("[RankingManager] ランキングボタン押下。初期化完了待機開始...");
 
         if (initializationTask != null)
@@ -65,7 +70,7 @@ public class RankingManager : MonoBehaviour
 
         while (retryCount < MaxRetryCount)
         {
-            topRanks = await firebaseController.GetTopRankingsAsync(maxDisplayCount);
+            topRanks = await firebaseController.GetTopRankingsFromServerAsync(maxDisplayCount);
 
             if (topRanks.Count > 0)
             {
@@ -96,7 +101,9 @@ public class RankingManager : MonoBehaviour
         }
 
         Debug.Log("[RankingManager] ランキング表示処理完了。");
+        _isFetchingTopRankings = false; // 連打防止フラグ解除
     }
+
 
     private void DisplayRanking(List<(int rank, string name, int score)> rankings)
     {

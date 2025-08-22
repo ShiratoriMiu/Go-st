@@ -38,6 +38,9 @@ public class FirebaseController : MonoBehaviour
     private DatabaseReference reference => login?.DbReference;
     private Firebase.Auth.FirebaseUser user => login?.User;
 
+    // ------------------------------
+    // ランキング保存
+    // ------------------------------
     public async Task SaveMyScoreAsync(int newScore)
     {
         if (!IsReady)
@@ -62,12 +65,9 @@ public class FirebaseController : MonoBehaviour
                 var data = new RankingData(displayName, newScore);
                 string json = JsonUtility.ToJson(data);
 
-                Debug.Log($"[FirebaseController] ランキング保存JSON: {json}");
                 await reference.Child("rankings").Child(uid).SetRawJsonValueAsync(json);
-                Debug.Log("[FirebaseController] ランキング保存成功");
+                Debug.Log($"[FirebaseController] ランキング保存成功: {json}");
             }
-
-            Debug.Log($"[FirebaseController] スコア保存完了: {newScore}");
         }
         catch (Exception e)
         {
@@ -75,21 +75,22 @@ public class FirebaseController : MonoBehaviour
         }
     }
 
-    public async Task<List<(int rank, string name, int score)>> GetTopRankingsAsync(int limit = 100)
+    // ------------------------------
+    // 上位ランキング取得（サーバー直）
+    // ------------------------------
+    public async Task<List<(int rank, string name, int score)>> GetTopRankingsFromServerAsync(int limit = 100)
     {
         var rankings = new List<(int rank, string name, int score)>();
 
         if (!IsReady)
         {
-            Debug.LogWarning("[FirebaseController] Firebase not ready in GetTopRankingsAsync.");
+            Debug.LogWarning("[FirebaseController] Firebase not ready in GetTopRankingsFromServerAsync.");
             return rankings;
         }
 
         try
         {
-            var snapshot = await reference.Child("rankings")
-                .OrderByChild("bestScore").LimitToLast(limit)
-                .GetValueAsync();
+            var snapshot = await FirebaseDatabase.DefaultInstance.GetReference("rankings").GetValueAsync();
 
             if (!snapshot.Exists)
             {
@@ -98,12 +99,14 @@ public class FirebaseController : MonoBehaviour
             }
 
             var tempList = snapshot.Children
-                .Select(userEntry =>
+                .Select(entry =>
                 {
-                    int score = int.TryParse(userEntry.Child("bestScore").Value?.ToString(), out int s) ? s : 0;
-                    string name = userEntry.Child("displayName").Value?.ToString() ?? "NoName";
+                    int score = int.TryParse(entry.Child("bestScore").Value?.ToString(), out int sc) ? sc : 0;
+                    string name = entry.Child("displayName").Value?.ToString() ?? "NoName";
                     return (name, score);
                 })
+                .OrderByDescending(x => x.score)
+                .Take(limit)
                 .ToList();
 
             var rankedList = RankListByScore(tempList, x => x.score);
@@ -112,12 +115,52 @@ public class FirebaseController : MonoBehaviour
         }
         catch (Exception e)
         {
-            Debug.LogError($"[FirebaseController] GetTopRankingsAsync エラー: {e}");
+            Debug.LogError($"[FirebaseController] GetTopRankingsFromServerAsync エラー: {e}");
         }
 
         return rankings;
     }
 
+    private bool _isFetchingRanking = false;
+
+    public async Task<(int rank, int score)> OnMyRankingButtonPressed()
+    {
+        if (_isFetchingRanking) return (-1, 0); // 連打防止
+
+        _isFetchingRanking = true;
+
+        try
+        {
+            await login.WaitForFirebaseReadyAsync();
+
+            var (rank, score) = await GetMyRankingAsync();
+
+            if (rank == -1)
+            {
+                Debug.LogWarning("ランキング取得失敗またはデータなし");
+            }
+            else
+            {
+                Debug.Log($"自分の順位: {rank}, スコア: {score}");
+            }
+
+            return (rank, score);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"ランキング取得時にエラー: {e}");
+            return (-1, 0);
+        }
+        finally
+        {
+            _isFetchingRanking = false;
+        }
+    }
+
+
+    // ------------------------------
+    // 自分の順位取得（サーバー直）
+    // ------------------------------
     public async Task<(int rank, int score)> GetMyRankingAsync()
     {
         if (!IsReady)
@@ -126,10 +169,14 @@ public class FirebaseController : MonoBehaviour
             return (-1, 0);
         }
 
+        string uid = user.UserId;
+
         try
         {
-            string uid = user.UserId;
-            var mySnapshot = await reference.Child("rankings").Child(uid).GetValueAsync();
+            var mySnapshot = await FirebaseDatabase.DefaultInstance
+                .GetReference("rankings")
+                .Child(uid)
+                .GetValueAsync();
 
             if (!mySnapshot.Exists)
             {
@@ -139,7 +186,9 @@ public class FirebaseController : MonoBehaviour
 
             int myScore = int.TryParse(mySnapshot.Child("bestScore").Value?.ToString(), out int s) ? s : 0;
 
-            var allSnapshot = await reference.Child("rankings").GetValueAsync();
+            var allSnapshot = await FirebaseDatabase.DefaultInstance
+                .GetReference("rankings")
+                .GetValueAsync();
 
             if (!allSnapshot.Exists)
             {
@@ -174,6 +223,9 @@ public class FirebaseController : MonoBehaviour
         }
     }
 
+    // ------------------------------
+    // 順位計算共通関数
+    // ------------------------------
     public static List<(int rank, T data)> RankListByScore<T>(List<T> dataList, Func<T, int> getScore)
     {
         var sortedList = dataList.OrderByDescending(getScore).ToList();
@@ -199,6 +251,9 @@ public class FirebaseController : MonoBehaviour
         return rankedList;
     }
 
+    // ------------------------------
+    // ランキングエントリ初期化
+    // ------------------------------
     public async Task EnsureRankingEntryAsync()
     {
         if (!IsReady)
@@ -211,8 +266,8 @@ public class FirebaseController : MonoBehaviour
         {
             string uid = user.UserId;
             var rankingRef = reference.Child("rankings").Child(uid);
-
             var snapshot = await rankingRef.GetValueAsync();
+
             if (!snapshot.Exists)
             {
                 string name = user.DisplayName ?? "NoName";
@@ -242,38 +297,70 @@ public class FirebaseController : MonoBehaviour
         }
     }
 
-
-    public async Task<List<(int rank, string name, int score)>> GetTopRankingsFromServerAsync()
+    // ------------------------------
+    // コイン保存（加算・減算可）
+    // ------------------------------
+    public async Task SaveMyCoinsAsync(int earnedCoins)
     {
-        var rankings = new List<(int rank, string name, int score)>();
+        if (!IsReady)
+        {
+            Debug.LogWarning("[FirebaseController] Firebase not ready in SaveMyCoinsAsync.");
+            return;
+        }
 
         try
         {
-            var snapshot = await FirebaseDatabase.DefaultInstance.GetReference("rankings").GetValueAsync();
+            string uid = user.UserId;
+            var userRef = reference.Child("users").Child(uid).Child("coins");
 
-            if (!snapshot.Exists)
-            {
-                Debug.LogWarning("[FirebaseController] GetTopRankingsFromServerAsync: データが存在しません。");
-                return rankings;
-            }
+            var coinSnapshot = await userRef.GetValueAsync();
+            int currentCoins = coinSnapshot.Exists ? int.Parse(coinSnapshot.Value.ToString()) : 0;
 
-            var tempList = snapshot.Children
-                .Select(entry =>
-                {
-                    int score = int.TryParse(entry.Child("bestScore").Value?.ToString(), out int sc) ? sc : 0;
-                    string name = entry.Child("displayName").Value?.ToString() ?? "NoName";
-                    return (name, score);
-                })
-                .ToList();
+            int newTotal = Mathf.Max(0, currentCoins + earnedCoins);
+            await userRef.SetValueAsync(newTotal);
 
-            var rankedList = RankListByScore(tempList, x => x.score);
-            rankings.AddRange(rankedList.Select(item => (item.rank, item.data.name, item.data.score)));
+            Debug.Log($"[FirebaseController] コイン保存完了: {(earnedCoins >= 0 ? "+" : "")}{earnedCoins} → 合計 {newTotal}");
         }
         catch (Exception e)
         {
-            Debug.LogError($"[FirebaseController] GetTopRankingsFromServerAsync エラー: {e}");
+            Debug.LogError($"[FirebaseController] SaveMyCoinsAsync エラー: {e}");
+        }
+    }
+
+    // ------------------------------
+    // コイン取得
+    // ------------------------------
+    public async Task<int> GetMyCoinsAsync()
+    {
+        if (!IsReady)
+        {
+            Debug.LogWarning("[FirebaseController] Firebase not ready in GetMyCoinsAsync.");
+            return 0;
         }
 
-        return rankings;
+        try
+        {
+            string uid = user.UserId;
+            var userRef = reference.Child("users").Child(uid).Child("coins");
+
+            var coinSnapshot = await userRef.GetValueAsync();
+
+            if (coinSnapshot.Exists)
+            {
+                int coins = int.Parse(coinSnapshot.Value.ToString());
+                Debug.Log($"[FirebaseController] 所持コイン: {coins}");
+                return coins;
+            }
+            else
+            {
+                Debug.Log("[FirebaseController] コインデータが存在しないため 0 を返します。");
+                return 0;
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[FirebaseController] GetMyCoinsAsync エラー: {e}");
+            return 0;
+        }
     }
 }

@@ -16,7 +16,7 @@ public class ProfileManager : MonoBehaviour
         string name = LoginController.Instance.GetUserName();
         nameText.text = $"Name : {name}";
 
-        var bestScore = await firebaseController.GetMyRankingAsync();
+        var bestScore = await firebaseController.OnMyRankingButtonPressed();
 
         rankText.text = $"Rank : {bestScore.rank.ToString()}";
 
