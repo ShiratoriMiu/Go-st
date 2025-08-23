@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using System;
+using static UnityEditor.Progress;
 
 public class SkinItemTarget : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class SkinItemTarget : MonoBehaviour
         public Renderer[] itemObjectRenderers;
         public Sprite itemIcon;
         public bool canColorChange;
+        public bool isOwned;
+        public bool isEquipped;
     }
 
     [SerializeField]
@@ -43,6 +46,7 @@ public class SkinItemTarget : MonoBehaviour
             Debug.Log($"外した: {_item.itemName}");
             buttonColorReset();
             _updateItemNum(-1, maxItemNum);//itemNumTMPの更新、1番目の引数は装備のコストに当たるが現状一律で1
+            _item.isEquipped = false;
             // 装備解除通知
             OnItemUnequipped?.Invoke(_item);
         }
@@ -62,6 +66,7 @@ public class SkinItemTarget : MonoBehaviour
             Debug.Log($"装備した: {_item.itemName}");
             buttonPressedColor();
             _updateItemNum(1, maxItemNum);
+            _item.isEquipped = true;
             // コールバック呼び出し
             OnItemEquipped?.Invoke(_item);
         }
@@ -97,5 +102,18 @@ public class SkinItemTarget : MonoBehaviour
                 activeItemNames.Add(item.itemName);
             }
         }
+    }
+
+    public void EquippedSkinItem(ItemSlot _item)
+    {
+        activeItemNames.Add(_item.itemName);
+        for (int i = 0; i < _item.itemObjectRenderers.Length; i++)
+        {
+            _item.itemObjectRenderers[i].enabled = true;
+        }
+        Debug.Log($"装備した: {_item.itemName}");
+        _item.isEquipped = true;
+        // コールバック呼び出し
+        OnItemEquipped?.Invoke(_item);
     }
 }

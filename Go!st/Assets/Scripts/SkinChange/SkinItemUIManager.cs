@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,7 +15,10 @@ public class SkinItemUIManager : MonoBehaviour
         [HideInInspector] public TogglePressedLookButton togglePressedLook;
     }
 
-    [SerializeField] private ItemButton[] itemButtons;
+    [SerializeField] GameObject scrollViewIconPrefab;
+    [SerializeField] GameObject skinItemScrollViewBase;
+
+    private List<ItemButton> itemButtons;
 
     private SkinItemTarget currentTarget;
 
@@ -36,6 +40,8 @@ public class SkinItemUIManager : MonoBehaviour
     {
         currentTarget = target;
 
+        GenerateOwnedItemButtons();
+
         currentTarget.OnItemEquipped = (item) => {
             var renderer = item.itemObjectRenderers;
             if (renderer != null)
@@ -48,30 +54,59 @@ public class SkinItemUIManager : MonoBehaviour
         currentTarget.OnItemUnequipped = (item) => {
             selectItem = null;
         };
+    }
 
-        // アイコンの更新とボタンのセット
-        for (int i = 0; i < itemButtons.Length; i++)
+    public void GenerateOwnedItemButtons()
+    {
+        // 既存のボタンをクリア
+        if (itemButtons != null)
         {
-            int index = i;
-
-            if (i < target.ItemSlots.Count)
+            foreach (var btn in itemButtons)
             {
-                var item = target.ItemSlots[index];
-
-                itemButtons[index].icon.sprite = item.itemIcon;
-                itemButtons[index].button.onClick.RemoveAllListeners();
-                itemButtons[index].button.onClick.AddListener(() => {
-                    currentTarget.ToggleItem(item , itemNumTMP.UpdateItemNumTMP, itemButtons[index].togglePressedLook.SetPressedLook, itemButtons[index].togglePressedLook.ResetButtonLook);
-                });
-
-                //target.ItemSlots.CountとitemButtonsの数に合わせてActiveを切り替え
-                itemButtons[index].button.gameObject.SetActive(true);
+                if (btn.button != null)
+                    Destroy(btn.button.gameObject);
             }
-            else
+            itemButtons.Clear(); // ← これを追加
+        }
+        else
+        {
+            itemButtons = new List<ItemButton>();
+        }
+
+        foreach (var item in currentTarget.ItemSlots)
+        {
+            if (!item.isOwned) continue; // 所持していないアイテムはスキップ
+
+            // scrollViewIconPrefabを生成
+            GameObject go = Instantiate(scrollViewIconPrefab, skinItemScrollViewBase.transform);
+            Button btn = go.GetComponent<Button>();
+            // 子オブジェクトのImageのみ取得（ルートのImageは無視）
+            Image icon = go.GetComponentsInChildren<Image>()
+                            .FirstOrDefault(img => img.gameObject != go);
+
+
+            ItemButton newItemButton = new ItemButton
             {
-                //target.ItemSlots.CountとitemButtonsの数に合わせてActiveを切り替え
-                itemButtons[index].button.gameObject.SetActive(false);
-            }
+                button = btn,
+                icon = icon,
+                togglePressedLook = btn.GetComponent<TogglePressedLookButton>()
+            };
+
+            // ボタンのクリック処理
+            btn.onClick.RemoveAllListeners();
+            btn.onClick.AddListener(() =>
+            {
+                currentTarget.ToggleItem(item,
+                    itemNumTMP.UpdateItemNumTMP,
+                    newItemButton.togglePressedLook.SetPressedLook,
+                    newItemButton.togglePressedLook.ResetButtonLook);
+            });
+
+            // アイコン設定
+            icon.sprite = item.itemIcon;
+
+            itemButtons.Add(newItemButton);
         }
     }
+
 }

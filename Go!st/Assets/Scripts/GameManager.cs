@@ -244,7 +244,10 @@ public class GameManager : MonoBehaviour
         rankingManager.OnRankingButtonClicked();
         ChangeGameState(GameState.Ranking);
     }
-    public void ToSkinChange() => ChangeGameState(GameState.SkinChange);
+    public void ToSkinChange() {
+        playerManager.ToSkinChangeSelectedPlayer();
+        ChangeGameState(GameState.SkinChange); 
+    }
     public void ToHelp() => ChangeGameState(GameState.Help);
     public void ToSetting() => ChangeGameState(GameState.Setting);
     public void ToGameSetting() => ChangeGameState(GameState.GameSetting);
@@ -254,5 +257,59 @@ public class GameManager : MonoBehaviour
     {
         state = _gameState;
         SwitchUIPanel(_gameState);
+    }
+
+    public void OnSkinDecided()
+    {
+        PlayerSaveData playerData = new PlayerSaveData();
+
+        List<string> currentOwnedSkinNames = new List<string>();
+
+        SkinItemTarget skinItemTarget = playerManager.Player.GetComponent<SkinItemTarget>();
+        if (skinItemTarget != null)
+        {
+            foreach (var skinItems in skinItemTarget.ItemSlots)
+            {
+                if (skinItems.isOwned)
+                {
+                    currentOwnedSkinNames.Add(skinItems.itemName);
+                }
+
+                if (skinItems.isEquipped)
+                {
+                    // 装備中スキンは色情報も保存
+                    if (skinItems.itemObjectRenderers != null && skinItems.itemObjectRenderers.Length > 0)
+                    {
+                        // 代表として最初のRendererを使う
+                        Material mat = skinItems.itemObjectRenderers[0].material;
+                        Color c = mat.color;
+                        playerData.equippedSkins.Add(new EquippedSkinData(skinItems.itemName, c));
+                    }
+                    else
+                    {
+                        // 色が取れない場合は白で保存
+                        playerData.equippedSkins.Add(new EquippedSkinData(skinItems.itemName, Color.white));
+                    }
+                }
+            }
+        }
+
+        // 所持スキン
+        playerData.ownedSkins = currentOwnedSkinNames;
+
+        // ベースマテリアル
+        Renderer playerRenderer = playerManager.Player.GetComponent<PlayerController>().renderer;
+        playerData.materials.Clear();
+        foreach (var mat in playerRenderer.materials)
+        {
+            Texture2D tex = mat.mainTexture as Texture2D;
+            string texName = tex != null ? tex.name : "";
+            playerData.materials.Add(new MaterialData(texName, mat.color));
+        }
+
+        // 保存
+        SaveManager.Save(playerData);
+
+        Debug.Log("スキン決定時にデータ保存完了");
     }
 }

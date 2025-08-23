@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using System.Collections.Generic;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -27,6 +28,10 @@ public class PlayerManager : MonoBehaviour
     private bool isInitialized = false;
     private float currentRotationSpeed = 0f;
 
+    private PlayerSaveData playerData;
+
+    [SerializeField] Texture2D defaultTexture;
+
     void Awake()
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
@@ -39,6 +44,18 @@ public class PlayerManager : MonoBehaviour
         playerRb.useGravity = false;
         player.GetComponent<PlayerSkill>().SetSkillEnemyNumText(skillEnemyNumText);
         skillEnemyNumText.gameObject.SetActive(false);
+    }
+
+    private void Start()
+    {
+        // JSONからロード
+        playerData = SaveManager.Load();
+
+        // 所持スキン・装備スキンを復元
+        RestoreSkins(playerData);
+
+        // マテリアルを復元
+        RestoreMaterials(playerData);
     }
 
     void Update()
@@ -103,5 +120,95 @@ public class PlayerManager : MonoBehaviour
         colorChanger.SetTargetRenderer(renderer);
         skinItemUIManager.SetTargetPlayer(player.GetComponent<SkinItemTarget>());
         makeUpManager.SetTargetRenderer(renderer);
+    }
+
+    private void RestoreSkins(PlayerSaveData data)
+    {
+        SkinItemTarget skinItemTarget = player.GetComponent<SkinItemTarget>();
+        if (skinItemTarget == null || skinItemTarget.ItemSlots == null) return;
+
+        // equippedSkins が null なら空リストに
+        List<EquippedSkinData> equippedSkins = data.equippedSkins ?? new List<EquippedSkinData>();
+        List<string> ownedSkins = data.ownedSkins ?? new List<string>();
+
+        foreach (var slot in skinItemTarget.ItemSlots)
+        {
+            if (slot == null) continue;
+
+            // 所持状態の復元
+            slot.isOwned = slot.isOwned || ownedSkins.Contains(slot.itemName);
+
+            // 装備状態の復元
+            EquippedSkinData equippedData = equippedSkins.Find(e => e.skinId == slot.itemName);
+            if (equippedData != null)
+            {
+                slot.isEquipped = true;
+                skinItemTarget.EquippedSkinItem(slot);  // 装備処理呼び出し
+
+                // Renderer がある場合は全ての Renderer に色を反映
+                if (slot.itemObjectRenderers != null)
+                {
+                    Color colorToApply = equippedData.ToColor();
+                    foreach (var renderer in slot.itemObjectRenderers)
+                    {
+                        if (renderer != null && renderer.material != null)
+                        {
+                            renderer.material.color = colorToApply;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                slot.isEquipped = false;
+            }
+        }
+    }
+
+    private void RestoreMaterials(PlayerSaveData data)
+    {
+        if (data == null)
+        {
+            data = new PlayerSaveData();
+        }
+
+        Renderer renderer = player.GetComponent<PlayerController>().renderer;
+        List<Material> mats = new List<Material>();
+        Shader standardShader = Shader.Find("Standard");
+
+        foreach (var matData in data.materials)
+        {
+            Material mat = new Material(standardShader);
+
+            Texture2D tex = null;
+            if (!string.IsNullOrEmpty(matData.textureName))
+            {
+                tex = Resources.Load<Texture2D>($"Textures/{matData.textureName}");
+                if (tex == null)
+                {
+                    Debug.LogWarning($"テクスチャ {matData.textureName} が見つかりません。defaultTextureを使用");
+                    tex = defaultTexture;
+                }
+            }
+            else
+            {
+                tex = defaultTexture;
+            }
+
+            mat.mainTexture = tex;
+            mat.color = matData.ToColor();
+            mats.Add(mat);
+        }
+
+        // 保存されているマテリアルがない場合は1つ作る
+        if (mats.Count == 0)
+        {
+            Material mat = new Material(standardShader);
+            mat.mainTexture = defaultTexture;
+            mat.color = Color.white;
+            mats.Add(mat);
+        }
+
+        renderer.materials = mats.ToArray();
     }
 }
