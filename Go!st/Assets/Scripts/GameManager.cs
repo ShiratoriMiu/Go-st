@@ -43,6 +43,8 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private RankingManager rankingManager;
 
+    [SerializeField] private MakeUpManager makeUpManager;
+
     CenterToGrayEffect centerToGrayEffect;
 
     private int finalScore;
@@ -303,7 +305,7 @@ public class GameManager : MonoBehaviour
         // 所持スキン
         playerData.ownedSkins = currentOwnedSkinNames;
 
-        // ベースマテリアル
+        // マテリアル
         Renderer playerRenderer = playerManager.Player.GetComponent<PlayerController>().renderer;
         playerData.materials.Clear();
         foreach (var mat in playerRenderer.materials)
@@ -311,6 +313,14 @@ public class GameManager : MonoBehaviour
             Texture2D tex = mat.mainTexture as Texture2D;
             string texName = tex != null ? tex.name : "";
             playerData.materials.Add(new MaterialData(texName, mat.color));
+        }
+
+        foreach (var makeSlot in makeUpManager.MakeUpSlots)
+        {
+            if (makeSlot.isEquipped)
+            {
+                playerData.equippedMakes.Add(makeSlot.name);
+            }
         }
 
         // 保存

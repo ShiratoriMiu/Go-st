@@ -49,10 +49,10 @@ public class MaterialData
 [System.Serializable]
 public class PlayerSaveData
 {
-    public List<string> ownedSkins = new List<string>();
-    public List<EquippedSkinData> equippedSkins = new List<EquippedSkinData>();
-    public List<MaterialData> materials = new List<MaterialData>(); // ←ここ
-
+    public List<string> ownedSkins = new List<string>();//所持アイテム
+    public List<EquippedSkinData> equippedSkins = new List<EquippedSkinData>();//装備アイテム
+    public List<MaterialData> materials = new List<MaterialData>();//マテリアル
+    public List<string> equippedMakes = new List<string>();//装備メイク
     // コイン
     public int coin = 0;
 }

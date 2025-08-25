@@ -23,6 +23,7 @@ public class ColorChanger : MonoBehaviour
 
     private void Start()
     {
+        if (_colorScrollViewBase == null) return;
         // 生成前に既存の子オブジェクトを削除
         foreach (Transform child in _colorScrollViewBase.transform)
         {

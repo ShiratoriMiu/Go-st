@@ -1,79 +1,110 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 
 public class MakeUpManager : MonoBehaviour
 {
     private Renderer targetRenderer;
 
     [System.Serializable]
-    public class MakeUpButton
+    public class MakeUpSlot
     {
-        public Button makeUpButton;
+        public string name;
         public Material makeUpMaterial;
         public MaterialSlot slotType;
+        public bool isOwned;
         [HideInInspector] public bool isEquipped;
     }
 
-    [SerializeField] private MakeUpButton[] makeUpButtons;
+    [SerializeField] private MakeUpSlot[] makeUpSlots;
+    [SerializeField] private Transform _makeUpScrollViewBase;
+    [SerializeField] private GameObject scrollViewIconPrefab;
+
+    public IReadOnlyList<MakeUpSlot> MakeUpSlots => makeUpSlots;
 
     // 透明マテリアルをキャッシュして返す
     private Material _transparentMaterial;
 
     void Start()
     {
-        foreach (var button in makeUpButtons)
+        // JSONからロード
+        PlayerSaveData playerData = SaveManager.Load();
+
+        RestoreMakeEquipped(playerData);
+
+        if (_makeUpScrollViewBase == null) return;
+        
+        // 既存の子オブジェクト削除
+        foreach (Transform child in _makeUpScrollViewBase)
         {
-            if (button.slotType == MaterialSlot.Color)
+            Destroy(child.gameObject);
+        }
+
+        // isOwned == true のスロットだけUI生成
+        foreach (var slot in makeUpSlots)
+        {
+            if (!slot.isOwned) continue;
+
+            var go = Instantiate(scrollViewIconPrefab, _makeUpScrollViewBase);
+            Button btn = go.GetComponent<Button>();
+            var captured = slot;
+
+            if (btn != null)
             {
-                Debug.LogWarning($"[MakeUpManager] Button '{button.makeUpButton.name}' has slotType 'Color' which is not allowed for makeup. Button will be disabled in Inspector.");
-                button.makeUpButton.interactable = false;
-                continue;
+                btn.onClick.AddListener(() =>
+                {
+                    ToggleMakeup(captured);
+                });
             }
 
-            var captured = button;
-            button.makeUpButton.onClick.AddListener(() =>
+            Text childText = go.GetComponentsInChildren<Text>().FirstOrDefault(txt => txt.gameObject != go);
+            // 子の Image にアイコン設定（icon がある場合）
+            if (go.name != null)
             {
-                ToggleMakeup(captured);
-            });
+                childText.text = slot.name;
+            }
+            else
+            {
+                childText.text = "";
+            }
         }
     }
 
-
-    void ToggleMakeup(MakeUpButton button)
+    void ToggleMakeup(MakeUpSlot slot)
     {
-        if (button.isEquipped)
+        if (slot.isEquipped)
         {
-            RemoveMaterialAt(button);
+            RemoveMaterialAt(slot);
         }
         else
         {
-            ApplyMaterial(button);
+            ApplyMaterial(slot);
         }
     }
 
-    void ApplyMaterial(MakeUpButton button)
+    void ApplyMaterial(MakeUpSlot slot)
     {
-        int slotIndex = (int)button.slotType;
+        int slotIndex = (int)slot.slotType;
         EnsureMaterialLength(slotIndex + 1);
 
         var mats = targetRenderer.materials;
-        mats[slotIndex] = button.makeUpMaterial;
+        mats[slotIndex] = slot.makeUpMaterial;
         targetRenderer.materials = mats;
 
-        button.isEquipped = true;
+        slot.isEquipped = true;
     }
 
-    void RemoveMaterialAt(MakeUpButton button)
+    void RemoveMaterialAt(MakeUpSlot slot)
     {
-        int slotIndex = (int)button.slotType;
+        int slotIndex = (int)slot.slotType;
         var mats = targetRenderer.materials;
         if (slotIndex >= mats.Length) return;
 
         mats[slotIndex] = GetTransparentMaterial();
         targetRenderer.materials = mats;
 
-        button.isEquipped = false;
+        slot.isEquipped = false;
     }
 
     void EnsureMaterialLength(int requiredLength)
@@ -111,5 +142,26 @@ public class MakeUpManager : MonoBehaviour
             _transparentMaterial.color = new Color(1, 1, 1, 0);
         }
         return _transparentMaterial;
+    }
+
+    private void RestoreMakeEquipped(PlayerSaveData data)
+    {
+        // まず一旦すべて解除
+        foreach (var makeSlot in makeUpSlots)
+        {
+            makeSlot.isEquipped = false;
+        }
+
+        // 保存データに含まれている名前と一致するものを復元
+        foreach (var equippedName in data.equippedMakes)
+        {
+            foreach (var makeSlot in makeUpSlots)
+            {
+                if (makeSlot.name == equippedName)
+                {
+                    makeSlot.isEquipped = true;
+                }
+            }
+        }
     }
 }
