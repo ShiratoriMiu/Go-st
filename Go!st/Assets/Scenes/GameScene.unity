@@ -20086,20 +20086,41 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultTexture: {fileID: 2800000, guid: 94913b13d1da1934b8fd1a0de5b3b91b, type: 3}
   skinButtons:
-  - button: {fileID: 1246038235}
+  - name: White
+    button: {fileID: 1246038235}
     texture: {fileID: 0}
-  - button: {fileID: 109139370}
+    color: {r: 1, g: 1, b: 1, a: 1}
+    isOwned: 0
+  - name: Yellow
+    button: {fileID: 109139370}
     texture: {fileID: 0}
-  - button: {fileID: 110795651}
+    color: {r: 1, g: 1, b: 0, a: 1}
+    isOwned: 0
+  - name: Blue
+    button: {fileID: 110795651}
     texture: {fileID: 0}
-  - button: {fileID: 907348005}
+    color: {r: 0, g: 0, b: 1, a: 1}
+    isOwned: 0
+  - name: Green
+    button: {fileID: 907348005}
     texture: {fileID: 0}
-  - button: {fileID: 1461941624}
+    color: {r: 0, g: 1, b: 0, a: 1}
+    isOwned: 0
+  - name: Red
+    button: {fileID: 1461941624}
     texture: {fileID: 0}
-  - button: {fileID: 1582729534}
+    color: {r: 1, g: 0, b: 0, a: 1}
+    isOwned: 0
+  - name: Rainbow
+    button: {fileID: 1582729534}
     texture: {fileID: 2800000, guid: 26779f2c379b4cb499995d17075f9a6e, type: 3}
-  - button: {fileID: 201897550}
+    color: {r: 1, g: 1, b: 1, a: 1}
+    isOwned: 0
+  - name: Zombie
+    button: {fileID: 201897550}
     texture: {fileID: 2800000, guid: e214c9c2b043831439ea42d116b689d3, type: 3}
+    color: {r: 1, g: 1, b: 1, a: 1}
+    isOwned: 0
 --- !u!114 &565445744
 MonoBehaviour:
   m_ObjectHideFlags: 0

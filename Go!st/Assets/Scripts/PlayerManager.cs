@@ -180,24 +180,25 @@ public class PlayerManager : MonoBehaviour
         {
             Material mat = new Material(standardShader);
 
-            Texture2D tex = null;
-            if (!string.IsNullOrEmpty(matData.textureName))
+            Texture2D tex = !string.IsNullOrEmpty(matData.textureName)
+                ? Resources.Load<Texture2D>($"Textures/{matData.textureName}")
+                : defaultTexture;
+
+            if (tex == null)
             {
-                tex = Resources.Load<Texture2D>($"Textures/{matData.textureName}");
-                if (tex == null)
-                {
-                    Debug.LogWarning($"テクスチャ {matData.textureName} が見つかりません。defaultTextureを使用");
-                    tex = defaultTexture;
-                }
-            }
-            else
-            {
+                Debug.LogWarning($"テクスチャ {matData.textureName} が見つかりません。defaultTextureを使用");
                 tex = defaultTexture;
             }
 
             mat.mainTexture = tex;
             mat.color = matData.ToColor();
             mats.Add(mat);
+        }
+
+        // 2つ目以降のマテリアルを Fade にする
+        for (int i = 1; i < mats.Count; i++)
+        {
+            SetMaterialRenderingMode(mats[i], "Fade");
         }
 
         // 保存されているマテリアルがない場合は1つ作る
@@ -210,5 +211,44 @@ public class PlayerManager : MonoBehaviour
         }
 
         renderer.materials = mats.ToArray();
+    }
+
+    private void SetMaterialRenderingMode(Material material, string mode)
+    {
+        switch (mode)
+        {
+            case "Opaque":
+                material.SetFloat("_Mode", 0);
+                material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+                material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
+                material.SetInt("_ZWrite", 1);
+                material.DisableKeyword("_ALPHATEST_ON");
+                material.DisableKeyword("_ALPHABLEND_ON");
+                material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                material.renderQueue = -1;
+                break;
+
+            case "Fade": // 半透明
+                material.SetFloat("_Mode", 2);
+                material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                material.SetInt("_ZWrite", 0);
+                material.DisableKeyword("_ALPHATEST_ON");
+                material.EnableKeyword("_ALPHABLEND_ON");
+                material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                material.renderQueue = 3000;
+                break;
+
+            case "Transparent": // 透過
+                material.SetFloat("_Mode", 3);
+                material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+                material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                material.SetInt("_ZWrite", 0);
+                material.DisableKeyword("_ALPHATEST_ON");
+                material.DisableKeyword("_ALPHABLEND_ON");
+                material.EnableKeyword("_ALPHAPREMULTIPLY_ON");
+                material.renderQueue = 3000;
+                break;
+        }
     }
 }

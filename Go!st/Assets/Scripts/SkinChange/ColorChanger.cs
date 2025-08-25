@@ -11,8 +11,11 @@ public class ColorChanger : MonoBehaviour
     [System.Serializable]
     public class SkinButton
     {
+        public string name;
         public Button button;
         public Texture texture; // nullÇ»ÇÁ Image ÇÃ color Çégóp
+        public Color color;
+        public bool isOwned;
     }
 
     private void Start()
@@ -27,6 +30,12 @@ public class ColorChanger : MonoBehaviour
                 {
                     ApplySkin(capturedSkinButton);
                 });
+
+                Image img = skinButton.button.GetComponent<Image>();
+                if (img != null)
+                {
+                    img.color = skinButton.color;
+                }
             }
         }
     }
@@ -45,11 +54,7 @@ public class ColorChanger : MonoBehaviour
         // 0î‘ñ⁄ÇæÇØÇï°êªÇµÇƒç∑Çµë÷Ç¶ÇÈ
         Material baseMat = new Material(materials[(int)MaterialSlot.Color]);
 
-        Image image = skinButton.button.GetComponent<Image>();
-        if (image != null)
-        {
-            baseMat.color = image.color;
-        }
+        baseMat.color = skinButton.color;
 
         baseMat.mainTexture = skinButton.texture != null ? skinButton.texture : defaultTexture;
 
