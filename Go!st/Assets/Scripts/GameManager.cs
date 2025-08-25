@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour
     [Header("UI")]
     [SerializeField] private Text scoreText;           // スコア表示用
     [SerializeField] private Text remainingTimeText;   // 残り時間表示用
+    [SerializeField] private CoinUI coinUI;
 
     [System.Serializable]
     public class UIPanelEntry
@@ -152,6 +153,11 @@ public class GameManager : MonoBehaviour
         Debug.Log("倒した数：" + enemiesDefeated + " / " + "生存時間：" + Mathf.FloorToInt(survivalTime) + " / " + "残りHP：" + getHP);
         //スコア計算
         finalScore = enemiesDefeated + Mathf.FloorToInt(survivalTime) + getHP;
+        //コイン枚数加算s
+        int coinNum = SaveManager.LoadCoin();
+        coinNum += enemiesDefeated;
+        SaveManager.SaveCoin(coinNum);
+        coinUI.UpdateCoinUI();
         return finalScore;
     }
 
