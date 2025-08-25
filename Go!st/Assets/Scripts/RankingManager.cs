@@ -33,6 +33,7 @@ public class RankingManager : MonoBehaviour
 
     private void GenerateRankingTextUI()
     {
+        if (rankingContainer == null) return;
         // ‚·‚Å‚É¶¬Ï‚İ‚ÌUI‚ğíœ
         foreach (Transform child in rankingContainer)
         {

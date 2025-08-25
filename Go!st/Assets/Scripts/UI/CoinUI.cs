@@ -21,6 +21,6 @@ public class CoinUI : MonoBehaviour
 
     public void UpdateCoinUI()
     {
-        coinText.text = SaveManager.LoadCoin() + "Coin";
+        coinText.text = SaveManager.LoadCoin().ToString();
     }
 }
