@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
+using static MakeUpManager;
+using System.Collections.Generic;
 
 public class ColorChanger : MonoBehaviour
 {
@@ -10,6 +12,8 @@ public class ColorChanger : MonoBehaviour
     [SerializeField] private SkinSlot[] skinSlots;
     [SerializeField] private Transform _colorScrollViewBase;
     [SerializeField] private GameObject scrollViewIconPrefab;
+
+    public IReadOnlyList<SkinSlot> SkinSlots => skinSlots;
 
     [System.Serializable]
     public class SkinSlot
@@ -23,6 +27,12 @@ public class ColorChanger : MonoBehaviour
 
     private void Start()
     {
+        // JSONからロード
+        PlayerSaveData playerData = SaveManager.Load();
+
+        // 所持スキン・装備スキンを復元
+        RestoreColor(playerData);
+
         if (_colorScrollViewBase == null) return;
         // 生成前に既存の子オブジェクトを削除
         foreach (Transform child in _colorScrollViewBase.transform)
@@ -88,5 +98,18 @@ public class ColorChanger : MonoBehaviour
     public void SetTargetRenderer(Renderer _targetRenderer)
     {
         targetRenderer = _targetRenderer;
+    }
+
+    private void RestoreColor(PlayerSaveData playerSaveData)
+    {
+        List<string> ownedSkins = playerSaveData.ownedSkins ?? new List<string>();
+
+        foreach (var slot in SkinSlots)
+        {
+            if (slot == null) continue;
+
+            // 所持状態の復元
+            slot.isOwned = slot.isOwned || ownedSkins.Contains(slot.name);
+        }
     }
 }

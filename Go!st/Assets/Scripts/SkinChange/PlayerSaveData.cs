@@ -55,6 +55,8 @@ public class PlayerSaveData
     public List<string> equippedMakes = new List<string>();//装備メイク
     // コイン
     public int coin = 0;
+
+    public List<string> allItemNames = new List<string>();//全ての着せ替えアイテムの名前
 }
 
 /// <summary>
@@ -92,7 +94,7 @@ public static class SaveManager
         }
     }
 
-    // 追加: コインだけ保存
+    //コインだけ保存
     public static void SaveCoin(int coin)
     {
         PlayerSaveData data = Load();   // 既存データを読み込み
@@ -100,7 +102,7 @@ public static class SaveManager
         Save(data);                    // 上書き保存
     }
 
-    // 追加: コインだけ取得
+    //コインだけ取得
     public static int LoadCoin()
     {
         PlayerSaveData data = Load();
@@ -109,6 +111,59 @@ public static class SaveManager
             return 0;
         }
         return data.coin;
+    }
+
+    //アイテム名保存
+    public static void SaveAllItemName(string name)
+    {
+        PlayerSaveData data = Load();   // 既存データを読み込み
+        if(data == null || data.allItemNames == null)
+        {
+            data.allItemNames.Add(name);
+        }
+        else
+        {
+            foreach (var dataName in data.allItemNames)
+            {
+                if (dataName != name)
+                {
+                    data.allItemNames.Add(name);
+                }
+            }
+        }
+        Save(data);                    // 上書き保存
+    }
+
+    //アイテム名取得
+    public static List<string> AllItemNames()
+    {
+        PlayerSaveData data = Load();
+        if (data == null)   // 初回起動などでデータが存在しない場合
+        {
+            return null;
+        }
+        return data.allItemNames;
+    }
+
+    //所持アイテム名保存
+    public static void SaveOwnedItemName(string name)
+    {
+        PlayerSaveData data = Load();   // 既存データを読み込み
+        if (data == null || data.ownedSkins == null)
+        {
+            data.ownedSkins.Add(name);
+        }
+        else
+        {
+            foreach (var dataName in data.ownedSkins)
+            {
+                if (dataName != name)
+                {
+                    data.ownedSkins.Add(name);
+                }
+            }
+        }
+        Save(data);                    // 上書き保存
     }
 }
 

@@ -45,6 +45,8 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private MakeUpManager makeUpManager;
 
+    [SerializeField] private ColorChanger colorChanger;
+
     CenterToGrayEffect centerToGrayEffect;
 
     private int finalScore;
@@ -302,6 +304,27 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        foreach (var makeSlot in makeUpManager.MakeUpSlots)
+        {
+            if (makeSlot.isEquipped)
+            {
+                playerData.equippedMakes.Add(makeSlot.name);
+            }
+
+            if (makeSlot.isOwned)
+            {
+                currentOwnedSkinNames.Add(makeSlot.name);
+            }
+        }
+
+        foreach(var colorSlot in colorChanger.SkinSlots)
+        {
+            if (colorSlot.isOwned)
+            {
+                currentOwnedSkinNames.Add(colorSlot.name);
+            }
+        }
+
         // èäéùÉXÉLÉì
         playerData.ownedSkins = currentOwnedSkinNames;
 
@@ -313,14 +336,6 @@ public class GameManager : MonoBehaviour
             Texture2D tex = mat.mainTexture as Texture2D;
             string texName = tex != null ? tex.name : "";
             playerData.materials.Add(new MaterialData(texName, mat.color));
-        }
-
-        foreach (var makeSlot in makeUpManager.MakeUpSlots)
-        {
-            if (makeSlot.isEquipped)
-            {
-                playerData.equippedMakes.Add(makeSlot.name);
-            }
         }
 
         // ï€ë∂

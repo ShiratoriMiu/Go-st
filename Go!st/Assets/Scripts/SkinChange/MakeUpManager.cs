@@ -146,16 +146,23 @@ public class MakeUpManager : MonoBehaviour
 
     private void RestoreMakeEquipped(PlayerSaveData data)
     {
+        List<string> ownedSkins = data.ownedSkins ?? new List<string>();
+
         // まず一旦すべて解除
         foreach (var makeSlot in makeUpSlots)
         {
             makeSlot.isEquipped = false;
         }
 
-        // 保存データに含まれている名前と一致するものを復元
-        foreach (var equippedName in data.equippedMakes)
+        foreach (var makeSlot in makeUpSlots)
         {
-            foreach (var makeSlot in makeUpSlots)
+            if (makeSlot == null) continue;
+
+            // 所持状態の復元
+            makeSlot.isOwned = makeSlot.isOwned || ownedSkins.Contains(makeSlot.name);
+
+            // 保存データに含まれている名前と一致するものを復元
+            foreach (var equippedName in data.equippedMakes)
             {
                 if (makeSlot.name == equippedName)
                 {
