@@ -20085,42 +20085,49 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultTexture: {fileID: 2800000, guid: 94913b13d1da1934b8fd1a0de5b3b91b, type: 3}
-  skinButtons:
-  - name: White
-    button: {fileID: 1246038235}
+  skinSlots:
+  - name: WhiteColor
     texture: {fileID: 0}
     color: {r: 1, g: 1, b: 1, a: 1}
-    isOwned: 0
-  - name: Yellow
-    button: {fileID: 109139370}
+    icon: {fileID: 0}
+    isOwned: 1
+  - name: YellowColor
     texture: {fileID: 0}
     color: {r: 1, g: 1, b: 0, a: 1}
-    isOwned: 0
-  - name: Blue
-    button: {fileID: 110795651}
+    icon: {fileID: 0}
+    isOwned: 1
+  - name: BlueColor
     texture: {fileID: 0}
     color: {r: 0, g: 0, b: 1, a: 1}
-    isOwned: 0
-  - name: Green
-    button: {fileID: 907348005}
+    icon: {fileID: 0}
+    isOwned: 1
+  - name: GreenColor
     texture: {fileID: 0}
     color: {r: 0, g: 1, b: 0, a: 1}
-    isOwned: 0
-  - name: Red
-    button: {fileID: 1461941624}
+    icon: {fileID: 0}
+    isOwned: 1
+  - name: RedColor
     texture: {fileID: 0}
     color: {r: 1, g: 0, b: 0, a: 1}
-    isOwned: 0
-  - name: Rainbow
-    button: {fileID: 1582729534}
+    icon: {fileID: 0}
+    isOwned: 1
+  - name: PurpleColor
+    texture: {fileID: 0}
+    color: {r: 0.5019608, g: 0, b: 1, a: 1}
+    icon: {fileID: 0}
+    isOwned: 1
+  - name: RainbowColor
     texture: {fileID: 2800000, guid: 26779f2c379b4cb499995d17075f9a6e, type: 3}
     color: {r: 1, g: 1, b: 1, a: 1}
-    isOwned: 0
-  - name: Zombie
-    button: {fileID: 201897550}
+    icon: {fileID: 21300000, guid: e4f93fac50d57da48b23b8cf7c78df31, type: 3}
+    isOwned: 1
+  - name: ZombieColor
     texture: {fileID: 2800000, guid: e214c9c2b043831439ea42d116b689d3, type: 3}
     color: {r: 1, g: 1, b: 1, a: 1}
-    isOwned: 0
+    icon: {fileID: 21300000, guid: 8b39792c8023f4b428284e2c3696c694, type: 3}
+    isOwned: 1
+  _colorScrollViewBase: {fileID: 384417008}
+  scrollViewIconPrefab: {fileID: 8238416060495465116, guid: 4f82e4f0f7742974c862086d5eb0a182, type: 3}
 --- !u!114 &565445744
 MonoBehaviour:
   m_ObjectHideFlags: 0
