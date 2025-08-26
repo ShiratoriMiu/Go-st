@@ -338,6 +338,8 @@ public class GameManager : MonoBehaviour
             playerData.materials.Add(new MaterialData(texName, mat.color));
         }
 
+        playerData.coin = SaveManager.LoadCoin();
+
         // •Û‘¶
         SaveManager.Save(playerData);
 

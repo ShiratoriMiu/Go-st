@@ -68,10 +68,18 @@ public static class SaveManager
 
     public static void Save(PlayerSaveData data)
     {
+        // 保存先ディレクトリを確認して、なければ作成
+        string directory = Path.GetDirectoryName(SavePath);
+        if (!Directory.Exists(directory))
+        {
+            Directory.CreateDirectory(directory);
+        }
+
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(SavePath, json);
         Debug.Log($"データ保存完了: {SavePath}");
     }
+
 
     public static PlayerSaveData Load()
     {
@@ -117,21 +125,19 @@ public static class SaveManager
     public static void SaveAllItemName(string name)
     {
         PlayerSaveData data = Load();   // 既存データを読み込み
-        if(data == null || data.allItemNames == null)
+
+        if (data.allItemNames == null)
+        {
+            data.allItemNames = new List<string>();
+        }
+
+        // 重複チェック
+        if (!data.allItemNames.Contains(name))
         {
             data.allItemNames.Add(name);
         }
-        else
-        {
-            foreach (var dataName in data.allItemNames)
-            {
-                if (dataName != name)
-                {
-                    data.allItemNames.Add(name);
-                }
-            }
-        }
-        Save(data);                    // 上書き保存
+
+        Save(data); // 上書き保存
     }
 
     //アイテム名取得
@@ -148,22 +154,19 @@ public static class SaveManager
     //所持アイテム名保存
     public static void SaveOwnedItemName(string name)
     {
-        PlayerSaveData data = Load();   // 既存データを読み込み
-        if (data == null || data.ownedSkins == null)
+        PlayerSaveData data = Load();
+
+        if (data.ownedSkins == null)
+        {
+            data.ownedSkins = new List<string>();
+        }
+
+        if (!data.ownedSkins.Contains(name))
         {
             data.ownedSkins.Add(name);
         }
-        else
-        {
-            foreach (var dataName in data.ownedSkins)
-            {
-                if (dataName != name)
-                {
-                    data.ownedSkins.Add(name);
-                }
-            }
-        }
-        Save(data);                    // 上書き保存
+
+        Save(data);
     }
 }
 
