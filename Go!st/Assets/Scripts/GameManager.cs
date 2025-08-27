@@ -8,7 +8,7 @@ using TMPro;
 
 public class GameManager : MonoBehaviour
 {
-    public enum GameState { Title, Game, Score, Ranking, SkinChange, Help, Setting, GameSetting, Profile }
+    public enum GameState { Title, Game, Score, Ranking, SkinChange, Help, Setting, GameSetting, Profile,Gacha }
     public GameState state;
 
     public PlayerManager playerManager;
@@ -262,6 +262,7 @@ public class GameManager : MonoBehaviour
     public void ToSetting() => ChangeGameState(GameState.Setting);
     public void ToGameSetting() => ChangeGameState(GameState.GameSetting);
     public void ToProfile() => ChangeGameState(GameState.Profile);
+    public void ToGacha() => ChangeGameState(GameState.Gacha);
 
     void ChangeGameState(GameState _gameState)
     {
@@ -338,7 +339,11 @@ public class GameManager : MonoBehaviour
             playerData.materials.Add(new MaterialData(texName, mat.color));
         }
 
+        //コインがリセットされないように
         playerData.coin = SaveManager.LoadCoin();
+
+        //全てのアイテム名がリセットされないように
+        playerData.allItems = SaveManager.AllItems();
 
         // 保存
         SaveManager.Save(playerData);

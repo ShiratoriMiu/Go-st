@@ -42,6 +42,28 @@ public class MaterialData
     }
 }
 
+[System.Serializable]
+public class ItemData
+{
+    public string name;
+    public string IconName;
+    public float[] color;
+
+    public ItemData(string name, string iconName, Color c)
+    {
+        this.name = name;
+        IconName = iconName;
+        color = new float[] { c.r, c.g, c.b, c.a };
+    }
+
+    public Color ToColor()
+    {
+        if (color != null && color.Length == 4)
+            return new Color(color[0], color[1], color[2], color[3]);
+        return Color.white;
+    }
+}
+
 
 /// <summary>
 /// セーブするデータ
@@ -56,7 +78,7 @@ public class PlayerSaveData
     // コイン
     public int coin = 0;
 
-    public List<string> allItemNames = new List<string>();//全ての着せ替えアイテムの名前
+    public List<ItemData> allItems = new List<ItemData>();//全ての着せ替えアイテムの名前
 }
 
 /// <summary>
@@ -122,33 +144,45 @@ public static class SaveManager
     }
 
     //アイテム名保存
-    public static void SaveAllItemName(string name)
+    public static void SaveAllItem(string name, string iconName, Color color)
     {
-        PlayerSaveData data = Load();   // 既存データを読み込み
+        // 既存データを読み込み（null 対策）
+        PlayerSaveData data = Load() ?? new PlayerSaveData();
 
-        if (data.allItemNames == null)
+        if (data.allItems == null)
         {
-            data.allItemNames = new List<string>();
+            data.allItems = new List<ItemData>();
         }
 
-        // 重複チェック
-        if (!data.allItemNames.Contains(name))
-        {
-            data.allItemNames.Add(name);
-        }
+        // 既に同名のアイテムがあるかチェック
+        bool exists = data.allItems.Exists(x => x.name == name);
 
-        Save(data); // 上書き保存
+        if (!exists)
+        {
+            // 新しい ItemData を正しく生成して追加
+            ItemData item = new ItemData(name, iconName, color);
+
+            data.allItems.Add(item);
+            Save(data); // 上書き保存
+
+            Debug.Log($"SaveAllItem: added '{name}' (total:{data.allItems.Count})");
+        }
+        else
+        {
+            Debug.Log($"SaveAllItem: '{name}' already exists, skip add.");
+        }
     }
 
+
     //アイテム名取得
-    public static List<string> AllItemNames()
+    public static List<ItemData> AllItems()
     {
         PlayerSaveData data = Load();
         if (data == null)   // 初回起動などでデータが存在しない場合
         {
             return null;
         }
-        return data.allItemNames;
+        return data.allItems;
     }
 
     //所持アイテム名保存

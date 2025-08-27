@@ -1,19 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class LoadItemData : MonoBehaviour
 {
     public static LoadItemData Instance { get; private set; }
 
-    private bool _initialized = false;
+    public bool IsInitialized { get; private set; } = false;
 
-    [SerializeField]
-    SkinItemTarget skinItemTarget;
-    [SerializeField]
-    ColorChanger colorChanger;
-    [SerializeField]
-    MakeUpManager makeUpManager;
+    [SerializeField] SkinItemTarget skinItemTarget;
+    [SerializeField] ColorChanger colorChanger;
+    [SerializeField] MakeUpManager makeUpManager;
 
     private void Awake()
     {
@@ -26,27 +21,34 @@ public class LoadItemData : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        if (!_initialized)
-        {
-            _initialized = true;
-            InitializeOnce(); // 起動時に1回だけ呼ばれる処理
-        }
+        InitializeOnce(); // 起動時に1回だけ呼ばれる処理
     }
 
     private void InitializeOnce()
     {
-        foreach(var skinItem in skinItemTarget.ItemSlots)
+        foreach (var skinItem in skinItemTarget.ItemSlots)
         {
-            SaveManager.SaveAllItemName(skinItem.itemName);
+            string itemName = string.IsNullOrEmpty(skinItem.itemName) ? "" : skinItem.itemName;
+            string iconName = skinItem.itemIcon == null ? "" : skinItem.itemIcon.name;
+
+            SaveManager.SaveAllItem(itemName, iconName, Color.white);
         }
+
         foreach (var colorItem in colorChanger.SkinSlots)
         {
-            SaveManager.SaveAllItemName(colorItem.name);
+            string itemName = string.IsNullOrEmpty(colorItem.name) ? "" : colorItem.name;
+            string iconName = colorItem.icon == null ? "" : colorItem.icon.name;
+
+            SaveManager.SaveAllItem(itemName, iconName, colorItem.color);
         }
+
         foreach (var makeUpItem in makeUpManager.MakeUpSlots)
         {
-            SaveManager.SaveAllItemName(makeUpItem.name);
-        }
-    }
+            string itemName = string.IsNullOrEmpty(makeUpItem.name) ? "" : makeUpItem.name;
 
+            SaveManager.SaveAllItem(itemName, itemName, Color.white);
+        }
+
+        IsInitialized = true; // ? 初期化完了フラグを立てる
+    }
 }
