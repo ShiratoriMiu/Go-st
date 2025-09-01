@@ -9,22 +9,31 @@ public class TogglePressedLookButton : MonoBehaviour
     private Color pressedColor;
     private bool isPressedLook = false;
 
-    void Start()
+    void Awake()
     {
-        button = GetComponent<Button>();
-
-        // ボタンの色設定を取得
-        ColorBlock colors = button.colors;
-        normalColor = colors.normalColor;
-        pressedColor = colors.pressedColor;
-
-        // 初期状態でボタンのTransitionを止める
-        button.transition = Selectable.Transition.None;
+        Init();
     }
+
+    private void Init()
+    {
+        if (button != null) return;
+
+        button = GetComponent<Button>();
+        if (button != null)
+        {
+            ColorBlock colors = button.colors;
+            normalColor = colors.normalColor;
+            pressedColor = colors.pressedColor;
+            button.transition = Selectable.Transition.None;
+        }
+    }
+
+    public void EnsureInit() => Init();
 
     // ボタンを押したときに呼ばれる処理
     public void SetPressedLook()
     {
+        EnsureInit();
         isPressedLook = true;
         button.image.color = pressedColor;
     }
@@ -32,6 +41,7 @@ public class TogglePressedLookButton : MonoBehaviour
     // 別のタイミングで戻す（例：3秒後に戻す）
     public void ResetButtonLook()
     {
+        EnsureInit();
         isPressedLook = false;
         button.image.color = normalColor;
     }

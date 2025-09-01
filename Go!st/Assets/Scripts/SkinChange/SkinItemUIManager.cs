@@ -106,6 +106,11 @@ public class SkinItemUIManager : MonoBehaviour
             icon.sprite = item.itemIcon;
 
             itemButtons.Add(newItemButton);
+
+            if (item.isEquipped)
+            {
+                newItemButton.togglePressedLook.SetPressedLook();
+            }
         }
     }
 
