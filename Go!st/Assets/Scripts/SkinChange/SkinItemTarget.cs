@@ -11,9 +11,10 @@ public class SkinItemTarget : MonoBehaviour
         public string itemName;
         public Renderer[] itemObjectRenderers;
         public Sprite itemIcon;
-        public bool canColorChange;
+        public bool canColorChange;//色変え可能か
         public bool isOwned;
         public bool isEquipped;
+        public bool currentColorChange;//現状の色変え可能状態
     }
 
     [SerializeField]

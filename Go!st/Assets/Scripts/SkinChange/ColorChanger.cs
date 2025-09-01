@@ -102,14 +102,18 @@ public class ColorChanger : MonoBehaviour
 
     private void RestoreColor(PlayerSaveData playerSaveData)
     {
-        List<string> ownedSkins = playerSaveData.ownedSkins ?? new List<string>();
+        List<ItemData> allItems = playerSaveData.allItems ?? new List<ItemData>();
 
         foreach (var slot in SkinSlots)
         {
             if (slot == null) continue;
 
+            // セーブデータから該当する ItemData を探す
+            ItemData savedItem = allItems.Find(i => i.name == slot.name);
+            if (savedItem == null) continue;
+
             // 所持状態の復元
-            slot.isOwned = slot.isOwned || ownedSkins.Contains(slot.name);
+            slot.isOwned = savedItem.isOwned;
         }
     }
 }

@@ -127,28 +127,29 @@ public class PlayerManager : MonoBehaviour
         SkinItemTarget skinItemTarget = player.GetComponent<SkinItemTarget>();
         if (skinItemTarget == null || skinItemTarget.ItemSlots == null) return;
 
-        // equippedSkins が null なら空リストに
-        List<EquippedSkinData> equippedSkins = data.equippedSkins ?? new List<EquippedSkinData>();
-        List<string> ownedSkins = data.ownedSkins ?? new List<string>();
+        List<ItemData> allItems = data.allItems ?? new List<ItemData>();
 
         foreach (var slot in skinItemTarget.ItemSlots)
         {
             if (slot == null) continue;
 
-            // 所持状態の復元
-            slot.isOwned = slot.isOwned || ownedSkins.Contains(slot.itemName);
+            // セーブデータから該当する ItemData を探す
+            ItemData savedItem = allItems.Find(i => i.name == slot.itemName);
+            if (savedItem == null) continue;
 
-            // 装備状態の復元
-            EquippedSkinData equippedData = equippedSkins.Find(e => e.skinId == slot.itemName);
-            if (equippedData != null)
+            // 所持・装備・色変え情報を復元
+            slot.isOwned = savedItem.isOwned;
+            slot.isEquipped = savedItem.isEquipped;
+
+            if (slot.isEquipped)
             {
-                slot.isEquipped = true;
-                skinItemTarget.EquippedSkinItem(slot);  // 装備処理呼び出し
+                // 装備処理
+                skinItemTarget.EquippedSkinItem(slot);
 
-                // Renderer がある場合は全ての Renderer に色を反映
+                // Renderer がある場合は色を反映
                 if (slot.itemObjectRenderers != null)
                 {
-                    Color colorToApply = equippedData.ToColor();
+                    Color colorToApply = savedItem.ToColor();
                     foreach (var renderer in slot.itemObjectRenderers)
                     {
                         if (renderer != null && renderer.material != null)
@@ -158,12 +159,11 @@ public class PlayerManager : MonoBehaviour
                     }
                 }
             }
-            else
-            {
-                slot.isEquipped = false;
-            }
+
+            slot.currentColorChange = savedItem.isColorChangeOn;
         }
     }
+
 
     private void RestoreMaterials(PlayerSaveData data)
     {

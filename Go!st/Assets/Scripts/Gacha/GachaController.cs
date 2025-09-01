@@ -8,6 +8,8 @@ public class GachaController : MonoBehaviour
 
     public int pullNum { private set; get; }
 
+    public int pullCoinNum = 0;//1回ガチャを引くのに必要なコイン枚数
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -23,5 +25,9 @@ public class GachaController : MonoBehaviour
     public void PullGacha(int _pullNum)
     {
         pullNum = _pullNum;
+        int coinNum = SaveManager.LoadCoin();
+        coinNum -= pullCoinNum * pullNum;
+        if (coinNum < 0) coinNum = 0;
+        SaveManager.SaveCoin(coinNum);
     }
 }

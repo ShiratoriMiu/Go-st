@@ -3,26 +3,6 @@ using System.IO;
 using UnityEngine;
 
 [System.Serializable]
-public class EquippedSkinData
-{
-    public string skinId;
-    public float[] color; // RGBA
-
-    public EquippedSkinData(string skinId, Color c)
-    {
-        this.skinId = skinId;
-        this.color = new float[] { c.r, c.g, c.b, c.a };
-    }
-
-    public Color ToColor()
-    {
-        if (color != null && color.Length == 4)
-            return new Color(color[0], color[1], color[2], color[3]);
-        return Color.white;
-    }
-}
-
-[System.Serializable]
 public class MaterialData
 {
     public string textureName; // テクスチャ名
@@ -49,11 +29,20 @@ public class ItemData
     public string IconName;
     public float[] color;
 
-    public ItemData(string name, string iconName, Color c)
+    public bool isOwned;        // 所持しているか
+    public bool isEquipped;     // 装備しているか
+    public bool canColorChange;  // 色変え可能か
+    public bool isColorChangeOn; //現状色変え可能か（ガチャなどでダブったか）
+
+    public ItemData(string _name, string _iconName, Color _color, bool _isOwned, bool _isEquipped, bool _canColorChange, bool _isColorChangeOn)
     {
-        this.name = name;
-        IconName = iconName;
-        color = new float[] { c.r, c.g, c.b, c.a };
+        this.name = _name;
+        IconName = _iconName;
+        color = new float[] { _color.r, _color.g, _color.b, _color.a };
+        isOwned = _isOwned;
+        isEquipped = _isEquipped;
+        canColorChange = _canColorChange;
+        isColorChangeOn = _isColorChangeOn;
     }
 
     public Color ToColor()
@@ -71,10 +60,8 @@ public class ItemData
 [System.Serializable]
 public class PlayerSaveData
 {
-    public List<string> ownedSkins = new List<string>();//所持アイテム
-    public List<EquippedSkinData> equippedSkins = new List<EquippedSkinData>();//装備アイテム
     public List<MaterialData> materials = new List<MaterialData>();//マテリアル
-    public List<string> equippedMakes = new List<string>();//装備メイク
+
     // コイン
     public int coin = 0;
 
@@ -143,8 +130,8 @@ public static class SaveManager
         return data.coin;
     }
 
-    //アイテム名保存
-    public static void SaveAllItem(string name, string iconName, Color color)
+    //アイテム保存
+    public static void SaveAllItem(string _name, string _iconName, Color _color, bool _isOwned, bool _isEquipped, bool _canColorChange, bool _isColorChangeOn)
     {
         // 既存データを読み込み（null 対策）
         PlayerSaveData data = Load() ?? new PlayerSaveData();
@@ -155,26 +142,26 @@ public static class SaveManager
         }
 
         // 既に同名のアイテムがあるかチェック
-        bool exists = data.allItems.Exists(x => x.name == name);
+        bool exists = data.allItems.Exists(x => x.name == _name);
 
         if (!exists)
         {
             // 新しい ItemData を正しく生成して追加
-            ItemData item = new ItemData(name, iconName, color);
+            ItemData item = new ItemData(_name, _iconName, _color, _isOwned, _isEquipped, _canColorChange, _isColorChangeOn);
 
             data.allItems.Add(item);
             Save(data); // 上書き保存
 
-            Debug.Log($"SaveAllItem: added '{name}' (total:{data.allItems.Count})");
+            Debug.Log($"SaveAllItem: added '{_name}' (total:{data.allItems.Count})");
         }
         else
         {
-            Debug.Log($"SaveAllItem: '{name}' already exists, skip add.");
+            Debug.Log($"SaveAllItem: '{_name}' already exists, skip add.");
         }
     }
 
 
-    //アイテム名取得
+    //アイテム取得
     public static List<ItemData> AllItems()
     {
         PlayerSaveData data = Load();
@@ -185,22 +172,33 @@ public static class SaveManager
         return data.allItems;
     }
 
-    //所持アイテム名保存
-    public static void SaveOwnedItemName(string name)
+    public static void UpdateItemFlags(string itemName, bool? owned = null, bool? colorChangeOn = null)
     {
-        PlayerSaveData data = Load();
+        PlayerSaveData data = Load() ?? new PlayerSaveData();
 
-        if (data.ownedSkins == null)
+        if (data.allItems == null)
+            data.allItems = new List<ItemData>();
+
+        // 名前でアイテムを検索
+        ItemData item = data.allItems.Find(i => i.name == itemName);
+
+        if (item != null)
         {
-            data.ownedSkins = new List<string>();
-        }
+            // null でない場合のみ更新
+            if (owned.HasValue)
+                item.isOwned = owned.Value;
 
-        if (!data.ownedSkins.Contains(name))
+            if (colorChangeOn.HasValue)
+                item.isColorChangeOn = colorChangeOn.Value;
+
+            Save(data); // 保存
+            Debug.Log($"アイテム '{itemName}' のフラグを更新しました (isOwned={item.isOwned}, isColorChangeOn={item.isColorChangeOn})");
+        }
+        else
         {
-            data.ownedSkins.Add(name);
+            Debug.LogWarning($"アイテム '{itemName}' が見つかりません");
         }
-
-        Save(data);
     }
+
 }
 

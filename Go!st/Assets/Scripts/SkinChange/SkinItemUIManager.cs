@@ -46,7 +46,7 @@ public class SkinItemUIManager : MonoBehaviour
             var renderer = item.itemObjectRenderers;
             if (renderer != null)
             {
-                if(item.canColorChange) selectItem = renderer;
+                if(item.canColorChange && item.currentColorChange) selectItem = renderer;
                 else selectItem = null;
             }
         };

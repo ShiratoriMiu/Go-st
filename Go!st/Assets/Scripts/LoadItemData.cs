@@ -31,22 +31,23 @@ public class LoadItemData : MonoBehaviour
             string itemName = string.IsNullOrEmpty(skinItem.itemName) ? "" : skinItem.itemName;
             string iconName = skinItem.itemIcon == null ? "" : skinItem.itemIcon.name;
 
-            SaveManager.SaveAllItem(itemName, iconName, Color.white);
+            SaveManager.SaveAllItem(itemName, iconName, Color.white, skinItem.isOwned, skinItem.isEquipped, skinItem.canColorChange,skinItem.currentColorChange);
         }
 
         foreach (var colorItem in colorChanger.SkinSlots)
         {
             string itemName = string.IsNullOrEmpty(colorItem.name) ? "" : colorItem.name;
             string iconName = colorItem.icon == null ? "" : colorItem.icon.name;
-
-            SaveManager.SaveAllItem(itemName, iconName, colorItem.color);
+            //色変え機能はついてないので直接false
+            //装備中判定も使用していないのでfalse
+            SaveManager.SaveAllItem(itemName, iconName, colorItem.color, colorItem.isOwned,false, false, false);
         }
 
         foreach (var makeUpItem in makeUpManager.MakeUpSlots)
         {
             string itemName = string.IsNullOrEmpty(makeUpItem.name) ? "" : makeUpItem.name;
-
-            SaveManager.SaveAllItem(itemName, itemName, Color.white);
+            //色変え機能はついてないので直接false
+            SaveManager.SaveAllItem(itemName, itemName, Color.white,makeUpItem.isOwned,makeUpItem.isEquipped,false,false);
         }
 
         IsInitialized = true; // ? 初期化完了フラグを立てる

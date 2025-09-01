@@ -8,8 +8,6 @@ public class TitleGachaButton : MonoBehaviour
     [SerializeField] Button pull1GachaButton;
     [SerializeField] Button pull9GachaButton;
 
-    [SerializeField] int pullCoinNum = 0;//1回ガチャを引くのに必要なコイン枚数
-
     // Start is called before the first frame update
     void Start()
     {
@@ -25,6 +23,8 @@ public class TitleGachaButton : MonoBehaviour
 
     private void OnEnable()
     {
+        int pullCoinNum = GachaController.Instance.pullCoinNum;
+
         if (SaveManager.LoadCoin() < pullCoinNum)
         {
             pull1GachaButton.interactable = false;

@@ -60,6 +60,22 @@ public class GachaPullItem : MonoBehaviour
             {
                 txt.text = "";
             }
+
+            if (allItems[randIndex].canColorChange)
+            {
+                if (!allItems[randIndex].isColorChangeOn) 
+                { 
+                    SaveManager.UpdateItemFlags(selectedItem, colorChangeOn: true); 
+                }
+                else
+                {
+                    ReturnCoin();
+                }
+            }
+            else
+            {
+                ReturnCoin();
+            }
         }
 
         // èoóÕ
@@ -67,7 +83,14 @@ public class GachaPullItem : MonoBehaviour
         foreach (var item in pulledItems)
         {
             Debug.Log(item);
-            SaveManager.SaveOwnedItemName(item);
+            SaveManager.UpdateItemFlags(item, owned:true);
         }
+    }
+
+    private void ReturnCoin()
+    {
+        int coinNum = SaveManager.LoadCoin();
+        coinNum += 200;
+        SaveManager.SaveCoin(coinNum);
     }
 }

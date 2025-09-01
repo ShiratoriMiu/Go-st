@@ -272,64 +272,96 @@ public class GameManager : MonoBehaviour
 
     public void OnSkinDecided()
     {
-        PlayerSaveData playerData = new PlayerSaveData();
-
-        List<string> currentOwnedSkinNames = new List<string>();
+        // 既存のセーブデータをロード（コインや既存アイテムを保持するため）
+        PlayerSaveData playerData = SaveManager.Load() ?? new PlayerSaveData();
 
         SkinItemTarget skinItemTarget = playerManager.Player.GetComponent<SkinItemTarget>();
         if (skinItemTarget != null)
         {
-            foreach (var skinItems in skinItemTarget.ItemSlots)
+            foreach (var slot in skinItemTarget.ItemSlots)
             {
-                if (skinItems.isOwned)
+                if (slot == null) continue;
+
+                // セーブデータの allItems から対応するアイテムを探す
+                ItemData savedItem = playerData.allItems.Find(i => i.name == slot.itemName);
+
+                // 見つからなければ新規作成
+                if (savedItem == null)
                 {
-                    currentOwnedSkinNames.Add(skinItems.itemName);
+                    savedItem = new ItemData(
+                        slot.itemName,
+                        slot.itemIcon.name,
+                        Color.white,
+                        slot.isOwned,
+                        slot.isEquipped,
+                        slot.canColorChange,
+                        slot.currentColorChange
+                    );
+                    playerData.allItems.Add(savedItem);
                 }
 
-                if (skinItems.isEquipped)
+                // 所持・装備状態を更新
+                savedItem.isOwned = slot.isOwned;
+                savedItem.isEquipped = slot.isEquipped;
+
+                // 色を保存（装備中で Renderer がある場合）
+                if (slot.isEquipped && slot.itemObjectRenderers != null && slot.itemObjectRenderers.Length > 0)
                 {
-                    // 装備中スキンは色情報も保存
-                    if (skinItems.itemObjectRenderers != null && skinItems.itemObjectRenderers.Length > 0)
-                    {
-                        // 代表として最初のRendererを使う
-                        Material mat = skinItems.itemObjectRenderers[0].material;
-                        Color c = mat.color;
-                        playerData.equippedSkins.Add(new EquippedSkinData(skinItems.itemName, c));
-                    }
-                    else
-                    {
-                        // 色が取れない場合は白で保存
-                        playerData.equippedSkins.Add(new EquippedSkinData(skinItems.itemName, Color.white));
-                    }
+                    Color c = slot.itemObjectRenderers[0].material.color;
+                    savedItem.color = new float[] { c.r, c.g, c.b, c.a };
                 }
             }
         }
 
+        // メイクアップスロットも同様に処理
         foreach (var makeSlot in makeUpManager.MakeUpSlots)
         {
-            if (makeSlot.isEquipped)
+            if (makeSlot == null) continue;
+
+            ItemData savedItem = playerData.allItems.Find(i => i.name == makeSlot.name);
+            if (savedItem == null)
             {
-                playerData.equippedMakes.Add(makeSlot.name);
+                savedItem = new ItemData(
+                    makeSlot.name,
+                    makeSlot.name,
+                    Color.white,
+                    makeSlot.isOwned,
+                    makeSlot.isEquipped,
+                    false,
+                    false
+                );
+                playerData.allItems.Add(savedItem);
             }
 
-            if (makeSlot.isOwned)
-            {
-                currentOwnedSkinNames.Add(makeSlot.name);
-            }
+            savedItem.isOwned = makeSlot.isOwned;
+            savedItem.isEquipped = makeSlot.isEquipped;
         }
 
-        foreach(var colorSlot in colorChanger.SkinSlots)
+        // カラースロットも処理
+        foreach (var colorSlot in colorChanger.SkinSlots)
         {
-            if (colorSlot.isOwned)
+            if (colorSlot == null) continue;
+
+            ItemData savedItem = playerData.allItems.Find(i => i.name == colorSlot.name);
+            if (savedItem == null)
             {
-                currentOwnedSkinNames.Add(colorSlot.name);
+                savedItem = new ItemData(
+                    colorSlot.name,
+                    colorSlot.icon.name,
+                    Color.white,
+                    colorSlot.isOwned,
+                    false,
+                    false,
+                    false
+                );
+                playerData.allItems.Add(savedItem);
             }
+
+            savedItem.isOwned = colorSlot.isOwned;
+            savedItem.isEquipped = false;
         }
 
-        // 所持スキン
-        playerData.ownedSkins = currentOwnedSkinNames;
-
-        // マテリアル
+        // マテリアル保存
         Renderer playerRenderer = playerManager.Player.GetComponent<PlayerController>().renderer;
         playerData.materials.Clear();
         foreach (var mat in playerRenderer.materials)
@@ -339,15 +371,13 @@ public class GameManager : MonoBehaviour
             playerData.materials.Add(new MaterialData(texName, mat.color));
         }
 
-        //コインがリセットされないように
+        // コインだけは既存の値を維持
         playerData.coin = SaveManager.LoadCoin();
-
-        //全てのアイテム名がリセットされないように
-        playerData.allItems = SaveManager.AllItems();
 
         // 保存
         SaveManager.Save(playerData);
 
         Debug.Log("スキン決定時にデータ保存完了");
     }
+
 }
