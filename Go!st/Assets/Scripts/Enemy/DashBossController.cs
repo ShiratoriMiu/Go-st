@@ -156,7 +156,8 @@ public class DashBossController : EnemyBase
 
         if(hp <= 0)
         {
-            Dead();
+            //Dead();
+            animator.SetTrigger("isDead");
         }
     }
 }

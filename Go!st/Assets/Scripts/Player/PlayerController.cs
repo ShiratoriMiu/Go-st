@@ -51,6 +51,16 @@ public class PlayerController : MonoBehaviour
     [SerializeField] PlayerHealth playerHealth;
     [SerializeField] PlayerMove playerMove;
 
+    //着せ替え時のキャラ回転
+    [SerializeField] private float rotationSpeed = 0;
+    private bool skinChangeIsInteracting = false;
+    private Vector2 lastTouchPos;
+    private Vector2 currentTouchPos;
+
+    private float rotationVelocity = 0f;   // 現在の回転速度
+    [SerializeField] private float rotationDamping = 5f; // 減速の速さ
+
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -99,6 +109,25 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        if (gameManager.state == GameManager.GameState.SkinChange)
+        {
+            if (skinChangeIsInteracting)
+            {
+                HandleSkinChangeRotation();
+            }
+            else
+            {
+                // 指を離したら慣性で回転
+                if (Mathf.Abs(rotationVelocity) > 0.01f)
+                {
+                    transform.Rotate(0f, -rotationVelocity, 0f, Space.World);
+                    // 減速
+                    rotationVelocity = Mathf.Lerp(rotationVelocity, 0f, rotationDamping);
+                }
+            }
+            return;
+        }
+
         if (gameManager.state != GameManager.GameState.Game) return;
 
         if (isInteracting)
@@ -141,6 +170,19 @@ public class PlayerController : MonoBehaviour
         skillGaugeImage.anchoredPosition = new Vector2(skillGaugeImage.anchoredPosition.x, y);
     }
 
+    private void HandleSkinChangeRotation()
+    {
+        if (lastTouchPos != Vector2.zero)
+        {
+            float deltaX = currentTouchPos.x - lastTouchPos.x;
+            rotationVelocity = deltaX * rotationSpeed; // velocityとして保持
+            transform.Rotate(0f, -rotationVelocity * Time.deltaTime, 0f, Space.World);
+        }
+
+        lastTouchPos = currentTouchPos;
+    }
+
+
     private void OnDisable()
     {
         // Inputアクションを無効化
@@ -161,6 +203,14 @@ public class PlayerController : MonoBehaviour
     // タッチまたはマウスの開始位置
     private void OnTouchStart(Vector2 position)
     {
+        if (gameManager.state == GameManager.GameState.SkinChange)
+        {
+            skinChangeIsInteracting = true;
+            lastTouchPos = position;
+            currentTouchPos = position;
+            rotationVelocity = 0f;
+        }
+
         if (gameManager.state != GameManager.GameState.Game || !canControl) return;
 
         startPosition = position;
@@ -191,6 +241,12 @@ public class PlayerController : MonoBehaviour
     // タッチまたはマウスの現在位置
     private void OnTouchMove(Vector2 position)
     {
+        if (gameManager.state == GameManager.GameState.SkinChange && skinChangeIsInteracting)
+        {
+            currentTouchPos = position; // 位置だけ記録
+            return;
+        }
+
         if (gameManager.state != GameManager.GameState.Game || !canControl || !isInteracting) return;
 
         currentPosition = position;
@@ -200,6 +256,13 @@ public class PlayerController : MonoBehaviour
     // タッチまたはマウス操作の終了
     private void OnTouchEnd()
     {
+        if (gameManager.state == GameManager.GameState.SkinChange)
+        {
+            skinChangeIsInteracting = false;
+            lastTouchPos = Vector2.zero;
+            currentTouchPos = Vector2.zero;
+        }
+
         if (gameManager.state != GameManager.GameState.Game || !canControl || !isInteracting) return;
 
         if (playerSkill.GetIsSkill())
