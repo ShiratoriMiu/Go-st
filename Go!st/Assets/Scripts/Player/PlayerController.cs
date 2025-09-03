@@ -83,6 +83,26 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        if (gameManager.state == GameManager.GameState.SkinChange)
+        {
+            if (skinChangeIsInteracting)
+            {
+                HandleSkinChangeRotation();
+            }
+            else
+            {
+                // Šµ«‚Å‰ñ“]
+                if (Mathf.Abs(rotationVelocity) > 0.001f)
+                {
+                    transform.Rotate(0f, -rotationVelocity * Time.deltaTime, 0f, Space.World);
+
+                    // Œ¸‘¬ (exp Œ¸Š)
+                    rotationVelocity = Mathf.Lerp(rotationVelocity, 0f, rotationDamping * Time.deltaTime);
+                }
+            }
+            return;
+        }
+
         if (gameManager.state != GameManager.GameState.Game)
         {
             return;
@@ -109,25 +129,6 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (gameManager.state == GameManager.GameState.SkinChange)
-        {
-            if (skinChangeIsInteracting)
-            {
-                HandleSkinChangeRotation();
-            }
-            else
-            {
-                // Žw‚ð—£‚µ‚½‚çŠµ«‚Å‰ñ“]
-                if (Mathf.Abs(rotationVelocity) > 0.01f)
-                {
-                    transform.Rotate(0f, -rotationVelocity, 0f, Space.World);
-                    // Œ¸‘¬
-                    rotationVelocity = Mathf.Lerp(rotationVelocity, 0f, rotationDamping);
-                }
-            }
-            return;
-        }
-
         if (gameManager.state != GameManager.GameState.Game) return;
 
         if (isInteracting)
