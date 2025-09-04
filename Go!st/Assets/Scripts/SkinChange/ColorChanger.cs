@@ -23,6 +23,7 @@ public class ColorChanger : MonoBehaviour
         public Color color;
         public Sprite icon;
         public bool isOwned;
+        public bool isGacha;
     }
 
     private void Start()

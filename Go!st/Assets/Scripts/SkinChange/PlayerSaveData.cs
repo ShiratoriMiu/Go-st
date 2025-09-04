@@ -66,6 +66,8 @@ public class PlayerSaveData
     public int coin = 0;
 
     public List<ItemData> allItems = new List<ItemData>();//全ての着せ替えアイテムの名前
+
+    public List<string> gachaItems = new List<string>();//ガチャで取得可能なアイテムの名前を保存
 }
 
 /// <summary>
@@ -200,5 +202,42 @@ public static class SaveManager
         }
     }
 
+    //ガチャアイテム保存
+    public static void SaveGachaItemName(string _name)
+    {
+        // 既存データを読み込み（null 対策）
+        PlayerSaveData data = Load() ?? new PlayerSaveData();
+
+        if (data.gachaItems == null)
+        {
+            data.gachaItems = new List<string>();
+        }
+
+        // 既に同名のアイテムがあるかチェック
+        bool exists = data.gachaItems.Exists(x => x == _name);
+
+        if (!exists)
+        {
+            data.gachaItems.Add(_name);
+            Save(data); // 上書き保存
+
+            Debug.Log($"SaveAllItem: added '{_name}' (total:{data.allItems.Count})");
+        }
+        else
+        {
+            Debug.Log($"SaveAllItem: '{_name}' already exists, skip add.");
+        }
+    }
+
+    //ガチャアイテム取得
+    public static List<string> GachaItems()
+    {
+        PlayerSaveData data = Load();
+        if (data == null)   // 初回起動などでデータが存在しない場合
+        {
+            return null;
+        }
+        return data.gachaItems;
+    }
 }
 

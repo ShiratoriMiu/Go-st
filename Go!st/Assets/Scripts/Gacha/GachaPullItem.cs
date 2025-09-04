@@ -31,39 +31,59 @@ public class GachaPullItem : MonoBehaviour
         // アイテム名リストを取得
         List<ItemData> allItems = SaveManager.AllItems();
 
+        //ガチャで出るアイテム名を取得
+        List<string> gachaItems = SaveManager.GachaItems();
+
+        //全てのアイテムからガチャで出るアイテムのみに絞る
+        List<ItemData> gachaItemDatas = new List<ItemData>();
+        if (allItems != null && gachaItems != null)
+        {
+            foreach (ItemData item in allItems)
+            {
+                Debug.Log($"[{item.name}] color = {string.Join(",", item.color)}");
+
+                foreach (string gachaItemName in gachaItems) 
+                {
+                    if (item.name == gachaItemName)gachaItemDatas.Add(item);
+                }
+            }
+        }
+
         // 結果を入れるリスト
         List<string> pulledItems = new List<string>();
 
         // pullNum 回ランダムに選ぶ
         for (int i = 0; i < GachaController.Instance.pullNum; i++)
         {
-            int randIndex = Random.Range(0, allItems.Count);
+            int randIndex = Random.Range(0, gachaItemDatas.Count);
             Debug.Log("全アイテムリスト" + allItems.Count);
-            string selectedItem = allItems[randIndex].name;
+            Debug.Log("ガチャアイテムリスト" + gachaItemDatas.Count);
+
+            string selectedItem = gachaItemDatas[randIndex].name;
             pulledItems.Add(selectedItem);//獲得したアイテムの名前を登録
 
             GameObject icon = Instantiate(itemIconPrefab, itemIconBase);//結果表示用のアイコンを生成
             //アイコンの背景の色を変更
-            icon.GetComponent<Image>().color = new Color(allItems[randIndex].color[0], allItems[randIndex].color[1], allItems[randIndex].color[2], allItems[randIndex].color[3]);
+            icon.GetComponent<Image>().color = gachaItemDatas[randIndex].ToColor();
             //アイコンの子のSpriteを変更
             Image img = icon.GetComponentsInChildren<Image>().FirstOrDefault(img => img.gameObject != icon);
             Text txt = icon.GetComponentsInChildren<Text>().FirstOrDefault(txt => txt.gameObject != icon);
-            img.sprite = !string.IsNullOrEmpty(allItems[randIndex].IconName)
-                ? Resources.Load<Sprite>($"Icon/{allItems[randIndex].IconName}")
+            img.sprite = !string.IsNullOrEmpty(gachaItemDatas[randIndex].IconName)
+                ? Resources.Load<Sprite>($"Icon/{gachaItemDatas[randIndex].IconName}")
                 : null;
             if(img.sprite == null)
             {
-                img.color = new Color(0, 0, 0, 0);
-                if(allItems[randIndex].IconName != "Null") txt.text = allItems[randIndex].IconName;
+                img.color = new Color(1, 1, 1, 1);
+                if(gachaItemDatas[randIndex].IconName != "Null") txt.text = gachaItemDatas[randIndex].IconName;
             }
             else
             {
                 txt.text = "";
             }
 
-            if (allItems[randIndex].canColorChange)
+            if (gachaItemDatas[randIndex].canColorChange)
             {
-                if (!allItems[randIndex].isColorChangeOn) 
+                if (!gachaItemDatas[randIndex].isColorChangeOn) 
                 { 
                     SaveManager.UpdateItemFlags(selectedItem, colorChangeOn: true); 
                 }

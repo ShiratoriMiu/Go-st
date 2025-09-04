@@ -375,6 +375,8 @@ public class GameManager : MonoBehaviour
         // ƒRƒCƒ“‚¾‚¯‚ÍŠù‘¶‚Ì’l‚ğˆÛ
         playerData.coin = SaveManager.LoadCoin();
 
+        playerData.gachaItems = SaveManager.GachaItems();
+
         // •Û‘¶
         SaveManager.Save(playerData);
 

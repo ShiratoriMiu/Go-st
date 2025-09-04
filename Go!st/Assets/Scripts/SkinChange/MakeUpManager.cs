@@ -15,6 +15,7 @@ public class MakeUpManager : MonoBehaviour
         public MaterialSlot slotType;
         public bool isOwned;
         [HideInInspector] public bool isEquipped;
+        public bool isGacha;
     }
 
     [SerializeField] private MakeUpSlot[] makeUpSlots;

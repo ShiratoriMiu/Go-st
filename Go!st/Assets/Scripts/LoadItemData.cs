@@ -22,6 +22,7 @@ public class LoadItemData : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         InitializeOnce(); // 起動時に1回だけ呼ばれる処理
+
     }
 
     private void InitializeOnce()
@@ -32,6 +33,10 @@ public class LoadItemData : MonoBehaviour
             string iconName = skinItem.itemIcon == null ? "" : skinItem.itemIcon.name;
 
             SaveManager.SaveAllItem(itemName, iconName, Color.white, skinItem.isOwned, skinItem.isEquipped, skinItem.canColorChange,skinItem.currentColorChange);
+            if (skinItem.isGacha)
+            {
+                SaveManager.SaveGachaItemName(itemName);
+            }
         }
 
         foreach (var colorItem in colorChanger.SkinSlots)
@@ -41,6 +46,10 @@ public class LoadItemData : MonoBehaviour
             //色変え機能はついてないので直接false
             //装備中判定も使用していないのでfalse
             SaveManager.SaveAllItem(itemName, iconName, colorItem.color, colorItem.isOwned,false, false, false);
+            if (colorItem.isGacha)
+            {
+                SaveManager.SaveGachaItemName(itemName);
+            }
         }
 
         foreach (var makeUpItem in makeUpManager.MakeUpSlots)
@@ -48,6 +57,10 @@ public class LoadItemData : MonoBehaviour
             string itemName = string.IsNullOrEmpty(makeUpItem.name) ? "" : makeUpItem.name;
             //色変え機能はついてないので直接false
             SaveManager.SaveAllItem(itemName, itemName, Color.white,makeUpItem.isOwned,makeUpItem.isEquipped,false,false);
+            if (makeUpItem.isGacha)
+            {
+                SaveManager.SaveGachaItemName(itemName);
+            }
         }
 
         IsInitialized = true; // ? 初期化完了フラグを立てる
