@@ -15012,7 +15012,7 @@ MonoBehaviour:
     isOwned: 0
     isEquipped: 0
     currentColorChange: 0
-    isGacha: 1
+    isGacha: 0
   - itemName: Axe
     itemObjectRenderers:
     - {fileID: 7795025393940651420}
@@ -15062,7 +15062,7 @@ MonoBehaviour:
     isEquipped: 0
     currentColorChange: 0
     isGacha: 1
-  - itemName: Glass
+  - itemName: Glasses
     itemObjectRenderers:
     - {fileID: 6116392421112654668}
     itemIcon: {fileID: 21300000, guid: 91118f851e15bcb459bf57683c0637b0, type: 3}
@@ -15089,7 +15089,7 @@ MonoBehaviour:
     isOwned: 0
     isEquipped: 0
     currentColorChange: 0
-    isGacha: 1
+    isGacha: 0
   maxItemNum: 2
 --- !u!1 &5128430682029378978
 GameObject:
