@@ -6,16 +6,12 @@ using DG.Tweening;
 
 public class ItemNumTMP : MonoBehaviour
 {
-    TMP_Text itemNumTMP;
+    [SerializeField] TMP_Text itemNumTMP;
 
     private int numEquippedItems = 0;//現在装備しているアイテムの数
 
     [SerializeField] private float stretchDuration = 0.2f;
 
-    private void Start()
-    {
-        itemNumTMP = GetComponent<TMP_Text>();
-    }
 
     public void UpdateItemNumTMP(int _value, int _maxItemNum)
     {
@@ -47,5 +43,12 @@ public class ItemNumTMP : MonoBehaviour
 
 
     }
+
+    public void ResetNumEquippedItems()
+    {
+        numEquippedItems = 0;
+        itemNumTMP.text = "0/2"; // 最大値は適宜セット
+    }
+
 
 }

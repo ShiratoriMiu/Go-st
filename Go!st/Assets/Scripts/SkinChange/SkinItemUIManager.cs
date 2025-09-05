@@ -73,6 +73,9 @@ public class SkinItemUIManager : MonoBehaviour
             itemButtons = new List<ItemButton>();
         }
 
+        // 生成開始前にリセット
+        itemNumTMP.ResetNumEquippedItems();
+
         foreach (var item in currentTarget.ItemSlots)
         {
             if (!item.isOwned) continue; // 所持していないアイテムはスキップ
@@ -110,6 +113,7 @@ public class SkinItemUIManager : MonoBehaviour
             if (item.isEquipped)
             {
                 newItemButton.togglePressedLook.SetPressedLook();
+                itemNumTMP.UpdateItemNumTMP(1, 2);
             }
         }
     }
