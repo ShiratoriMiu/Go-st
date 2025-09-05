@@ -16,7 +16,10 @@ public class ShopPopUpController : MonoBehaviour
     [SerializeField] Text iconText;
     [SerializeField] Text coinText;
 
+    [SerializeField] Button buyButton;
+
     private string itemName;
+    private int coinNum = 0;
 
     private Action onBuyAction;
 
@@ -33,15 +36,25 @@ public class ShopPopUpController : MonoBehaviour
         shopPop.SetActive(false);
     }
 
-    public void ShowShopPop(Sprite sprite, Color bgColor, string text, int coinNum, Action onBuy)
+    public void ShowShopPop(Sprite _sprite, Color _bgColor, string _text, int _coinNum, Action _onBuy)
     {
         shopPop.SetActive(true);
-        iconImage.sprite = sprite;
-        iconBG.color = bgColor;
-        iconText.text = text;
-        coinText.text = coinNum.ToString();
+        iconImage.sprite = _sprite;
+        iconBG.color = _bgColor;
+        iconText.text = _text;
+        coinText.text = _coinNum.ToString();
+        coinNum = _coinNum;
 
-        onBuyAction = onBuy; // コールバック登録
+        if (coinNum > SaveManager.LoadCoin())
+        {
+            buyButton.interactable = false;
+        }
+        else
+        {
+            buyButton.interactable= true;
+        }
+
+        onBuyAction = _onBuy; // コールバック登録
     }
 
     public void CloseShopPop()
@@ -52,6 +65,9 @@ public class ShopPopUpController : MonoBehaviour
     public void BuyItem()
     {
         Debug.Log("アイテム購入処理");
+        int nowCoinNum = SaveManager.LoadCoin();
+        nowCoinNum -= coinNum;
+        SaveManager.SaveCoin(nowCoinNum);
         onBuyAction?.Invoke(); // 外から渡された処理を実行
     }
 }

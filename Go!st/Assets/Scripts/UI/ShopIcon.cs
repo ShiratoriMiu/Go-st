@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using static System.Collections.Specialized.BitVector32;
 
 public class ShopIcon : MonoBehaviour
 {
@@ -20,67 +19,80 @@ public class ShopIcon : MonoBehaviour
 
     [SerializeField] int coinNum = 0;
 
+    void Awake()
+    {
+        shopButton = GetComponent<Button>();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        ItemChecker();
+        var item = ItemChecker();
+        if (item != null)
+        {
+            SetIcon(item);
+        }
+        else
+        {
+            Debug.LogWarning($"Item not found: {selectItemName}");
+            // 必要ならデフォルト表示をセット
+            iconImage.sprite = null;
+            iconImage.color = Color.clear;
+            iconText.text = selectItemName.ToString();
+            iconBG.color = Color.white;
+        }
 
-        shopButton = this.GetComponent<Button>();
-
+        shopButton = GetComponent<Button>();
         shopButton.onClick.AddListener(() =>
         {
-            ShopPopUpController.Instance.ShowShopPop(iconImage.sprite, iconBG.color, iconText.text, coinNum, Buy);
+            ShopPopUpController.Instance.ShowShopPop(
+                iconImage.sprite, iconBG.color, iconText.text, coinNum, Buy);
         });
     }
 
-    private void ItemChecker()
+    private void OnEnable()
     {
-        foreach (var skinItem in skinItemTarget.ItemSlots)
-        {
-            if (skinItem.itemName == selectItemName.ToString())
-            {
-                if (skinItem.itemIcon != null)
-                {
-                    iconImage.sprite = skinItem.itemIcon;
-                    iconText.text = "";
-                }
-                else
-                {
-                    iconText.text = skinItem.itemName;
-                }
-                iconBG.color = Color.white;
-            }
-        }
+        if (shopButton == null) shopButton = GetComponent<Button>();
+        ButtonOff();
+    }
 
-        foreach (var skinColor in colorChanger.SkinSlots)
-        {
-            if (skinColor.name == selectItemName.ToString())
-            {
-                if (skinColor.icon != null)
-                {
-                    iconImage.sprite = skinColor.icon;
-                    iconBG.color = Color.white;
-                }
-                else
-                {
-                    iconImage.sprite = null;
-                    iconImage.color = Color.clear;
-                    iconBG.color = skinColor.color;
-                }
-                iconText.text = "";
-            }
-        }
+    void ButtonOff()
+    {
+        var item = ItemChecker();
+        if (item != null && item.isOwned)
+            shopButton.interactable = false;
+    }
 
-        foreach (var make in makeUpManager.MakeUpSlots)
+    private void SetIcon(ItemData _item)
+    {
+        Sprite iconSprite = Resources.Load<Sprite>($"Icon/{_item.IconName}");
+
+        if (iconSprite != null)
         {
-            if (make.name == selectItemName.ToString())
+            iconImage.sprite = iconSprite;
+            iconText.text = "";
+            iconBG.color = Color.white;
+        }
+        else
+        {
+            iconImage.sprite = null;
+            iconImage.color = Color.clear;
+            iconText.text = _item.name;
+            iconBG.color = _item.ToColor();
+        }
+        
+    }
+
+    private ItemData ItemChecker()
+    {
+        foreach(var item in SaveManager.AllItems())
+        {
+            if(item.name == selectItemName.ToString())
             {
-                iconImage.sprite = null;
-                iconImage.color = Color.clear;
-                iconBG.color = Color.white;
-                iconText.text = make.name;
+                return item;
             }
         }
+        return null;
     }
 
     private void Buy()
@@ -111,5 +123,6 @@ public class ShopIcon : MonoBehaviour
         }
 
         SaveManager.UpdateItemFlags(selectItemName.ToString(), owned: true,colorChangeOn:true);
+        ButtonOff();
     }
 }
