@@ -25,7 +25,7 @@ public abstract class EnemyBase : MonoBehaviour
 
     [SerializeField] protected Animator animator;
     [SerializeField] protected Renderer[] enemyRenderers;
-    [SerializeField] protected Collider enemyCollider;
+    [SerializeField] protected Collider[] enemyColliders;
 
     protected bool previousSkillState = false;
 
@@ -83,7 +83,12 @@ public abstract class EnemyBase : MonoBehaviour
             isDead = true;
             animator.SetTrigger("isDead");
             OnDeath?.Invoke(); // ボス/雑魚共通で発火
-            enemyCollider.enabled = false;
+            Debug.Log("ボス死亡発火");
+            // 複数Colliderを無効化
+            foreach (var col in enemyColliders)
+            {
+                col.enabled = false;
+            }
             rb.useGravity = false;
         }
     }
@@ -101,11 +106,12 @@ public abstract class EnemyBase : MonoBehaviour
     //死亡アニメーションのアニメーションイベントで呼ぶ
     public virtual void Dead()
     {
-        Hidden();
         hp = maxHp;
         levelManager?.AddEnemyKill();
         gameManager?.AddEnemiesDefeatedNum(defeatedNum);
         enemyDeadEffectManager.PlayEffect(this.transform.position);
+
+        Hidden();
     }
 
     protected virtual void OnCollisionEnter(Collision collision)
@@ -123,7 +129,19 @@ public abstract class EnemyBase : MonoBehaviour
     {
         isActive = true;
         animator.enabled = true;
-        enemyCollider.enabled = true;
+        // 複数Colliderを無効化
+        foreach (var col in enemyColliders)
+        {
+            col.enabled = true;
+        }
+        //アニメーターのトリガーをリセット
+        foreach (var p in animator.parameters)
+        {
+            if (p.type == AnimatorControllerParameterType.Trigger)
+                animator.ResetTrigger(p.name);
+        }
+
+
         foreach (Renderer renderer in enemyRenderers)
         {
             renderer.enabled = true;
@@ -135,7 +153,11 @@ public abstract class EnemyBase : MonoBehaviour
     {
         isActive = false;
         animator.enabled = false;
-        enemyCollider.enabled = false;
+        // 複数Colliderを無効化
+        foreach (var col in enemyColliders)
+        {
+            col.enabled = false;
+        }
         foreach (Renderer renderer in enemyRenderers)
         {
             renderer.enabled = false;

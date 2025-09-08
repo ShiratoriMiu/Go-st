@@ -2,15 +2,13 @@ using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using DG.Tweening;
 
 public class ShotBossController : EnemyBase
 {
     [SerializeField] GameObject bulletPrefab;
     [SerializeField, Header("一度に発射する弾の数")] int bulletNum = 4;
-    [SerializeField, Header("敵の索敵範囲に入ってから攻撃するまでの時間")] float attackInterval = 5f;
+    [SerializeField, Header("索敵後に攻撃するまでの時間")] float attackInterval = 5f;
     [SerializeField, Header("弾のスピード")] float bulletSpeed = 5f;
-    [SerializeField, Header("上昇距離")] float riseDistance = 5f;
     [SerializeField, Header("弾の発射位置の高さ調整")] float offsetY = 0.5f;
 
     float attackIntervalCount = 0f;
@@ -19,67 +17,58 @@ public class ShotBossController : EnemyBase
 
     void FixedUpdate()
     {
-        if (!isActive) return;
+        if (!isActive || isDead) return;
         if (gameManager.state != GameManager.GameState.Game) return;
 
         if (player != null && playerController != null)
         {
             Stan();
-            if (playerController.GetIsSkill())
-            {
-                return;
-            }
-            else
-            {
-                if (state == State.Charge)
-                {
-                    attackIntervalCount += Time.deltaTime;
-                    //animator.SetTrigger("isAttack");
 
-                    if (attackIntervalCount > attackInterval)
+            if (playerController.GetIsSkill()) return;
+
+            if (state == State.Charge)
+            {
+                attackIntervalCount += Time.deltaTime;
+
+                if (attackIntervalCount > attackInterval)
+                {
+                    attackIntervalCount = 0f; // カウントリセット
+
+                    float angleStep = 360f / bulletNum;
+                    float angle = 0f;
+                    animator.SetTrigger("isAttack");
+                    for (int i = 0; i < bulletNum; i++)
                     {
-                        attackIntervalCount = 0f; // カウントリセット
-                        
-                        float angleStep = 360f / bulletNum;
-                        float angle = 0f;
+                        // 敵の forward を基準に回転
+                        Quaternion rot = Quaternion.Euler(0, angle, 0) * transform.rotation;
+                        Vector3 bulletMoveDirection = rot * Vector3.forward; // forward方向を回転させる
 
-                        for (int i = 0; i < bulletNum; i++)
+                        GameObject bullet = Instantiate(
+                            bulletPrefab,
+                            this.transform.position + new Vector3(0, offsetY, 0),
+                            Quaternion.LookRotation(bulletMoveDirection) // 弾の向きを設定
+                        );
+
+                        Rigidbody bulletRb = bullet.GetComponent<Rigidbody>();
+                        if (bulletRb != null)
                         {
-                            // 水平方向の角度を設定
-                            float bulletDirX = Mathf.Cos(angle * Mathf.Deg2Rad);
-                            float bulletDirZ = Mathf.Sin(angle * Mathf.Deg2Rad);
-
-                            Vector3 bulletMoveDirection = new Vector3(bulletDirX, 0, bulletDirZ).normalized;
-
-                            GameObject bullet = Instantiate(bulletPrefab, this.transform.position + new Vector3(0, offsetY, 0), Quaternion.identity);
-                            Rigidbody bulletRb = bullet.GetComponent<Rigidbody>();
-                            if (bulletRb != null)
-                            {
-                                bulletRb.velocity = bulletMoveDirection * bulletSpeed;
-                            }
-
-                            angle += angleStep;
+                            bulletRb.velocity = bulletMoveDirection * bulletSpeed;
                         }
-                        //animator.SetTrigger("isWait");
-                        state = State.Follow; // 攻撃後はFollow状態に戻るなど必要に応じて
-                    }
-                }
 
-                if (state == State.Follow)
-                {
-                    Vector3 direction = (player.transform.position - transform.position).normalized;
-                    rb.velocity = direction * moveSpeed;
-                    transform.LookAt(player.transform.position);
+                        angle += angleStep;
+                    }
+
+                    state = State.Follow; // 攻撃後はFollow状態に戻る
                 }
+            }
+
+            if (state == State.Follow)
+            {
+                Vector3 direction = (player.transform.position - transform.position).normalized;
+                rb.velocity = direction * moveSpeed;
+                transform.LookAt(player.transform.position);
             }
         }
-    }
-
-    private void Reset()
-    {
-        state = State.Follow;
-        rb.isKinematic = false;
-        //animator.SetTrigger("isWait");
     }
 
     protected override void OnCollisionEnter(Collision collision)
@@ -90,10 +79,9 @@ public class ShotBossController : EnemyBase
 
         if (collision.gameObject.CompareTag("Player"))
         {
-            transform.DOKill(); // DOTween 移動停止
+            transform.DOKill();
             rb.isKinematic = false;
             state = State.Charge;
-            //animator.SetTrigger("isWait");
         }
     }
 
@@ -110,17 +98,15 @@ public class ShotBossController : EnemyBase
     public override void Hidden()
     {
         base.Hidden();
+        
         rb.WakeUp();
-        Reset();
-    }
+        rb.isKinematic = false;
 
-    public override void Damage(int _damage)
-    {
-        base.Damage(_damage);
+        state = State.Follow;
+        attackIntervalCount = 0f;
 
-        if (hp <= 0)
-        {
-            Dead();
-        }
+        animator.ResetTrigger("isAttack");
+        animator.ResetTrigger("isDead");
+        animator.Play("Idle", 0, 0f);
     }
 }

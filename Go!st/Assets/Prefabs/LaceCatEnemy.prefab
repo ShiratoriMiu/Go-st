@@ -680,7 +680,9 @@ MonoBehaviour:
   animator: {fileID: 8620114576161207822}
   enemyRenderers:
   - {fileID: 8706703283683022025}
-  enemyCollider: {fileID: 6880640630189763685}
+  enemyColliders:
+  - {fileID: 6880640630189763685}
+  - {fileID: 8177312051075378603}
   attackInterval: 2
   dashDistance: 5
   dashDuration: 1.5

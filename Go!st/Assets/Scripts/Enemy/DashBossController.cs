@@ -143,21 +143,11 @@ public class DashBossController : EnemyBase
         rb.WakeUp();
         rb.isKinematic = false;
         animator.SetBool("isWait", false);
+        animator.ResetTrigger("isDead");
 
         if (lineRenderer != null)
         {
             lineRenderer.enabled = false;
-        }
-    }
-
-    public override void Damage(int _damage)
-    {
-        base.Damage(_damage);
-
-        if(hp <= 0)
-        {
-            //Dead();
-            animator.SetTrigger("isDead");
         }
     }
 }

@@ -104,7 +104,12 @@ MonoBehaviour:
   animator: {fileID: 5635570882279310782}
   enemyRenderers:
   - {fileID: 8853573783609187573}
-  enemyCollider: {fileID: 2325765228274746030}
+  enemyColliders:
+  - {fileID: 2325765228274746030}
+  bulletPrefab: {fileID: 0}
+  isShot: 0
+  shotCoolTime: 5
+  bulletSpeed: 10
 --- !u!1001 &5210029761843479436
 PrefabInstance:
   m_ObjectHideFlags: 0
