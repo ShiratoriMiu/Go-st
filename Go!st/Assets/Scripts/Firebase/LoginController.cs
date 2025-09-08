@@ -4,6 +4,7 @@ using Firebase.Database;
 using UnityEngine;
 using System;
 using System.Threading.Tasks;
+using UnityEngine.UI;
 
 public class LoginController : MonoBehaviour
 {
@@ -16,6 +17,8 @@ public class LoginController : MonoBehaviour
     private TaskCompletionSource<bool> firebaseReadyTcs = new TaskCompletionSource<bool>();
     public Task WaitForFirebaseReadyAsync() => firebaseReadyTcs.Task;
 
+    [SerializeField] InputField nameInputField;
+
     private void Awake()
     {
         if (Instance == null)
@@ -27,6 +30,8 @@ public class LoginController : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        nameInputField.onEndEdit.AddListener(OnNameEndEdit);
     }
 
     private async void Start()
@@ -80,6 +85,12 @@ public class LoginController : MonoBehaviour
         }
     }
 
+    private void OnNameEndEdit(string newName)
+    {
+        // 非同期処理を発火（戻り値は使わない）
+        _ = SetUserName(newName);
+    }
+
     /// <summary>
     /// Firebaseユーザーの表示名を設定する
     /// </summary>
@@ -91,13 +102,27 @@ public class LoginController : MonoBehaviour
             return;
         }
 
+        if (string.IsNullOrWhiteSpace(newName))
+        {
+            newName = "Player";
+        }
+
         try
         {
+            // Firebase Auth の DisplayName を更新
             var profile = new UserProfile { DisplayName = newName };
             await User.UpdateUserProfileAsync(profile);
 
+            // users/{uid}/displayName を更新
             await DbReference
                 .Child("users")
+                .Child(User.UserId)
+                .Child("displayName")
+                .SetValueAsync(newName);
+
+            // rankings/{uid}/displayName も更新
+            await DbReference
+                .Child("rankings")
                 .Child(User.UserId)
                 .Child("displayName")
                 .SetValueAsync(newName);
@@ -109,6 +134,7 @@ public class LoginController : MonoBehaviour
             Debug.LogError($"ユーザー名設定失敗: {e}");
         }
     }
+
 
     /// <summary>
     /// 現在のユーザー名を取得（未ログイン時は "NoName" を返す）

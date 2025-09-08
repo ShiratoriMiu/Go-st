@@ -45,7 +45,7 @@ public class RankingManager : MonoBehaviour
         {
             GameObject bg = Instantiate(rankingTextBGPrefab, rankingContainer);
             Text rankingText = bg.GetComponentInChildren<Text>();
-            rankingText.text = $"No.{i + 1}  --- : ---";
+            rankingText.text = $"{i + 1}.  --- : ---";
             rankingTextList.Add(rankingText);
         }
     }
@@ -93,7 +93,7 @@ public class RankingManager : MonoBehaviour
 
             for (int i = 0; i < rankingTextList.Count; i++)
             {
-                rankingTextList[i].text = $"No.{i + 1} --- : ---";
+                rankingTextList[i].text = $"{i + 1}. --- : ---";
             }
         }
         else
@@ -113,11 +113,11 @@ public class RankingManager : MonoBehaviour
             if (i < rankings.Count)
             {
                 var entry = rankings[i];
-                rankingTextList[i].text = $"No.{entry.rank} {entry.name} : {entry.score}";
+                rankingTextList[i].text = $"{entry.rank}. {entry.name} : {entry.score}";
             }
             else
             {
-                rankingTextList[i].text = $"No.{i + 1} --- : ---";
+                rankingTextList[i].text = $"{i + 1}. --- : ---";
             }
         }
     }
