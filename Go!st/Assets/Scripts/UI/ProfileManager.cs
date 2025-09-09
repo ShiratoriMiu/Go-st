@@ -8,6 +8,7 @@ public class ProfileManager : MonoBehaviour
     [SerializeField] Text nameText;
     [SerializeField] Text rankText;
     [SerializeField] Text bestScoreText;
+    [SerializeField] GameObject changePlayerIconScrollView;
 
     [SerializeField] private FirebaseController firebaseController;
 
@@ -21,5 +22,15 @@ public class ProfileManager : MonoBehaviour
         rankText.text = $"Rank : {bestScore.rank.ToString()}";
 
         bestScoreText.text = $"BestScore : {bestScore.score.ToString()}";
+    }
+
+    public void ShowChangePlayerIconScrollView()
+    {
+        changePlayerIconScrollView.SetActive(true);
+    }
+
+    public void CloseChangePlayerIconScrollView()
+    {
+        changePlayerIconScrollView.SetActive(false);
     }
 }
