@@ -63,13 +63,27 @@ public enum PlayerIconStyle
 [System.Serializable]
 public class PlayerIconData
 {
-    [HideInInspector]public string name;
+    public string name;
     public PlayerIconStyle style;
 
-    public PlayerIconData(string _name, PlayerIconStyle _style)
+    public PlayerIconData(string name, PlayerIconStyle style)
     {
-        name = _name;
-        this.style = _style;
+        this.name = name;
+        this.style = style;
+    }
+
+    public override bool Equals(object obj)
+    {
+        if (obj is PlayerIconData other)
+        {
+            return this.name == other.name && this.style == other.style;
+        }
+        return false;
+    }
+
+    public override int GetHashCode()
+    {
+        return (name, style).GetHashCode();
     }
 }
 
