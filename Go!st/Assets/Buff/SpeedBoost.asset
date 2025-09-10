@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d009cd0553508c4e8bc55aa0d00d3ac, type: 3}
   m_Name: SpeedBoost
   m_EditorClassIdentifier: 
-  buffName: SpeedBoost
+  buffType: 1
   healAmount: 0
-  speedMultiplier: 5
+  speedMultiplier: 2
+  skillCoolTimeAdd: 1
   duration: 2
   canGetSkill: 0

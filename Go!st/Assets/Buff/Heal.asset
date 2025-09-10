@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d009cd0553508c4e8bc55aa0d00d3ac, type: 3}
   m_Name: Heal
   m_EditorClassIdentifier: 
-  buffType: 2
+  buffType: 0
   healAmount: 1
   speedMultiplier: 0
   skillCoolTimeAdd: 1
