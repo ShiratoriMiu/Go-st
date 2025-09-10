@@ -377,6 +377,10 @@ public class GameManager : MonoBehaviour
 
         playerData.gachaItems = SaveManager.GachaItems();
 
+        playerData.ownedPlayerIcons = SaveManager.LoadOwnedPlayerIcons();
+
+        playerData.equippedPlayerIcons = SaveManager.LoadEquippedPlayerIcons();
+
         // •Û‘¶
         SaveManager.Save(playerData);
 

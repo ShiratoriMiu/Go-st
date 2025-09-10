@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 [System.Serializable]
@@ -53,6 +54,24 @@ public class ItemData
     }
 }
 
+public enum PlayerIconStyle
+{
+    BackGround,
+    Chara,
+}
+
+[System.Serializable]
+public class PlayerIconData
+{
+    [HideInInspector]public string name;
+    public PlayerIconStyle style;
+
+    public PlayerIconData(string _name, PlayerIconStyle _style)
+    {
+        name = _name;
+        this.style = _style;
+    }
+}
 
 /// <summary>
 /// セーブするデータ
@@ -68,6 +87,10 @@ public class PlayerSaveData
     public List<ItemData> allItems = new List<ItemData>();//全ての着せ替えアイテムの名前
 
     public List<string> gachaItems = new List<string>();//ガチャで取得可能なアイテムの名前を保存
+
+    public List<PlayerIconData> ownedPlayerIcons = new List<PlayerIconData>();//所持プレイヤーアイコンの名前
+
+    public List<PlayerIconData> equippedPlayerIcons = new List<PlayerIconData>();
 }
 
 /// <summary>
@@ -238,6 +261,77 @@ public static class SaveManager
             return null;
         }
         return data.gachaItems;
+    }
+
+    // アイコン購入（所持済みに追加）
+    public static void SaveOwnedPlayerIcon(PlayerIconData iconName)
+    {
+        PlayerSaveData data = Load() ?? new PlayerSaveData();
+
+        if (data.ownedPlayerIcons == null)
+            data.ownedPlayerIcons = new List<PlayerIconData>();
+
+        if (!data.ownedPlayerIcons.Contains(iconName))
+        {
+            data.ownedPlayerIcons.Add(iconName);
+            Save(data);
+            Debug.Log($"SavePlayerIcon: '{iconName}' を購入済みに追加しました");
+        }
+        else
+        {
+            Debug.Log($"SavePlayerIcon: '{iconName}' はすでに所持済みです");
+        }
+    }
+
+    // 所持アイコン一覧を取得
+    public static List<PlayerIconData> LoadOwnedPlayerIcons()
+    {
+        PlayerSaveData data = Load();
+        return data?.ownedPlayerIcons ?? new List<PlayerIconData>();
+    }
+
+    // アイコン装備
+    public static void SaveEquippedPlayerIcon(PlayerIconData newIcon)
+    {
+        PlayerSaveData data = Load() ?? new PlayerSaveData();
+
+        if (data.equippedPlayerIcons == null)
+            data.equippedPlayerIcons = new List<PlayerIconData>();
+
+        // 同じ style のアイコンがすでにあるか探す
+        int index = data.equippedPlayerIcons.FindIndex(icon => icon.style == newIcon.style);
+
+        if (index >= 0)
+        {
+            // すでにあるなら上書き
+            data.equippedPlayerIcons[index] = newIcon;
+            Debug.Log($"SavePlayerIcon: '{newIcon}' を {newIcon.style} として上書きしました");
+        }
+        else
+        {
+            // まだそのスタイルがないなら追加
+            data.equippedPlayerIcons.Add(newIcon);
+            Debug.Log($"SavePlayerIcon: '{newIcon}' を {newIcon.style} として新規追加しました");
+        }
+
+        // 念のため最大2つに制限（BackGround と Chara）
+        if (data.equippedPlayerIcons.Count > 2)
+        {
+            data.equippedPlayerIcons = data.equippedPlayerIcons
+                .GroupBy(icon => icon.style)
+                .Select(g => g.First())
+                .ToList();
+        }
+
+        Save(data);
+    }
+
+
+    // 装備アイコン一覧を取得
+    public static List<PlayerIconData> LoadEquippedPlayerIcons()
+    {
+        PlayerSaveData data = Load();
+        return data?.equippedPlayerIcons ?? new List<PlayerIconData>();
     }
 }
 

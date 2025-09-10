@@ -41,6 +41,7 @@ public class ShopPopUpController : MonoBehaviour
         shopPop.SetActive(true);
         iconImage.sprite = _sprite;
         iconBG.color = _bgColor;
+        iconBG.sprite = null;
         iconText.text = _text;
         coinText.text = _coinNum.ToString();
         coinNum = _coinNum;
@@ -52,6 +53,28 @@ public class ShopPopUpController : MonoBehaviour
         else
         {
             buyButton.interactable= true;
+        }
+
+        onBuyAction = _onBuy; // コールバック登録
+    }
+
+    public void ShowShopPop(Sprite _sprite, Sprite _bgSprite, string _text, int _coinNum, Action _onBuy)
+    {
+        shopPop.SetActive(true);
+        iconImage.sprite = _sprite;
+        iconBG.sprite = _bgSprite;
+        iconBG.color = Color.white;
+        iconText.text = _text;
+        coinText.text = _coinNum.ToString();
+        coinNum = _coinNum;
+
+        if (coinNum > SaveManager.LoadCoin())
+        {
+            buyButton.interactable = false;
+        }
+        else
+        {
+            buyButton.interactable = true;
         }
 
         onBuyAction = _onBuy; // コールバック登録

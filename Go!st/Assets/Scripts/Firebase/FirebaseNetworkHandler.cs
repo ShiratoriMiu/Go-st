@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 using Firebase.Database;
 using System.Threading.Tasks;
 using System.Net.NetworkInformation; // ← インターネット確認用
@@ -8,7 +7,7 @@ using System.Net.NetworkInformation; // ← インターネット確認用
 public class FirebaseNetworkHandler : MonoBehaviour
 {
     public GameObject errorPanel;
-    public TMP_Text errorText;
+    public Text errorText;
     public Button retryButton;
 
     private DatabaseReference dbRef;
