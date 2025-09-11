@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5288184277903770294}
   - component: {fileID: 5434017872987486783}
+  - component: {fileID: -220483646073098962}
   m_Layer: 0
   m_Name: SpeedBoost
   m_TagString: Untagged
@@ -46,6 +47,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buffData: {fileID: 11400000, guid: 58a2bff56df675946a4c5226e8e643d0, type: 2}
+--- !u!135 &-220483646073098962
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2456954262616944531}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.35
+  m_Center: {x: 0, y: -0.17, z: 0}
 --- !u!1001 &4584562472634753571
 PrefabInstance:
   m_ObjectHideFlags: 0
