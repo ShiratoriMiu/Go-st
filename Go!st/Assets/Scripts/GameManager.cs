@@ -47,6 +47,8 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private ColorChanger colorChanger;
 
+    [SerializeField] private MapRandomChanger mapRandomChanger;
+
     CenterToGrayEffect centerToGrayEffect;
 
     private int finalScore;
@@ -239,6 +241,7 @@ public class GameManager : MonoBehaviour
     {
         if (_isReset)
         {
+            mapRandomChanger.ActivateRandomMap();
             playerManager.PlayerGameStart();
             StartGame();
         }

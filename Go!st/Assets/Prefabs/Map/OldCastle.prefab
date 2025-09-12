@@ -288,7 +288,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7830831872812340372}
-  - component: {fileID: 6626813385685906383}
   m_Layer: 0
   m_Name: OldCastle
   m_TagString: Untagged
@@ -316,27 +315,6 @@ Transform:
   - {fileID: 1749680204375382163}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &6626813385685906383
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7190227799683621091}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 50.49, y: 1, z: 91.51}
-  m_Center: {x: 0, y: 1.52, z: 0}
 --- !u!1 &8013143682588197444
 GameObject:
   m_ObjectHideFlags: 0
