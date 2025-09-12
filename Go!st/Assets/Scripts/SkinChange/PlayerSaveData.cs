@@ -63,7 +63,7 @@ public enum PlayerIconStyle
 [System.Serializable]
 public class PlayerIconData
 {
-    public string name;
+    [HideInInspector] public string name;
     public PlayerIconStyle style;
 
     public PlayerIconData(string name, PlayerIconStyle style)
