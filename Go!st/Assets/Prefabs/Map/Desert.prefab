@@ -1086,6 +1086,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5090818041665513256}
+  - component: {fileID: 5484026393656405738}
   m_Layer: 0
   m_Name: Desert
   m_TagString: Untagged
@@ -1110,6 +1111,27 @@ Transform:
   - {fileID: 3445604810338660362}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &5484026393656405738
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6643845841028665218}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 55.01, y: 0.79999995, z: 95.31}
+  m_Center: {x: -0.4, y: -12.56, z: 0.00000035762787}
 --- !u!1001 &7579049181274671
 PrefabInstance:
   m_ObjectHideFlags: 0
