@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 2456954262616944531}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.12773104, y: 0.24239174, z: 0.56827706}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -66,8 +66,8 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.35
-  m_Center: {x: 0, y: -0.17, z: 0}
+  m_Radius: 0.36
+  m_Center: {x: 0, y: 0.16, z: 0}
 --- !u!1001 &4584562472634753571
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -94,7 +94,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 64a927c80033db0409b71cfd8df5461a, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15339173
+      value: 0.14
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 64a927c80033db0409b71cfd8df5461a, type: 3}
       propertyPath: m_LocalPosition.z
@@ -143,8 +143,33 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 64a927c80033db0409b71cfd8df5461a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1450016499204427185}
   m_SourcePrefab: {fileID: 100100000, guid: 64a927c80033db0409b71cfd8df5461a, type: 3}
+--- !u!1 &3701618692492500850 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 64a927c80033db0409b71cfd8df5461a, type: 3}
+  m_PrefabInstance: {fileID: 4584562472634753571}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1450016499204427185
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3701618692492500850}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1e3095245f548e4198d529052bf12b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isRotating: 1
+  rotateX: 0
+  rotateY: 1
+  rotateZ: 0
+  rotationSpeed: 90
 --- !u!4 &4041165077603567048 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 64a927c80033db0409b71cfd8df5461a, type: 3}
