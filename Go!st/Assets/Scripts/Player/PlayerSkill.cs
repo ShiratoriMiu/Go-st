@@ -121,7 +121,7 @@ public class PlayerSkill : MonoBehaviour
             {
                 SkillTouchMove(_currentPosition);
                 // プレイヤーを四角形の中に制限
-                ConstrainPlayer();
+                if (isOneHand) ConstrainPlayer();
             }
         }
         else
@@ -221,7 +221,7 @@ public class PlayerSkill : MonoBehaviour
         if (canSkillGetter())
         {
             // カメラの四隅から地面への交点を取得
-            CalculateCorners();
+            if (isOneHand) CalculateCorners();
             Skill();
             SetCanSkill(false);
         }
