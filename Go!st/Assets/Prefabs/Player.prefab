@@ -14769,6 +14769,7 @@ MonoBehaviour:
   attackSpeed: 10
   attackCooldownTime: 1
   attackDis: 5
+  offsetY: 0.5
   bulletManager: {fileID: 0}
 --- !u!114 &1374434373799072049
 MonoBehaviour:
@@ -14782,7 +14783,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25c78cd90542d7a4ab171d8bd186761a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHP: 10
+  maxHP: 5
   playerHpImage: {fileID: 0}
   gameManager: {fileID: 0}
 --- !u!114 &5116671327088856304
