@@ -4,21 +4,16 @@ using UnityEngine.UI;
 
 public class IconChanger : MonoBehaviour
 {
-    public static IconChanger Instance { get; private set; }
-
     [SerializeField] private Image playerIconImage;
     [SerializeField] private Image playerIconBGImage;
 
     private void Awake()
     {
-        // ‚·‚Å‚É‘¶İ‚µ‚Ä‚¢‚éê‡‚Í©•ª‚ğ”jŠü
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
+        UpdatePlayerIcon();
+    }
 
-        Instance = this;
+    private void OnEnable()
+    {
         UpdatePlayerIcon();
     }
 

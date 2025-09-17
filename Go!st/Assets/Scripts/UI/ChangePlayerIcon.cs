@@ -13,6 +13,8 @@ public class ChangePlayerIcon : MonoBehaviour
     [SerializeField] Sprite defaultPlayerIcon;
     [SerializeField] Sprite defaultPlayerIconBG;
 
+    [SerializeField] IconChanger iconChanger;
+
     private void Awake()
     {
         //デフォルトをセット
@@ -83,6 +85,6 @@ public class ChangePlayerIcon : MonoBehaviour
     void ChangeIcon(PlayerIconData _playerIcon)
     {
         SaveManager.SaveEquippedPlayerIcon(_playerIcon);
-        IconChanger.Instance.UpdatePlayerIcon();
+        iconChanger.UpdatePlayerIcon();
     }
 }

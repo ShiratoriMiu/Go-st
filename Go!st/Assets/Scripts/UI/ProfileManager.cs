@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class ProfileManager : MonoBehaviour
 {
     [SerializeField] Text nameText;
-    [SerializeField] Text rankText;
+    //[SerializeField] Text rankText;
     [SerializeField] Text bestScoreText;
     [SerializeField] GameObject changePlayerIconScrollView;
 
@@ -19,9 +19,9 @@ public class ProfileManager : MonoBehaviour
 
         var bestScore = await firebaseController.OnMyRankingButtonPressed();
 
-        rankText.text = $"Rank : {bestScore.rank.ToString()}";
+        //rankText.text = $"Rank : {bestScore.rank.ToString()}";
 
-        bestScoreText.text = $"BestScore : {bestScore.score.ToString()}";
+        bestScoreText.text = $"{bestScore.score.ToString()}";
     }
 
     public void ShowChangePlayerIconScrollView()
