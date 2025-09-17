@@ -5,6 +5,7 @@ using UnityEngine;
 using System;
 using System.Threading.Tasks;
 using UnityEngine.UI;
+using Firebase.Extensions;
 
 public class LoginController : MonoBehaviour
 {
@@ -46,7 +47,9 @@ public class LoginController : MonoBehaviour
     {
         try
         {
-            var dependencyStatus = await FirebaseApp.CheckAndFixDependenciesAsync();
+            var dependencyStatus = await FirebaseApp.CheckAndFixDependenciesAsync()
+                .ContinueWithOnMainThread(task => task.Result); // ★ここ重要
+
             if (dependencyStatus != DependencyStatus.Available)
             {
                 Debug.LogError($"Firebase初期化失敗: {dependencyStatus}");
@@ -55,7 +58,8 @@ public class LoginController : MonoBehaviour
             }
 
             var auth = FirebaseAuth.DefaultInstance;
-            var loginResult = await auth.SignInAnonymouslyAsync();
+            var loginResult = await auth.SignInAnonymouslyAsync()
+                .ContinueWithOnMainThread(task => task.Result); // ★これも追加
 
             if (loginResult == null || auth.CurrentUser == null)
             {
@@ -70,10 +74,9 @@ public class LoginController : MonoBehaviour
 
             Debug.Log($"匿名ログイン成功: {User.UserId}");
 
-            // 名前が未設定の場合のみデフォルト名を設定する（必要に応じて任意名に置き換え可能）
             if (string.IsNullOrEmpty(User.DisplayName))
             {
-                await SetUserName("Player");
+                await SetUserName("Player"); // これも ContinueWithOnMainThread をつけるとより安全
             }
 
             firebaseReadyTcs.TrySetResult(true);
