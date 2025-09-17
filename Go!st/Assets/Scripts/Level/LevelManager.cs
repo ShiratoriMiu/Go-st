@@ -10,6 +10,8 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private PlayerManager playerManager;
     [SerializeField] private EnemyManager enemyManager;
 
+    PlayerController playerController;
+
     public Dictionary<int, LevelData> levelDataDict = new Dictionary<int, LevelData>();
 
     private int level = 1;
@@ -62,16 +64,20 @@ public class LevelManager : MonoBehaviour
         enemyKillCount = 0;
         UpdateLevelUI();
         ApplyLevelParameters(level);
+        playerController = playerManager.Player.GetComponent<PlayerController>();
     }
 
     public void AddEnemyKill()
     {
         enemyKillCount++;
 
+        playerController.UpdateLevelUpImage((float)enemyKillCount / (float)nextLevelEnemyNum);
+
         // レベルアップ条件（例：level * 5体倒す）
         if (enemyKillCount >= nextLevelEnemyNum)
         {
             level++;
+            playerController.UpdateLevelUpImage(0);
             enemyKillCount -= nextLevelEnemyNum;
             UpdateLevelUI();
             ApplyLevelParameters(level);

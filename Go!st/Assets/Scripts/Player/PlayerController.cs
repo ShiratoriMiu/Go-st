@@ -22,6 +22,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] Renderer rendererInit;
     [SerializeField] private ParticleSystem levelUpEffect;
     [SerializeField] private RectTransform skillGaugeImage;
+    [SerializeField] private RectTransform levelUpGaugeImageRect;
+    private Image levelUpGaugeImage;
     [SerializeField] private GameManager gameManager;
 
     public Renderer renderer { get; private set; }
@@ -71,6 +73,8 @@ public class PlayerController : MonoBehaviour
         stickControllerInitPos = stickControllerRect.anchoredPosition;
 
         playerSkill.InitializeSkillDependencies(stickController, () => canSkill, SetCanSkill);
+
+        levelUpGaugeImage = levelUpGaugeImageRect.GetComponent<Image>();
     }
 
     private void Start()
@@ -169,6 +173,11 @@ public class PlayerController : MonoBehaviour
     {
         float y = playerSkill.coolTime * maxSkillChargeImageHeight;
         skillGaugeImage.anchoredPosition = new Vector2(skillGaugeImage.anchoredPosition.x, y);
+    }
+
+    public void UpdateLevelUpImage(float _fillAmount)
+    {
+        levelUpGaugeImage.fillAmount = _fillAmount;
     }
 
     private void HandleSkinChangeRotation()
@@ -375,9 +384,11 @@ public class PlayerController : MonoBehaviour
         onAutoAim = _onAutoAim;
     }
 
-    public void SetSkillGaugeImage(RectTransform _skillGaugeImage)
+    public void SetSkillGaugeImage(RectTransform _skillGaugeImage, RectTransform _levelUpGaugeImageRect)
     {
         skillGaugeImage = _skillGaugeImage;
+        levelUpGaugeImageRect = _levelUpGaugeImageRect;
+        levelUpGaugeImage = levelUpGaugeImageRect.GetComponent<Image>();
     }
 
     public void SwitchStickPos()
