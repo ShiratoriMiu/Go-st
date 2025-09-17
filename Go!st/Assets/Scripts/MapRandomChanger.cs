@@ -1,32 +1,72 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class MapRandomChanger : MonoBehaviour
 {
-    [SerializeField] GameObject[] maps;
+    public static MapRandomChanger Instance { get; private set; }
+
+    [System.Serializable]
+    public class MapObj
+    {
+        public GameObject mapObj;
+        public GameObject offModel;
+    }
+
+    [SerializeField] private MapObj[] maps;
+
+    private void Awake()
+    {
+        // ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³åŒ–
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Debug.LogWarning("MapRandomChanger ãŒè¤‡æ•°å­˜åœ¨ã—ã¾ã™ã€‚ç ´æ£„ã—ã¾ã™ã€‚");
+            Destroy(gameObject);
+            return;
+        }
+
+        // å¿…è¦ãªã‚‰ã‚·ãƒ¼ãƒ³åˆ‡ã‚Šæ›¿ãˆæ™‚ã‚‚ç ´æ£„ã—ãªã„
+        // DontDestroyOnLoad(gameObject);
+    }
 
     /// <summary>
-    /// ƒ‰ƒ“ƒ_ƒ€‚Å1‚Â‚ğƒAƒNƒeƒBƒu‚É‚µA‚»‚êˆÈŠO‚ğ”ñ•\¦‚É‚·‚é
+    /// ãƒ©ãƒ³ãƒ€ãƒ ã§1ã¤ã‚’ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã«ã—ã€ãã‚Œä»¥å¤–ã‚’éè¡¨ç¤ºã«ã™ã‚‹
     /// </summary>
     public void ActivateRandomMap()
     {
         if (maps == null || maps.Length == 0)
         {
-            Debug.LogWarning("maps ‚ª‹ó‚Å‚·BƒIƒuƒWƒFƒNƒg‚ğ“o˜^‚µ‚Ä‚­‚¾‚³‚¢B");
+            Debug.LogWarning("maps ãŒç©ºã§ã™ã€‚ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç™»éŒ²ã—ã¦ãã ã•ã„ã€‚");
             return;
         }
 
-        // ‚Ü‚¸‘S•””ñ•\¦‚É‚·‚é
-        foreach (GameObject map in maps)
+        // ã¾ãšå…¨éƒ¨éè¡¨ç¤ºã«ã™ã‚‹
+        foreach (MapObj map in maps)
         {
             if (map != null)
-                map.SetActive(false);
+                map.mapObj.SetActive(false);
         }
 
-        // ƒ‰ƒ“ƒ_ƒ€‚Å1‚Â‘I‚ñ‚Å•\¦
+        // ãƒ©ãƒ³ãƒ€ãƒ ã§1ã¤é¸ã‚“ã§è¡¨ç¤º
         int randomIndex = Random.Range(0, maps.Length);
         if (maps[randomIndex] != null)
-            maps[randomIndex].SetActive(true);
+        {
+            maps[randomIndex].mapObj.SetActive(true);
+            maps[randomIndex].offModel.SetActive(false);
+        }
+    }
+
+    public void OffModelActive()
+    {
+        // offModelã‚’è¡¨ç¤º
+        foreach (MapObj map in maps)
+        {
+            if (map != null && map.mapObj.activeSelf)
+                map.offModel.SetActive(true);
+        }
     }
 }

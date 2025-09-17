@@ -236,6 +236,7 @@ public class GameManager : MonoBehaviour
         ChangeGameState(GameState.Title);
         ResetGame();
         StartCoroutine(ResetSelectPlayerRotate());
+        MapRandomChanger.Instance.OffModelActive();
     }
     public void ToGame(bool _isReset) 
     {
