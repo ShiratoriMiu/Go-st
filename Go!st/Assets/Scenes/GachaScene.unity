@@ -264,6 +264,7 @@ GameObject:
   - component: {fileID: 57795116}
   - component: {fileID: 57795115}
   - component: {fileID: 57795114}
+  - component: {fileID: 57795117}
   m_Layer: 5
   m_Name: GachaBG_Obake
   m_TagString: Untagged
@@ -280,8 +281,8 @@ RectTransform:
   m_GameObject: {fileID: 57795112}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 1
+  m_LocalScale: {x: 1, y: 0, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 141103314}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -298,7 +299,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 57795112}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 7cf6537a914176c4abd6bad1c9397ebe, type: 2}
   m_CullingMode: 0
@@ -350,6 +351,33 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 57795112}
   m_CullTransparentMesh: 1
+--- !u!114 &57795117
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 57795112}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd8e30a976c88d744b8d354da9786253, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1051747454}
+        m_TargetAssemblyTypeName: GachaPullItem, Assembly-CSharp
+        m_MethodName: PullItem
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &60982615
 GameObject:
   m_ObjectHideFlags: 0
@@ -1468,6 +1496,7 @@ GameObject:
   - component: {fileID: 837493052}
   - component: {fileID: 837493051}
   - component: {fileID: 837493050}
+  - component: {fileID: 837493053}
   m_Layer: 5
   m_Name: GachaBG_Obake
   m_TagString: Untagged
@@ -1484,8 +1513,8 @@ RectTransform:
   m_GameObject: {fileID: 837493048}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 1
+  m_LocalScale: {x: 1, y: 0, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2128978492}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1502,7 +1531,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 837493048}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 7cf6537a914176c4abd6bad1c9397ebe, type: 2}
   m_CullingMode: 0
@@ -1554,6 +1583,33 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 837493048}
   m_CullTransparentMesh: 1
+--- !u!114 &837493053
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 837493048}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd8e30a976c88d744b8d354da9786253, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1051747454}
+        m_TargetAssemblyTypeName: GachaPullItem, Assembly-CSharp
+        m_MethodName: PullItem
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &846285695
 GameObject:
   m_ObjectHideFlags: 0
@@ -1908,6 +1964,7 @@ GameObject:
   - component: {fileID: 1009550848}
   - component: {fileID: 1009550847}
   - component: {fileID: 1009550846}
+  - component: {fileID: 1009550849}
   m_Layer: 5
   m_Name: GachaBG_Obake
   m_TagString: Untagged
@@ -1924,8 +1981,8 @@ RectTransform:
   m_GameObject: {fileID: 1009550844}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 1
+  m_LocalScale: {x: 1, y: 0, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 945802610}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1942,7 +1999,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1009550844}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 7cf6537a914176c4abd6bad1c9397ebe, type: 2}
   m_CullingMode: 0
@@ -1994,6 +2051,33 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1009550844}
   m_CullTransparentMesh: 1
+--- !u!114 &1009550849
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1009550844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd8e30a976c88d744b8d354da9786253, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1051747454}
+        m_TargetAssemblyTypeName: GachaPullItem, Assembly-CSharp
+        m_MethodName: PullItem
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1029840136
 GameObject:
   m_ObjectHideFlags: 0
@@ -2178,6 +2262,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemIconPrefab: {fileID: 8238416060495465116, guid: 79c369e61c21c1646ab06d464efa89d2, type: 3}
   itemIconBase: {fileID: 1152578472}
+  graveOverAnims:
+  - {fileID: 1725042861}
+  - {fileID: 1865487270}
+  - {fileID: 837493050}
+  - {fileID: 2105347546}
+  - {fileID: 1782608553}
+  - {fileID: 1009550846}
+  - {fileID: 57795114}
+  - {fileID: 1801604252}
+  - {fileID: 1680948663587871247}
 --- !u!114 &1051747455
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2465,13 +2559,13 @@ MonoBehaviour:
   m_Padding:
     m_Left: 141
     m_Right: 0
-    m_Top: 0
+    m_Top: -97
     m_Bottom: 0
   m_ChildAlignment: 4
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 200, y: 200}
-  m_Spacing: {x: 100, y: 100}
+  m_CellSize: {x: 150, y: 150}
+  m_Spacing: {x: 175, y: 125}
   m_Constraint: 0
   m_ConstraintCount: 2
 --- !u!1 &1216364921
@@ -3012,6 +3106,7 @@ GameObject:
   - component: {fileID: 1725042863}
   - component: {fileID: 1725042862}
   - component: {fileID: 1725042861}
+  - component: {fileID: 1725042864}
   m_Layer: 5
   m_Name: GachaBG_Obake
   m_TagString: Untagged
@@ -3028,8 +3123,8 @@ RectTransform:
   m_GameObject: {fileID: 1725042859}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 1
+  m_LocalScale: {x: 1, y: 0, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 60982616}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3046,7 +3141,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1725042859}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 7cf6537a914176c4abd6bad1c9397ebe, type: 2}
   m_CullingMode: 0
@@ -3098,6 +3193,33 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1725042859}
   m_CullTransparentMesh: 1
+--- !u!114 &1725042864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1725042859}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd8e30a976c88d744b8d354da9786253, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1051747454}
+        m_TargetAssemblyTypeName: GachaPullItem, Assembly-CSharp
+        m_MethodName: PullItem
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1754883449
 GameObject:
   m_ObjectHideFlags: 0
@@ -3203,6 +3325,7 @@ GameObject:
   - component: {fileID: 1782608555}
   - component: {fileID: 1782608554}
   - component: {fileID: 1782608553}
+  - component: {fileID: 1782608556}
   m_Layer: 5
   m_Name: GachaBG_Obake
   m_TagString: Untagged
@@ -3219,8 +3342,8 @@ RectTransform:
   m_GameObject: {fileID: 1782608551}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 1
+  m_LocalScale: {x: 1, y: 0, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 525406650}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3237,7 +3360,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1782608551}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 7cf6537a914176c4abd6bad1c9397ebe, type: 2}
   m_CullingMode: 0
@@ -3289,6 +3412,33 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1782608551}
   m_CullTransparentMesh: 1
+--- !u!114 &1782608556
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1782608551}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd8e30a976c88d744b8d354da9786253, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1051747454}
+        m_TargetAssemblyTypeName: GachaPullItem, Assembly-CSharp
+        m_MethodName: PullItem
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1801604250
 GameObject:
   m_ObjectHideFlags: 0
@@ -3301,6 +3451,7 @@ GameObject:
   - component: {fileID: 1801604254}
   - component: {fileID: 1801604253}
   - component: {fileID: 1801604252}
+  - component: {fileID: 1801604255}
   m_Layer: 5
   m_Name: GachaBG_Obake
   m_TagString: Untagged
@@ -3317,8 +3468,8 @@ RectTransform:
   m_GameObject: {fileID: 1801604250}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 1
+  m_LocalScale: {x: 1, y: 0, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1545956391}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3335,7 +3486,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1801604250}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 7cf6537a914176c4abd6bad1c9397ebe, type: 2}
   m_CullingMode: 0
@@ -3387,6 +3538,33 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1801604250}
   m_CullTransparentMesh: 1
+--- !u!114 &1801604255
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1801604250}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd8e30a976c88d744b8d354da9786253, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1051747454}
+        m_TargetAssemblyTypeName: GachaPullItem, Assembly-CSharp
+        m_MethodName: PullItem
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1839155137
 GameObject:
   m_ObjectHideFlags: 0
@@ -3518,6 +3696,7 @@ GameObject:
   - component: {fileID: 1865487272}
   - component: {fileID: 1865487271}
   - component: {fileID: 1865487270}
+  - component: {fileID: 1865487273}
   m_Layer: 5
   m_Name: GachaBG_Obake
   m_TagString: Untagged
@@ -3534,8 +3713,8 @@ RectTransform:
   m_GameObject: {fileID: 1865487268}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 1
+  m_LocalScale: {x: 1, y: 0, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 781143930}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3552,7 +3731,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1865487268}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 7cf6537a914176c4abd6bad1c9397ebe, type: 2}
   m_CullingMode: 0
@@ -3604,6 +3783,33 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1865487268}
   m_CullTransparentMesh: 1
+--- !u!114 &1865487273
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1865487268}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd8e30a976c88d744b8d354da9786253, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1051747454}
+        m_TargetAssemblyTypeName: GachaPullItem, Assembly-CSharp
+        m_MethodName: PullItem
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1903048359
 GameObject:
   m_ObjectHideFlags: 0
@@ -3616,6 +3822,7 @@ GameObject:
   - component: {fileID: 1903048363}
   - component: {fileID: 1903048361}
   - component: {fileID: 1903048364}
+  - component: {fileID: 1903048365}
   m_Layer: 5
   m_Name: GachaBG_Base
   m_TagString: Untagged
@@ -3696,6 +3903,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_AspectMode: 3
   m_AspectRatio: 0.56250006
+--- !u!114 &1903048365
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1903048359}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd8e30a976c88d744b8d354da9786253, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1051747454}
+        m_TargetAssemblyTypeName: GachaPullItem, Assembly-CSharp
+        m_MethodName: GraveOver
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1930167534
 GameObject:
   m_ObjectHideFlags: 0
@@ -3858,6 +4092,7 @@ GameObject:
   - component: {fileID: 2105347548}
   - component: {fileID: 2105347547}
   - component: {fileID: 2105347546}
+  - component: {fileID: 2105347549}
   m_Layer: 5
   m_Name: GachaBG_Obake
   m_TagString: Untagged
@@ -3874,8 +4109,8 @@ RectTransform:
   m_GameObject: {fileID: 2105347544}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 1
+  m_LocalScale: {x: 1, y: 0, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1491297508}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3892,7 +4127,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2105347544}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 7cf6537a914176c4abd6bad1c9397ebe, type: 2}
   m_CullingMode: 0
@@ -3944,6 +4179,33 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2105347544}
   m_CullTransparentMesh: 1
+--- !u!114 &2105347549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2105347544}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd8e30a976c88d744b8d354da9786253, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1051747454}
+        m_TargetAssemblyTypeName: GachaPullItem, Assembly-CSharp
+        m_MethodName: PullItem
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &2128978491
 GameObject:
   m_ObjectHideFlags: 0
@@ -3991,8 +4253,8 @@ RectTransform:
   m_GameObject: {fileID: 4055058361240605411}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 1
+  m_LocalScale: {x: 1, y: 0, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 466026510798412775}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4050,7 +4312,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4055058361240605411}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 7cf6537a914176c4abd6bad1c9397ebe, type: 2}
   m_CullingMode: 0
@@ -4103,6 +4365,7 @@ GameObject:
   - component: {fileID: 8307554632355622592}
   - component: {fileID: 8553033183403595476}
   - component: {fileID: 1680948663587871247}
+  - component: {fileID: 8553033183403595477}
   m_Layer: 5
   m_Name: GachaBG_Obake
   m_TagString: Untagged
@@ -4268,6 +4531,33 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &8553033183403595477
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4055058361240605411}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd8e30a976c88d744b8d354da9786253, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1051747454}
+        m_TargetAssemblyTypeName: GachaPullItem, Assembly-CSharp
+        m_MethodName: PullItem
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

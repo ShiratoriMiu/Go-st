@@ -11,6 +11,17 @@ public class GachaPullItem : MonoBehaviour
 
     [SerializeField] Transform itemIconBase;
 
+    [SerializeField] Sprite dummySprite;          // 未選択アイコンの画像
+    [SerializeField] Color dummyColor = Color.gray; // 未選択時の色
+
+    [SerializeField] Animator[] graveOverAnims;
+
+
+    private List<ItemData> pullResults; // 抽選されたアイテム結果
+    private int pullIndex = 0;          // 次に表示するアイテムのインデックス
+
+    private bool pullItemFlag = false;
+
     // Start is called before the first frame update
     private void Start()
     {
@@ -24,84 +35,146 @@ public class GachaPullItem : MonoBehaviour
             LoadItemData.Instance != null && LoadItemData.Instance.IsInitialized);
 
         Debug.Log("アイテムデータ初期化完了 → ガチャ開始");
-        PullItem();
+        //PullItem();
     }
 
-    void PullItem()
+    public void PullItem()
     {
-        // アイテム名リストを取得
-        List<ItemData> allItems = SaveManager.AllItems();
+        if (pullItemFlag) return;
 
-        // ガチャで出るアイテム名を取得
+        // アイテムリストからガチャ候補を取得
+        List<ItemData> allItems = SaveManager.AllItems();
         List<string> gachaItems = SaveManager.GachaItems();
 
-        // 全てのアイテムからガチャで出るアイテムのみに絞る
-        List<ItemData> gachaItemDatas = new List<ItemData>();
-        if (allItems != null && gachaItems != null)
-        {
-            foreach (ItemData item in allItems)
-            {
-                foreach (string gachaItemName in gachaItems)
-                {
-                    if (item.name == gachaItemName) gachaItemDatas.Add(item);
-                }
-            }
-        }
+        List<ItemData> gachaItemDatas = allItems
+            .Where(x => gachaItems.Contains(x.name))
+            .ToList();
 
-        // pullNum 回ランダムに選ぶ
-        for (int i = 0; i < GachaController.Instance.pullNum; i++)
+        int pullNum = GachaController.Instance.pullNum;
+
+        // pullNum 個抽選して保存
+        pullResults = new List<ItemData>();
+        for (int i = 0; i < pullNum; i++)
         {
             int randIndex = Random.Range(0, gachaItemDatas.Count);
-            string selectedItemName = gachaItemDatas[randIndex].name;
+            pullResults.Add(gachaItemDatas[randIndex]);
+        }
 
-            // 毎回最新の状態を取得
-            ItemData currentItem = SaveManager.AllItems().First(x => x.name == selectedItemName);
-
-            // アイコン生成
-            GameObject icon = Instantiate(itemIconPrefab, itemIconBase);
-            Image iconBG = icon.GetComponent<Image>();
-            iconBG.color = currentItem.ToColor();
-
-            Image img = icon.GetComponentsInChildren<Image>().FirstOrDefault(x => x.gameObject != icon);
-            Text txt = icon.GetComponentsInChildren<Text>().FirstOrDefault(x => x.gameObject != icon);
-            img.sprite = !string.IsNullOrEmpty(currentItem.IconName)
-                ? Resources.Load<Sprite>($"Icon/{currentItem.IconName}")
-                : null;
-
-            if (img.sprite == null)
+        // -------------------------
+        // 分岐処理
+        // -------------------------
+        if (pullNum == 9)
+        {
+            // 全部表示する
+            for (int i = 0; i < 9; i++)
             {
-                img.color = new Color(1, 1, 1, 1);
-                if (currentItem.IconName != "Null") txt.text = currentItem.IconName;
-            }
-            else
-            {
-                txt.text = "";
-            }
+                ItemData currentItem = pullResults[i];
 
-            // 所持済みアイテムの処理
-            if (currentItem.isOwned)
-            {
-                if (currentItem.canColorChange)
+                GameObject icon = Instantiate(itemIconPrefab, itemIconBase);
+                Image iconBG = icon.GetComponent<Image>();
+                Image img = icon.GetComponentsInChildren<Image>().FirstOrDefault(x => x.gameObject != icon);
+                Text txt = icon.GetComponentsInChildren<Text>().FirstOrDefault(x => x.gameObject != icon);
+
+                // アイテム表示
+                iconBG.color = currentItem.ToColor();
+                img.sprite = !string.IsNullOrEmpty(currentItem.IconName)
+                    ? Resources.Load<Sprite>($"Icon/{currentItem.IconName}")
+                    : null;
+
+                if (img.sprite == null)
                 {
-                    // 最新状態で色解放判定
-                    if (!currentItem.isColorChangeOn)
+                    img.color = Color.white;
+                    if (currentItem.IconName != "Null") txt.text = currentItem.IconName;
+                }
+                else
+                {
+                    txt.text = "";
+                }
+
+                // 所持判定と更新
+                if (currentItem.isOwned)
+                {
+                    if (currentItem.canColorChange && !currentItem.isColorChangeOn)
                     {
-                        SaveManager.UpdateItemFlags(selectedItemName, colorChangeOn: true);
+                        SaveManager.UpdateItemFlags(currentItem.name, colorChangeOn: true);
                     }
                     else
                     {
                         ReturnCoin();
                     }
                 }
-                else
-                {
-                    ReturnCoin();
-                }
+                SaveManager.UpdateItemFlags(currentItem.name, owned: true);
             }
-
-            // 所持フラグを更新
-            SaveManager.UpdateItemFlags(selectedItemName, owned: true);
         }
+        else
+        {
+            // 9個ダミーを生成して選択式にする
+            for (int i = 0; i < 9; i++)
+            {
+                GameObject icon = Instantiate(itemIconPrefab, itemIconBase);
+                Image iconBG = icon.GetComponent<Image>();
+                Image img = icon.GetComponentsInChildren<Image>().FirstOrDefault(x => x.gameObject != icon);
+                Text txt = icon.GetComponentsInChildren<Text>().FirstOrDefault(x => x.gameObject != icon);
+
+                // ダミー表示
+                iconBG.color = dummyColor;
+                img.sprite = dummySprite;
+                txt.text = "";
+
+                // ボタン押下時に「ここにアイテムを出す」処理を登録
+                int index = i;
+                Button btn = icon.GetComponent<Button>();
+                btn.onClick.AddListener(() => OnIconClick(icon, index));
+            }
+        }
+
+        pullItemFlag = true;
+    }
+
+
+    private void OnIconClick(GameObject icon, int index)
+    {
+        // もう結果が残ってなければ何もしない
+        if (pullIndex >= pullResults.Count) return;
+
+        ItemData currentItem = pullResults[pullIndex];
+        pullIndex++; // 次のアイテムに進む
+
+        Image iconBG = icon.GetComponent<Image>();
+        Image img = icon.GetComponentsInChildren<Image>().FirstOrDefault(x => x.gameObject != icon);
+        Text txt = icon.GetComponentsInChildren<Text>().FirstOrDefault(x => x.gameObject != icon);
+
+        // アイテム表示
+        iconBG.color = currentItem.ToColor();
+        img.sprite = !string.IsNullOrEmpty(currentItem.IconName)
+            ? Resources.Load<Sprite>($"Icon/{currentItem.IconName}")
+            : null;
+
+        if (img.sprite == null)
+        {
+            img.color = Color.white;
+            if (currentItem.IconName != "Null") txt.text = currentItem.IconName;
+        }
+        else
+        {
+            txt.text = "";
+        }
+
+        // 所持判定と更新
+        if (currentItem.isOwned)
+        {
+            if (currentItem.canColorChange && !currentItem.isColorChangeOn)
+            {
+                SaveManager.UpdateItemFlags(currentItem.name, colorChangeOn: true);
+            }
+            else
+            {
+                ReturnCoin();
+            }
+        }
+        SaveManager.UpdateItemFlags(currentItem.name, owned: true);
+
+        Debug.Log($"アイテム表示: {currentItem.name}");
     }
 
     private void ReturnCoin()
@@ -109,5 +182,13 @@ public class GachaPullItem : MonoBehaviour
         int coinNum = SaveManager.LoadCoin();
         coinNum += 200;
         SaveManager.SaveCoin(coinNum);
+    }
+
+    public void GraveOver()
+    {
+        for (int i = 0; i < graveOverAnims.Count(); i++)
+        {
+            graveOverAnims[i].enabled = true;
+        }
     }
 }
