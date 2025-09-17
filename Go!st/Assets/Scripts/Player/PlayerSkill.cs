@@ -158,7 +158,7 @@ public class PlayerSkill : MonoBehaviour
 
         isSkill = true;
         //”O‚Ì‚½‚ßƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½”»’è‚Æü‚ğˆø‚­‚½‚ß‚Ìw‚ğ—£‚µ‚½”»’è‚ª‚©‚Ô‚ç‚È‚¢‚æ‚¤‚É‘Ò‚Â
-        Invoke("StartLine", 1f);
+        Invoke("StartLine", 0.1f);
         centerToGrayEffect.Gray(true);
         skillChargeEffect.SetActive(false);
         if (!isOneHand) stickController.SetActive(false);
