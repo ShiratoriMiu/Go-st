@@ -48,9 +48,9 @@ public class BuffManager : MonoBehaviour
 
         for (int i = 0; i < spawnCount; i++)
         {
-            Vector2 spawnPos = GetValidPosition();
+            Vector3 spawnPos = GetValidPosition();
 
-            if (spawnPos == Vector2.zero) continue;
+            if (spawnPos == Vector3.zero) continue;
 
             int prefabIndex = Random.Range(0, buffPrefabs.Length);
 
@@ -64,20 +64,29 @@ public class BuffManager : MonoBehaviour
         }
     }
 
-    Vector2 GetValidPosition()
+    Vector3 GetValidPosition()
     {
         const int maxAttempts = 20;
         for (int i = 0; i < maxAttempts; i++)
         {
-            float x = Random.Range(spawnAreaRandA.position.x, spawnAreaRandB.position.x);
-            float y = Random.Range(spawnAreaRandA.position.y, spawnAreaRandB.position.y);
-            Vector2 randomPosition = new Vector2(x, y);
+            float minX = Mathf.Min(spawnAreaRandA.position.x, spawnAreaRandB.position.x);
+            float maxX = Mathf.Max(spawnAreaRandA.position.x, spawnAreaRandB.position.x);
+            float minY = Mathf.Min(spawnAreaRandA.position.y, spawnAreaRandB.position.y);
+            float maxY = Mathf.Max(spawnAreaRandA.position.y, spawnAreaRandB.position.y);
+            float minZ = Mathf.Min(spawnAreaRandA.position.z, spawnAreaRandB.position.z);
+            float maxZ = Mathf.Max(spawnAreaRandA.position.z, spawnAreaRandB.position.z);
+
+            float x = Random.Range(minX, maxX);
+            float y = Random.Range(minY, maxY);
+            float z = Random.Range(minZ, maxZ);
+
+            Vector3 randomPosition = new Vector3(x, y, z);
 
             bool overlap = false;
             foreach (var buff in spawnedBuffs)
             {
                 if (buff == null) continue;
-                if (Vector2.Distance(buff.transform.position, randomPosition) < minDistance)
+                if (Vector3.Distance(buff.transform.position, randomPosition) < minDistance)
                 {
                     overlap = true;
                     break;
@@ -89,7 +98,7 @@ public class BuffManager : MonoBehaviour
                 return randomPosition;
             }
         }
-        return Vector2.zero;
+        return Vector3.zero;
     }
 
     // ‚·‚×‚Ä‚Ìƒoƒt‚ðíœ
