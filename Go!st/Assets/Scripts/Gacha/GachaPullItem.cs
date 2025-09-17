@@ -76,7 +76,7 @@ public class GachaPullItem : MonoBehaviour
                 Text txt = icon.GetComponentsInChildren<Text>().FirstOrDefault(x => x.gameObject != icon);
 
                 // アイテム表示
-                iconBG.color = currentItem.ToColor();
+                //iconBG.color = currentItem.ToColor();
                 img.sprite = !string.IsNullOrEmpty(currentItem.IconName)
                     ? Resources.Load<Sprite>($"Icon/{currentItem.IconName}")
                     : null;
@@ -145,7 +145,7 @@ public class GachaPullItem : MonoBehaviour
         Text txt = icon.GetComponentsInChildren<Text>().FirstOrDefault(x => x.gameObject != icon);
 
         // アイテム表示
-        iconBG.color = currentItem.ToColor();
+        //iconBG.color = currentItem.ToColor();
         img.sprite = !string.IsNullOrEmpty(currentItem.IconName)
             ? Resources.Load<Sprite>($"Icon/{currentItem.IconName}")
             : null;
