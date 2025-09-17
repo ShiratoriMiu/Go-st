@@ -2262,6 +2262,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemIconPrefab: {fileID: 8238416060495465116, guid: 79c369e61c21c1646ab06d464efa89d2, type: 3}
   itemIconBase: {fileID: 1152578472}
+  dummySprite: {fileID: 0}
+  dummyColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   graveOverAnims:
   - {fileID: 1725042861}
   - {fileID: 1865487270}
@@ -2272,6 +2274,7 @@ MonoBehaviour:
   - {fileID: 57795114}
   - {fileID: 1801604252}
   - {fileID: 1680948663587871247}
+  titleButton: {fileID: 3991269}
 --- !u!114 &1051747455
 MonoBehaviour:
   m_ObjectHideFlags: 0

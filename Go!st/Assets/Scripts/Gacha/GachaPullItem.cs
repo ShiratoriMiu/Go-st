@@ -16,6 +16,7 @@ public class GachaPullItem : MonoBehaviour
 
     [SerializeField] Animator[] graveOverAnims;
 
+    [SerializeField] GameObject titleButton;
 
     private List<ItemData> pullResults; // 抽選されたアイテム結果
     private int pullIndex = 0;          // 次に表示するアイテムのインデックス
@@ -25,6 +26,7 @@ public class GachaPullItem : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
+        titleButton.SetActive(false);
         StartCoroutine(WaitForInitializeAndPull());
     }
 
@@ -105,6 +107,7 @@ public class GachaPullItem : MonoBehaviour
                 }
                 SaveManager.UpdateItemFlags(currentItem.name, owned: true);
             }
+            titleButton.SetActive(true);
         }
         else
         {
@@ -145,7 +148,7 @@ public class GachaPullItem : MonoBehaviour
         Text txt = icon.GetComponentsInChildren<Text>().FirstOrDefault(x => x.gameObject != icon);
 
         // アイテム表示
-        //iconBG.color = currentItem.ToColor();
+        iconBG.color = Color.white;
         img.sprite = !string.IsNullOrEmpty(currentItem.IconName)
             ? Resources.Load<Sprite>($"Icon/{currentItem.IconName}")
             : null;
@@ -175,6 +178,7 @@ public class GachaPullItem : MonoBehaviour
         SaveManager.UpdateItemFlags(currentItem.name, owned: true);
 
         Debug.Log($"アイテム表示: {currentItem.name}");
+        if (pullIndex >= pullResults.Count) titleButton.SetActive(true);
     }
 
     private void ReturnCoin()
