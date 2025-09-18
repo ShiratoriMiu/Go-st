@@ -7,6 +7,8 @@ public class TutorialController : MonoBehaviour
 {
     [SerializeField] private GameObject tutorialUI;
 
+    [SerializeField] private TutorialVideoController videoController;
+
     void Start()
     {
         InputManager.Instance.OnAnyTouchDown += HandleTutorialTouch;
@@ -15,6 +17,7 @@ public class TutorialController : MonoBehaviour
         {
             // èââÒãNìÆ
             tutorialUI.SetActive(true);
+            videoController.PlayVideo();
 
             // ÉtÉâÉOÇï€ë∂
             PlayerPrefs.SetInt("Tutorial", 1);
@@ -35,12 +38,14 @@ public class TutorialController : MonoBehaviour
 
     private void HandleTutorialTouch()
     {
+        videoController.StopVideo();
         tutorialUI.SetActive(false);
     }
 
     public void ActiveTutorial()
     {
         InputManager.Instance.OnAnyTouchDown += HandleTutorialTouch;
+        videoController.PlayVideo();
         tutorialUI.SetActive(true);
     }
 }
