@@ -8,6 +8,9 @@ public class TitleGachaButton : MonoBehaviour
     [SerializeField] Button pull1GachaButton;
     [SerializeField] Button pull9GachaButton;
 
+    // ”CˆÓ‚ÌURL‚ðŽw’è
+    [SerializeField] private string url = "https://example.com";
+
     // Start is called before the first frame update
     void Start()
     {
@@ -39,5 +42,10 @@ public class TitleGachaButton : MonoBehaviour
             pull1GachaButton.interactable = true;
             pull9GachaButton.interactable = true;
         }
+    }
+
+    public void OpenURL()
+    {
+        Application.OpenURL(url);
     }
 }
