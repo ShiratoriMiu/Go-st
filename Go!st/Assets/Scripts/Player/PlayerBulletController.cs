@@ -9,7 +9,7 @@ public class PlayerBulletController : MonoBehaviour
     PlayerController playerController;
 
     [SerializeField] Collider bulletCollider;
-    [SerializeField] Renderer bulletRenderer;
+    [SerializeField] GameObject bulletEffect;
 
     public bool isActive { get; private set; }
 
@@ -25,8 +25,9 @@ public class PlayerBulletController : MonoBehaviour
     public void Display()
     {
         bulletCollider.enabled = true;
-        bulletRenderer.enabled = true;
         isActive = true;
+
+        bulletEffect.SetActive(true);
 
         CancelInvoke();
         Invoke("Hidden", destroyTime); // ”ñ•\Ž¦
@@ -34,8 +35,9 @@ public class PlayerBulletController : MonoBehaviour
 
     public void Hidden()
     {
+        bulletEffect.SetActive(false);
+
         bulletCollider.enabled = false;
-        bulletRenderer.enabled = false;
         isActive = false;
     }
 }
