@@ -15,6 +15,15 @@ public class BuffItem : MonoBehaviour
                 player.ApplyBuff(buffData);
                 Debug.Log($"バフ「{buffData.buffType}」を適用");
 
+                if(buffData.buffType == BuffType.Heal)
+                {
+                    SoundManager.Instance.PlaySE("HealSE");
+                }
+                else if(buffData.buffType == BuffType.SpeedBoost)
+                {
+                    SoundManager.Instance.PlaySE("SpeedBoostSE");
+                }
+
                 Destroy(gameObject); // アイテムを消す
             }
         }

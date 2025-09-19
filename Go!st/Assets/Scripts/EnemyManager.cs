@@ -221,6 +221,7 @@ public class EnemyManager : MonoBehaviour
         {
             SpawnBoss();
             Debug.Log("ボススポーン");
+            SoundManager.Instance.PlaySE("BossSpawnSE");
         }
     }
 
