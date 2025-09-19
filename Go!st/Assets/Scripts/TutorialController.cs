@@ -44,7 +44,7 @@ public class TutorialController : MonoBehaviour
             InputManager.Instance.OnAnyTouchDown -= HandleTutorialTouch;
         videoController.StopVideo();
         tutorialUI.SetActive(false);
-        gameManager.ToTitle();
+        gameManager.ToTitle(false);
     }
 
     public void ActiveTutorial()

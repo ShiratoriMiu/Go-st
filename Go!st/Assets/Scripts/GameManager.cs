@@ -231,12 +231,17 @@ public class GameManager : MonoBehaviour
         maxTimeLimit = initmaxTimeLimit;
     }
 
-    public void ToTitle()
+    public void ToTitle(bool _resetBGM)
     {
         ChangeGameState(GameState.Title);
         ResetGame();
         StartCoroutine(ResetSelectPlayerRotate());
         MapRandomChanger.Instance.OffModelActive();
+        if (_resetBGM)
+        {
+            SoundManager.Instance.StopBGM();
+            SoundManager.Instance.PlayBGM("HomeBGM", true);
+        }
     }
     public void ToGame(bool _isReset) 
     {
@@ -245,6 +250,8 @@ public class GameManager : MonoBehaviour
             mapRandomChanger.ActivateRandomMap();
             playerManager.PlayerGameStart();
             StartGame();
+            SoundManager.Instance.StopBGM();
+            SoundManager.Instance.PlayBGM("GameBGM", true);
         }
         ChangeGameState(GameState.Game);
     }
