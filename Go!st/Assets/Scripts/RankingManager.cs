@@ -34,10 +34,19 @@ public class RankingManager : MonoBehaviour
     private void GenerateRankingTextUI()
     {
         if (rankingContainer == null) return;
+
         // すでに生成済みのUIを削除
         foreach (Transform child in rankingContainer)
         {
-            Destroy(child.gameObject);
+            if (Application.isPlaying)
+            {
+                Destroy(child.gameObject);
+            }
+            else
+            {
+                // エディタモード中に呼ばれた場合はこちらを使用
+                DestroyImmediate(child.gameObject);
+            }
         }
         rankingTextList.Clear();
 
@@ -104,7 +113,6 @@ public class RankingManager : MonoBehaviour
         Debug.Log("[RankingManager] ランキング表示処理完了。");
         _isFetchingTopRankings = false; // 連打防止フラグ解除
     }
-
 
     private void DisplayRanking(List<(int rank, string name, int score)> rankings)
     {
