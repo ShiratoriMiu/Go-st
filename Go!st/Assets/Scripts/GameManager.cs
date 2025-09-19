@@ -170,8 +170,8 @@ public class GameManager : MonoBehaviour
     private async void ShowScore()
     {
         int score = CalculateScore();
-        await firebaseController.SaveMyScoreAsync(score);
         scoreText.text = $"Score : {score}";
+        await firebaseController.SaveMyScoreAsync(score);
     }
 
     public void EndGame()
