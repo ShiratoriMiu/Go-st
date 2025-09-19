@@ -113,6 +113,8 @@ public class DashBossController : EnemyBase
 
         if (other.gameObject.CompareTag("Player"))
         {
+            SoundManager.Instance.PlaySE("LaceBossDash");
+
             PrepareDashLine();
             animator.SetBool("isWait", true);
             state = State.Charge;
@@ -148,6 +150,15 @@ public class DashBossController : EnemyBase
         if (lineRenderer != null)
         {
             lineRenderer.enabled = false;
+        }
+    }
+
+    public override void Damage(int _damage)
+    {
+        base.Damage(_damage);
+        if (hp <= 0)
+        {
+            SoundManager.Instance.PlaySE("BossLaceCatDead");
         }
     }
 }

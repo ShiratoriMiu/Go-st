@@ -34,6 +34,8 @@ public class ShotBossController : EnemyBase
                 {
                     attackIntervalCount = 0f; // カウントリセット
 
+                    SoundManager.Instance.PlaySE("BulletEnemyShotSE");
+
                     float angleStep = 360f / bulletNum;
                     float angle = 0f;
                     animator.SetTrigger("isAttack");
@@ -108,5 +110,14 @@ public class ShotBossController : EnemyBase
         animator.ResetTrigger("isAttack");
         animator.ResetTrigger("isDead");
         animator.Play("Idle", 0, 0f);
+    }
+
+    public override void Damage(int _damage)
+    {
+        base.Damage(_damage);
+        if (hp <= 0)
+        {
+            SoundManager.Instance.PlaySE("BossRainyDead");
+        }
     }
 }

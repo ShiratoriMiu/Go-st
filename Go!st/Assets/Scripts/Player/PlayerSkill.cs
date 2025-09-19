@@ -134,7 +134,11 @@ public class PlayerSkill : MonoBehaviour
         {
             if (coolTime >= 1)
             {
-                skillChargeEffect.SetActive(true);
+                if (!skillChargeEffect.activeSelf) 
+                { 
+                    skillChargeEffect.SetActive(true);
+                    SoundManager.Instance.PlaySE("SkillMaxSE");
+                }
                 SetCanSkill(true);
             }
             else

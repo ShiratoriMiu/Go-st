@@ -21,6 +21,12 @@ public class SoundManager : MonoBehaviour
     private Dictionary<string, float> lastPlayTime = new Dictionary<string, float>();
     private float minInterval = 0.1f; // “¯‚¶SE‚ð–Â‚ç‚·Å¬ŠÔŠu(•b)
 
+    // === ‰¹—ÊÝ’è ===
+    [Header("Volume Settings")]
+    [Range(0f, 1f)] public float masterVolume = 1f;
+    [Range(0f, 1f)] public float bgmVolume = 1f;
+    [Range(0f, 1f)] public float seVolume = 1f;
+
     private void Awake()
     {
         if (Instance == null)
@@ -49,6 +55,25 @@ public class SoundManager : MonoBehaviour
         PlayBGM("HomeBGM", true);
     }
 
+    private void Update()
+    {
+        // –ˆƒtƒŒ[ƒ€‰¹—Ê‚ð”½‰f
+        ApplyVolume();
+    }
+
+    private void ApplyVolume()
+    {
+        // BGM
+        bgmSource.volume = masterVolume * bgmVolume;
+
+        // SE
+        foreach (var source in seSources)
+        {
+            // Ä¶’†‚Ì‚Ý‚É”½‰f‚µ‚Ä‚à‚æ‚¢
+            source.volume = masterVolume * seVolume;
+        }
+    }
+
     // ==== BGM ====
     public void PlayBGM(string bgmName, bool loop = true)
     {
@@ -56,6 +81,7 @@ public class SoundManager : MonoBehaviour
         {
             bgmSource.clip = clip;
             bgmSource.loop = loop;
+            bgmSource.volume = masterVolume * bgmVolume;
             bgmSource.Play();
         }
     }
@@ -82,8 +108,8 @@ public class SoundManager : MonoBehaviour
         var source = seSources.Find(s => !s.isPlaying);
         if (source != null)
         {
-            source.volume = volume;
             source.clip = clip;
+            source.volume = masterVolume * seVolume * volume;
             source.Play();
         }
     }

@@ -81,7 +81,7 @@ public abstract class EnemyBase : MonoBehaviour
         hp -= _damage;
         if (hp <= 0)
         {
-            if(!playerSkill.GetIsSkill()) SoundManager.Instance.PlaySE("HitSEFinish",0.5f);
+            if(!playerSkill.GetIsSkill()) SoundManager.Instance.PlaySE("HitSEFinish", 0.3f);
             animator.speed = 1f;
             isDead = true;
             animator.SetTrigger("isDead");
@@ -96,7 +96,7 @@ public abstract class EnemyBase : MonoBehaviour
         }
         else
         {
-            if (!playerSkill.GetIsSkill()) SoundManager.Instance.PlaySE("HitSE",0.5f);
+            if (!playerSkill.GetIsSkill()) SoundManager.Instance.PlaySE("HitSE", 0.3f);
         }
     }
 
@@ -113,6 +113,7 @@ public abstract class EnemyBase : MonoBehaviour
     //死亡アニメーションのアニメーションイベントで呼ぶ
     public virtual void Dead()
     {
+        SoundManager.Instance.PlaySE("DeadSE");
         hp = maxHp;
         levelManager?.AddEnemyKill();
         gameManager?.AddEnemiesDefeatedNum(defeatedNum);
