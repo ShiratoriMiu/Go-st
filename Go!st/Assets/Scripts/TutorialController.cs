@@ -1,33 +1,35 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static GameManager;
 
 public class TutorialController : MonoBehaviour
 {
     [SerializeField] private GameObject tutorialUI;
+    [SerializeField] private GameObject SettingUI;
 
     [SerializeField] private TutorialVideoController videoController;
 
+    [SerializeField] private GameManager gameManager;
+
     void Start()
     {
-        InputManager.Instance.OnAnyTouchDown += HandleTutorialTouch;
+        //InputManager.Instance.OnAnyTouchDown += HandleTutorialTouch;
 
-        if (!PlayerPrefs.HasKey("Tutorial"))
-        {
-            // 初回起動
-            tutorialUI.SetActive(true);
-            videoController.PlayVideo();
+        //if (!PlayerPrefs.HasKey("Tutorial"))
+        //{
+        //    // 初回起動
+        //    tutorialUI.SetActive(true);
+        //    videoController.PlayVideo();
 
-            // フラグを保存
-            PlayerPrefs.SetInt("Tutorial", 1);
-            PlayerPrefs.Save();
-        }
-        else
-        {
-            // 2回目以降
-            tutorialUI.SetActive(false);
-        }
+        //    // フラグを保存
+        //    PlayerPrefs.SetInt("Tutorial", 1);
+        //    PlayerPrefs.Save();
+        //}
+        //else
+        //{
+        //    // 2回目以降
+        //    tutorialUI.SetActive(false);
+        //}
     }
 
     private void OnDestroy()
@@ -38,14 +40,18 @@ public class TutorialController : MonoBehaviour
 
     private void HandleTutorialTouch()
     {
+        if (InputManager.Instance != null)
+            InputManager.Instance.OnAnyTouchDown -= HandleTutorialTouch;
         videoController.StopVideo();
         tutorialUI.SetActive(false);
+        gameManager.ToTitle();
     }
 
     public void ActiveTutorial()
     {
-        InputManager.Instance.OnAnyTouchDown += HandleTutorialTouch;
         videoController.PlayVideo();
+        SettingUI.SetActive(false);
         tutorialUI.SetActive(true);
+        InputManager.Instance.OnAnyTouchDown += HandleTutorialTouch;
     }
 }
