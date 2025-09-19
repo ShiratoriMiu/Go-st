@@ -46,7 +46,7 @@ public class SoundManager : MonoBehaviour
             Destroy(gameObject);
         }
 
-        PlayBGM("BGM", true);
+        PlayBGM("HomeBGM", true);
     }
 
     // ==== BGM ====
