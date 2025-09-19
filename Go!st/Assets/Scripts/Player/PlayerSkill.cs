@@ -358,6 +358,7 @@ public class PlayerSkill : MonoBehaviour
         {
             //エフェクトを出す
             skillEffect.Play();
+            SoundManager.Instance.PlaySE("ExplosionSE",0.5f);
         }
         points.Clear(); // 軌跡をクリア
         UpdateLineRenderer();

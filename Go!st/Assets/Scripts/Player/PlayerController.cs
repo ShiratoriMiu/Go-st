@@ -370,6 +370,7 @@ public class PlayerController : MonoBehaviour
     {
         levelUpText.PlayAnimation();
         levelUpEffect.Play();
+        SoundManager.Instance.PlaySE("LevelUpSE");
     }
 
     public void SetAttackParameters(int _bulletNum, float _attackSpeed, float _attackCooldownTime)

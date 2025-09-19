@@ -11,6 +11,7 @@ public abstract class EnemyBase : MonoBehaviour
     protected LevelManager levelManager;
     protected GameManager gameManager;
     protected PlayerManager playerManager;
+    protected PlayerSkill playerSkill;
     protected EnemyDeadEffectManager enemyDeadEffectManager;
     protected Vector3 lastVelocity;
     protected float hp;
@@ -44,6 +45,7 @@ public abstract class EnemyBase : MonoBehaviour
         levelManager = _levelManager;
         player = _player;
         playerController = _playerController;
+        playerSkill = _player.GetComponent<PlayerSkill>();
         enemyDeadEffectManager = _enemyDeadEffectManager;
     }
 
@@ -79,6 +81,7 @@ public abstract class EnemyBase : MonoBehaviour
         hp -= _damage;
         if (hp <= 0)
         {
+            if(!playerSkill.GetIsSkill()) SoundManager.Instance.PlaySE("HitSEFinish",0.5f);
             animator.speed = 1f;
             isDead = true;
             animator.SetTrigger("isDead");
@@ -90,6 +93,10 @@ public abstract class EnemyBase : MonoBehaviour
                 col.enabled = false;
             }
             rb.useGravity = false;
+        }
+        else
+        {
+            if (!playerSkill.GetIsSkill()) SoundManager.Instance.PlaySE("HitSE",0.5f);
         }
     }
 
