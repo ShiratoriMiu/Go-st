@@ -5,14 +5,14 @@ using static GameManager;
 
 public class BuffManager : MonoBehaviour
 {
-    [SerializeField] GameObject[] buffPrefabs;   // 生成するオブジェクトの候補
-    [SerializeField] Transform spawnAreaRandA;   // 範囲A
-    [SerializeField] Transform spawnAreaRandB;   // 範囲B
-    [SerializeField] float spawnInterval = 5f;   // 生成間隔（秒）
-    [SerializeField] int spawnPerCycle = 2;      // 1回の生成数
-    [SerializeField] int maxBuffCount = 10;      // フィールド上の最大数
-    [SerializeField] float minDistance = 1.0f;   // アイテム同士の最低距離
-    [SerializeField] float buffLifetime = 10f;   // 生成から消えるまでの秒数
+    [SerializeField] GameObject[] buffPrefabs;
+    [SerializeField] Transform spawnAreaRandA;
+    [SerializeField] Transform spawnAreaRandB;
+    [SerializeField] float spawnInterval = 5f;
+    [SerializeField] int spawnPerCycle = 2;
+    [SerializeField] int maxBuffCount = 10;
+    [SerializeField] float minDistance = 1.0f;
+    [SerializeField] float buffLifetime = 10f;
 
     private List<GameObject> spawnedBuffs = new List<GameObject>();
 
@@ -49,18 +49,29 @@ public class BuffManager : MonoBehaviour
         for (int i = 0; i < spawnCount; i++)
         {
             Vector3 spawnPos = GetValidPosition();
-
             if (spawnPos == Vector3.zero) continue;
 
             int prefabIndex = Random.Range(0, buffPrefabs.Length);
-
             GameObject buff = Instantiate(buffPrefabs[prefabIndex], spawnPos, Quaternion.identity);
+
+            // リストに追加
             spawnedBuffs.Add(buff);
 
+            // BuffCleaner を生成直後に追加
             BuffCleaner cleaner = buff.AddComponent<BuffCleaner>();
             cleaner.onDestroy = () => spawnedBuffs.Remove(buff);
 
-            Destroy(buff, buffLifetime);
+            // Destroy を Coroutine で制御して確実に onDestroy が呼ばれるようにする
+            StartCoroutine(DestroyAfter(buff, buffLifetime));
+        }
+    }
+
+    IEnumerator DestroyAfter(GameObject obj, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (obj != null)
+        {
+            Destroy(obj);
         }
     }
 
@@ -76,32 +87,28 @@ public class BuffManager : MonoBehaviour
             float minZ = Mathf.Min(spawnAreaRandA.position.z, spawnAreaRandB.position.z);
             float maxZ = Mathf.Max(spawnAreaRandA.position.z, spawnAreaRandB.position.z);
 
-            float x = Random.Range(minX, maxX);
-            float y = Random.Range(minY, maxY);
-            float z = Random.Range(minZ, maxZ);
-
-            Vector3 randomPosition = new Vector3(x, y, z);
+            Vector3 randomPos = new Vector3(
+                Random.Range(minX, maxX),
+                Random.Range(minY, maxY),
+                Random.Range(minZ, maxZ)
+            );
 
             bool overlap = false;
             foreach (var buff in spawnedBuffs)
             {
                 if (buff == null) continue;
-                if (Vector3.Distance(buff.transform.position, randomPosition) < minDistance)
+                if (Vector3.Distance(buff.transform.position, randomPos) < minDistance)
                 {
                     overlap = true;
                     break;
                 }
             }
 
-            if (!overlap)
-            {
-                return randomPosition;
-            }
+            if (!overlap) return randomPos;
         }
         return Vector3.zero;
     }
 
-    // すべてのバフを削除
     void ClearAllBuffs()
     {
         foreach (var buff in spawnedBuffs)
@@ -118,6 +125,7 @@ public class BuffManager : MonoBehaviour
 public class BuffCleaner : MonoBehaviour
 {
     public System.Action onDestroy;
+
     private void OnDestroy()
     {
         onDestroy?.Invoke();

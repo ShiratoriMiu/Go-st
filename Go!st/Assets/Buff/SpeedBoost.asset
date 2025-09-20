@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buffType: 1
   healAmount: 0
-  speedMultiplier: 2
+  speedMultiplier: 3
   skillCoolTimeAdd: 1
   duration: 2
   canGetSkill: 0

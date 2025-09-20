@@ -22,7 +22,7 @@ public class BuffSOEditor : Editor
 
             case BuffType.SpeedBoost:
                 buff.speedMultiplier = EditorGUILayout.FloatField("Speed Multiplier", buff.speedMultiplier);
-                buff.speedMultiplier = EditorGUILayout.FloatField("Duration", buff.duration);
+                buff.duration = EditorGUILayout.FloatField("Duration", buff.duration);
                 break;
 
             case BuffType.SkillCoolTime:

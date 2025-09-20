@@ -16,6 +16,8 @@ public class PlayerMove : MonoBehaviour
 
     Rigidbody rb;
 
+    bool isSpeedBoost = false;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -24,6 +26,7 @@ public class PlayerMove : MonoBehaviour
     public void Init()
     {
         moveDirection = Vector2.zero;
+        isSpeedBoost = false;
     }
 
     //ˆÚ“®update
@@ -82,11 +85,15 @@ public class PlayerMove : MonoBehaviour
 
     public void AddSpeed(float _addSpeed)
     {
+        if (isSpeedBoost) return;
         moveSpeed *= _addSpeed;
+        isSpeedBoost = true;
     }
 
     public void RemoveSpeed(float _removeSpeed)
     {
+        if (!isSpeedBoost) return;
         moveSpeed /= _removeSpeed;
+        isSpeedBoost = false;
     }
 }

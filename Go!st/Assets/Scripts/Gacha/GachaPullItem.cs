@@ -10,6 +10,7 @@ public class GachaPullItem : MonoBehaviour
     [SerializeField] Animator[] graveOverAnims;
     [SerializeField] ShakeAnimation[] shakeAnimations;
     [SerializeField] GameObject titleButton;
+    [SerializeField] GameObject tapText;
     [SerializeField] float offsetY;
     [SerializeField] float returnDuration = 0.5f; // 戻るアニメーションの時間
 
@@ -24,6 +25,7 @@ public class GachaPullItem : MonoBehaviour
     private void Start()
     {
         titleButton.SetActive(false);
+        tapText.SetActive(false);
 
         // すでに配置されているアイコンを取得して保持
         icons = itemIconBase.Cast<Transform>()
@@ -86,6 +88,7 @@ public class GachaPullItem : MonoBehaviour
         }
         else
         {
+            tapText.SetActive(true);
             // 選択式用ダミー表示
             for (int i = 0; i < 9; i++)
             {
@@ -113,6 +116,7 @@ public class GachaPullItem : MonoBehaviour
         {
             StartCoroutine(ReturnBaseSmooth());
             titleButton.SetActive(true);
+            tapText.SetActive(false);
         }
     }
 
