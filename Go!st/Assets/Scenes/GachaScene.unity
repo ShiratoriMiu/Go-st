@@ -2168,15 +2168,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemIconBase: {fileID: 953730909}
   graveOverAnims:
-  - {fileID: 459093179}
   - {fileID: 1836765284}
+  - {fileID: 459093179}
   - {fileID: 423580238}
-  - {fileID: 1838871852}
   - {fileID: 1217910990}
   - {fileID: 2012244011}
-  - {fileID: 805866288}
-  - {fileID: 2068569194}
+  - {fileID: 1838871852}
   - {fileID: 1680948663587871247}
+  - {fileID: 2068569194}
+  - {fileID: 805866288}
   shakeAnimations:
   - {fileID: 459093180}
   - {fileID: 1836765285}

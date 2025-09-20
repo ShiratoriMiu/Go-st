@@ -23,7 +23,7 @@ public class ShakeAnimation : MonoBehaviour
         ).OnComplete(() =>
         {
             // —h‚êI—¹‚ÉŒÄ‚Ñ‚½‚¢ˆ—
-            gachaPullItem.GraveOver();
+            if(GachaController.Instance.pullNum == 9)gachaPullItem.GraveOver();
             Debug.Log("—h‚êI—¹");
         });
     }

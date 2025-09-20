@@ -50,10 +50,10 @@ public class GachaPullItem : MonoBehaviour
             LoadItemData.Instance != null && LoadItemData.Instance.IsInitialized);
 
         Debug.Log("アイテムデータ初期化完了 → ガチャ開始");
-        //PullItem();
+        PullItem();
     }
 
-    public void PullItem()
+    void PullItem()
     {
         if (pullItemFlag) return;
 
@@ -74,8 +74,6 @@ public class GachaPullItem : MonoBehaviour
             pullResults.Add(gachaItemDatas[randIndex]);
         }
 
-        SetIconsActive(true);
-
         if (pullNum == 9)
         {
             // 全部表示する
@@ -89,6 +87,7 @@ public class GachaPullItem : MonoBehaviour
         else
         {
             tapText.SetActive(true);
+            SetIconsActive(true);
             // 選択式用ダミー表示
             for (int i = 0; i < 9; i++)
             {
@@ -110,6 +109,7 @@ public class GachaPullItem : MonoBehaviour
         if (pullIndex >= pullResults.Count) return;
 
         UpdateIconDisplay(icon, pullResults[pullIndex]);
+        graveOverAnims[index].enabled = true;
         pullIndex++;
 
         if (pullIndex >= pullResults.Count)
@@ -190,6 +190,7 @@ public class GachaPullItem : MonoBehaviour
     public void GraveOver()
     {
         if (isGraveOver) return;
+        SetIconsActive(true);
         SoundManager.Instance.PlaySE("AppearGhostSE");
         for (int i = 0; i < graveOverAnims.Length; i++)
         {
