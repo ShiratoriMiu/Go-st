@@ -3,36 +3,47 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEditor.Progress;
 
 public class GachaPullItem : MonoBehaviour
 {
-    [SerializeField] GameObject itemIconPrefab;
-
     [SerializeField] Transform itemIconBase;
-
-    [SerializeField] Sprite dummySprite;          // 未選択アイコンの画像
-    [SerializeField] Color dummyColor = Color.gray; // 未選択時の色
-
     [SerializeField] Animator[] graveOverAnims;
-
+    [SerializeField] ShakeAnimation[] shakeAnimations;
     [SerializeField] GameObject titleButton;
+    [SerializeField] float offsetY;
+    [SerializeField] float returnDuration = 0.5f; // 戻るアニメーションの時間
+
+    private Vector3 originalPos;
 
     private List<ItemData> pullResults; // 抽選されたアイテム結果
     private int pullIndex = 0;          // 次に表示するアイテムのインデックス
-
     private bool pullItemFlag = false;
+    private bool isGraveOver = false;
+    private List<GameObject> icons;     // Hierarchy 上に配置済みのアイコンを保持
 
-    // Start is called before the first frame update
     private void Start()
     {
         titleButton.SetActive(false);
+
+        // すでに配置されているアイコンを取得して保持
+        icons = itemIconBase.Cast<Transform>()
+                            .Select(t => t.gameObject)
+                            .ToList();
+
+        // 元の位置を保持
+        originalPos = itemIconBase.localPosition;
+
+        // 最初に下げる
+        itemIconBase.localPosition = originalPos + new Vector3(0, -offsetY, 0);
+
+        // 最初は非表示にする
+        SetIconsActive(false);
+
         StartCoroutine(WaitForInitializeAndPull());
     }
 
     private IEnumerator WaitForInitializeAndPull()
     {
-        // LoadItemData が存在して初期化完了するまで待機
         yield return new WaitUntil(() =>
             LoadItemData.Instance != null && LoadItemData.Instance.IsInitialized);
 
@@ -44,17 +55,16 @@ public class GachaPullItem : MonoBehaviour
     {
         if (pullItemFlag) return;
 
-        // アイテムリストからガチャ候補を取得
+        // ガチャ候補取得
         List<ItemData> allItems = SaveManager.AllItems();
         List<string> gachaItems = SaveManager.GachaItems();
-
         List<ItemData> gachaItemDatas = allItems
             .Where(x => gachaItems.Contains(x.name))
             .ToList();
 
         int pullNum = GachaController.Instance.pullNum;
 
-        // pullNum 個抽選して保存
+        // 抽選結果を保存
         pullResults = new List<ItemData>();
         for (int i = 0; i < pullNum; i++)
         {
@@ -62,96 +72,61 @@ public class GachaPullItem : MonoBehaviour
             pullResults.Add(gachaItemDatas[randIndex]);
         }
 
-        // -------------------------
-        // 分岐処理
-        // -------------------------
+        SetIconsActive(true);
+
         if (pullNum == 9)
         {
             // 全部表示する
             for (int i = 0; i < 9; i++)
             {
-                ItemData currentItem = pullResults[i];
-
-                GameObject icon = Instantiate(itemIconPrefab, itemIconBase);
-                Image iconBG = icon.GetComponent<Image>();
-                Image img = icon.GetComponentsInChildren<Image>().FirstOrDefault(x => x.gameObject != icon);
-                Text txt = icon.GetComponentsInChildren<Text>().FirstOrDefault(x => x.gameObject != icon);
-
-                // アイテム表示
-                //iconBG.color = currentItem.ToColor();
-                img.sprite = !string.IsNullOrEmpty(currentItem.IconName)
-                    ? Resources.Load<Sprite>($"Icon/{currentItem.IconName}")
-                    : null;
-
-                if (img.sprite == null)
-                {
-                    img.color = Color.white;
-                    if (currentItem.IconName != "Null") txt.text = currentItem.IconName;
-                }
-                else
-                {
-                    txt.text = "";
-                }
-
-                // 所持判定と更新
-                if (currentItem.isOwned)
-                {
-                    if (currentItem.canColorChange && !currentItem.isColorChangeOn)
-                    {
-                        SaveManager.UpdateItemFlags(currentItem.name, colorChangeOn: true);
-                    }
-                    else
-                    {
-                        ReturnCoin();
-                    }
-                }
-                SaveManager.UpdateItemFlags(currentItem.name, owned: true);
+                UpdateIconDisplay(icons[i], pullResults[i]);
             }
+            StartCoroutine(ReturnBaseSmooth());
             titleButton.SetActive(true);
         }
         else
         {
-            // 9個ダミーを生成して選択式にする
+            // 選択式用ダミー表示
             for (int i = 0; i < 9; i++)
             {
-                GameObject icon = Instantiate(itemIconPrefab, itemIconBase);
-                Image iconBG = icon.GetComponent<Image>();
-                Image img = icon.GetComponentsInChildren<Image>().FirstOrDefault(x => x.gameObject != icon);
-                Text txt = icon.GetComponentsInChildren<Text>().FirstOrDefault(x => x.gameObject != icon);
+                SetDummyIcon(icons[i]);
 
-                // ダミー表示
-                iconBG.color = dummyColor;
-                img.sprite = dummySprite;
-                txt.text = "";
-
-                // ボタン押下時に「ここにアイテムを出す」処理を登録
+                // ボタン押下時に結果を表示
                 int index = i;
-                Button btn = icon.GetComponent<Button>();
-                btn.onClick.AddListener(() => OnIconClick(icon, index));
+                Button btn = icons[i].GetComponent<Button>();
+                btn.onClick.RemoveAllListeners();
+                btn.onClick.AddListener(() => OnIconClick(icons[index], index));
             }
         }
 
         pullItemFlag = true;
     }
 
-
     private void OnIconClick(GameObject icon, int index)
     {
-        // もう結果が残ってなければ何もしない
         if (pullIndex >= pullResults.Count) return;
 
-        ItemData currentItem = pullResults[pullIndex];
-        pullIndex++; // 次のアイテムに進む
+        UpdateIconDisplay(icon, pullResults[pullIndex]);
+        pullIndex++;
 
+        if (pullIndex >= pullResults.Count)
+        {
+            StartCoroutine(ReturnBaseSmooth());
+            titleButton.SetActive(true);
+        }
+    }
+
+    private void UpdateIconDisplay(GameObject icon, ItemData currentItem)
+    {
         Image iconBG = icon.GetComponent<Image>();
         Image img = icon.GetComponentsInChildren<Image>().FirstOrDefault(x => x.gameObject != icon);
         Text txt = icon.GetComponentsInChildren<Text>().FirstOrDefault(x => x.gameObject != icon);
 
         // アイテム表示
-        iconBG.color = Color.white;
         img.sprite = !string.IsNullOrEmpty(currentItem.IconName)
             ? Resources.Load<Sprite>($"Icon/{currentItem.IconName}")
             : null;
+        img.color = Color.white;
 
         if (img.sprite == null)
         {
@@ -161,7 +136,10 @@ public class GachaPullItem : MonoBehaviour
         else
         {
             txt.text = "";
+            img.color = Color.white;
         }
+
+        iconBG.color = Color.white;
 
         // 所持判定と更新
         if (currentItem.isOwned)
@@ -176,9 +154,26 @@ public class GachaPullItem : MonoBehaviour
             }
         }
         SaveManager.UpdateItemFlags(currentItem.name, owned: true);
+    }
 
-        Debug.Log($"アイテム表示: {currentItem.name}");
-        if (pullIndex >= pullResults.Count) titleButton.SetActive(true);
+    private void SetDummyIcon(GameObject icon)
+    {
+        Image iconBG = icon.GetComponent<Image>();
+        Image img = icon.GetComponentsInChildren<Image>().FirstOrDefault(x => x.gameObject != icon);
+        Text txt = icon.GetComponentsInChildren<Text>().FirstOrDefault(x => x.gameObject != icon);
+
+        iconBG.color = Color.clear;
+        img.sprite = null;
+        img.color = Color.clear;
+        txt.text = "";
+    }
+
+    private void SetIconsActive(bool active)
+    {
+        foreach (var icon in icons)
+        {
+            icon.SetActive(active);
+        }
     }
 
     private void ReturnCoin()
@@ -190,9 +185,32 @@ public class GachaPullItem : MonoBehaviour
 
     public void GraveOver()
     {
-        for (int i = 0; i < graveOverAnims.Count(); i++)
+        if (isGraveOver) return;
+        for (int i = 0; i < graveOverAnims.Length; i++)
         {
             graveOverAnims[i].enabled = true;
         }
+        isGraveOver = true;
+    }
+
+    public void StartShakes()
+    {
+        for (int i = 0; i < shakeAnimations.Length; i++)
+        {
+            shakeAnimations[i].StartShake();
+        }
+    }
+
+    private IEnumerator ReturnBaseSmooth()
+    {
+        Vector3 start = itemIconBase.localPosition;
+        float t = 0f;
+        while (t < 1f)
+        {
+            t += Time.deltaTime / returnDuration;
+            itemIconBase.localPosition = Vector3.Lerp(start, originalPos, t);
+            yield return null;
+        }
+        itemIconBase.localPosition = originalPos; // 最終補正
     }
 }
