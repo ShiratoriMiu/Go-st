@@ -35,6 +35,7 @@ public class TitleGachaButton : MonoBehaviour
         }
         else if (SaveManager.LoadCoin() < pullCoinNum * 9)
         {
+            pull1GachaButton.interactable = true;
             pull9GachaButton.interactable = false;
         }
         else
