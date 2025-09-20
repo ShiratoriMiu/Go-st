@@ -259,6 +259,7 @@ public class GameManager : MonoBehaviour
     {
         ChangeGameState(GameState.Score);
         ShowScore();
+        SoundManager.Instance.StopBGM();
         SoundManager.Instance.PlaySE("ResultSE");
     }
     public void ToRanking()

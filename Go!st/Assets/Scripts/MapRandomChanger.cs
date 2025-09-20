@@ -11,6 +11,7 @@ public class MapRandomChanger : MonoBehaviour
     {
         public GameObject mapObj;
         public GameObject offModel;
+        public string bgmName;
     }
 
     [SerializeField] private MapObj[] maps;
@@ -57,6 +58,8 @@ public class MapRandomChanger : MonoBehaviour
         {
             maps[randomIndex].mapObj.SetActive(true);
             maps[randomIndex].offModel.SetActive(false);
+            //SoundManager.Instance.StopBGM();
+            //SoundManager.Instance.PlayBGM(maps[randomIndex].bgmName, true);
         }
     }
 
