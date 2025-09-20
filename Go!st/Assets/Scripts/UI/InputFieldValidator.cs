@@ -27,6 +27,15 @@ public class InputFieldValidator : MonoBehaviour
         inputField.onEndEdit.AddListener(OnEndEdit);
     }
 
+    private void OnEnable()
+    {
+        string playerName = LoginController.Instance.GetUserName();
+        if(playerName != "Player")
+        {
+            inputField.text = playerName;
+        }
+    }
+
     /// <summary>
     /// 入力中の文字列をチェック（改行削除＋最大文字数超過カット）
     /// </summary>

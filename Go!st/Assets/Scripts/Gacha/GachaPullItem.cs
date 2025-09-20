@@ -186,6 +186,7 @@ public class GachaPullItem : MonoBehaviour
     public void GraveOver()
     {
         if (isGraveOver) return;
+        SoundManager.Instance.PlaySE("AppearGhostSE");
         for (int i = 0; i < graveOverAnims.Length; i++)
         {
             graveOverAnims[i].enabled = true;
@@ -195,6 +196,7 @@ public class GachaPullItem : MonoBehaviour
 
     public void StartShakes()
     {
+        SoundManager.Instance.PlaySE("GroundShakeSE");
         for (int i = 0; i < shakeAnimations.Length; i++)
         {
             shakeAnimations[i].StartShake();
