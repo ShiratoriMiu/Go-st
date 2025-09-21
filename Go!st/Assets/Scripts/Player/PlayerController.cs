@@ -62,6 +62,7 @@ public class PlayerController : MonoBehaviour
     private float rotationVelocity = 0f;   // 現在の回転速度
     [SerializeField] private float rotationDamping = 5f; // 減速の速さ
 
+    private Coroutine speedBuffCoroutine;
 
     // Start is called before the first frame update
     void Awake()
@@ -342,9 +343,13 @@ public class PlayerController : MonoBehaviour
             // 速度アップ
             if (buff.speedMultiplier != 1f)
             {
-                StopCoroutine(SpeedBuffCoroutine(buff.speedMultiplier, buff.duration));
-                playerMove.RemoveSpeed();
-                StartCoroutine(SpeedBuffCoroutine(buff.speedMultiplier, buff.duration));
+                // 既にバフ中なら止める
+                if (speedBuffCoroutine != null)
+                {
+                    StopCoroutine(speedBuffCoroutine);
+                    playerMove.RemoveSpeed(); // 途中で戻す
+                }
+                speedBuffCoroutine = StartCoroutine(SpeedBuffCoroutine(buff.speedMultiplier, buff.duration));
             }  
         }
         else if(buff.buffType == BuffType.SkillCoolTime)
@@ -366,6 +371,7 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(duration);
 
         playerMove.RemoveSpeed();
+        speedBuffCoroutine = null;
     }
 
     public void LevelUpText()
