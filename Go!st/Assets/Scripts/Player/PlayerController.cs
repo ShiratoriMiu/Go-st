@@ -341,7 +341,11 @@ public class PlayerController : MonoBehaviour
         {
             // 速度アップ
             if (buff.speedMultiplier != 1f)
+            {
+                StopCoroutine(SpeedBuffCoroutine(buff.speedMultiplier, buff.duration));
+                playerMove.RemoveSpeed();
                 StartCoroutine(SpeedBuffCoroutine(buff.speedMultiplier, buff.duration));
+            }  
         }
         else if(buff.buffType == BuffType.SkillCoolTime)
         {

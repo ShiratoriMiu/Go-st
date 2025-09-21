@@ -17,17 +17,16 @@ public class PlayerMove : MonoBehaviour
     Rigidbody rb;
 
     private float originalSpeed;
-    bool isSpeedBoost = false;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
+        originalSpeed = moveSpeed;
     }
 
     public void Init()
     {
         moveDirection = Vector2.zero;
-        isSpeedBoost = false;
     }
 
     //ˆÚ“®update
@@ -86,16 +85,11 @@ public class PlayerMove : MonoBehaviour
 
     public void AddSpeed(float _addSpeed)
     {
-        if (isSpeedBoost) return;
-        originalSpeed = moveSpeed;
         moveSpeed *= _addSpeed;
-        isSpeedBoost = true;
     }
 
     public void RemoveSpeed()
     {
-        if (!isSpeedBoost) return;
         moveSpeed = originalSpeed;
-        isSpeedBoost = false;
     }
 }
