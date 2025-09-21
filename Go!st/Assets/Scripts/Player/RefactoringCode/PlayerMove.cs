@@ -16,6 +16,7 @@ public class PlayerMove : MonoBehaviour
 
     Rigidbody rb;
 
+    private float originalSpeed;
     bool isSpeedBoost = false;
 
     private void Start()
@@ -86,14 +87,15 @@ public class PlayerMove : MonoBehaviour
     public void AddSpeed(float _addSpeed)
     {
         if (isSpeedBoost) return;
+        originalSpeed = moveSpeed;
         moveSpeed *= _addSpeed;
         isSpeedBoost = true;
     }
 
-    public void RemoveSpeed(float _removeSpeed)
+    public void RemoveSpeed()
     {
         if (!isSpeedBoost) return;
-        moveSpeed /= _removeSpeed;
+        moveSpeed = originalSpeed;
         isSpeedBoost = false;
     }
 }

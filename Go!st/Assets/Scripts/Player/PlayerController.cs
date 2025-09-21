@@ -358,12 +358,10 @@ public class PlayerController : MonoBehaviour
     private IEnumerator SpeedBuffCoroutine(float multiplier, float duration)
     {
         playerMove.AddSpeed(multiplier);
-        Debug.Log($"速度アップ：{multiplier}倍");
 
         yield return new WaitForSeconds(duration);
 
-        playerMove.RemoveSpeed(multiplier);
-        Debug.Log("速度元に戻った！");
+        playerMove.RemoveSpeed();
     }
 
     public void LevelUpText()
