@@ -29,9 +29,6 @@ public class MapRandomChanger : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-
-        // 必要ならシーン切り替え時も破棄しない
-        // DontDestroyOnLoad(gameObject);
     }
 
     /// <summary>
@@ -58,8 +55,8 @@ public class MapRandomChanger : MonoBehaviour
         {
             maps[randomIndex].mapObj.SetActive(true);
             maps[randomIndex].offModel.SetActive(false);
-            //SoundManager.Instance.StopBGM();
-            //SoundManager.Instance.PlayBGM(maps[randomIndex].bgmName, true);
+            SoundManager.Instance.StopBGM();
+            SoundManager.Instance.PlayBGM(maps[randomIndex].bgmName, true);
         }
     }
 

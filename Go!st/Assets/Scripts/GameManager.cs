@@ -250,8 +250,8 @@ public class GameManager : MonoBehaviour
             mapRandomChanger.ActivateRandomMap();
             playerManager.PlayerGameStart();
             StartGame();
-            SoundManager.Instance.StopBGM();
-            SoundManager.Instance.PlayBGM("GameBGM", true);
+            //SoundManager.Instance.StopBGM();
+            //SoundManager.Instance.PlayBGM("GameBGM", true);
         }
         ChangeGameState(GameState.Game);
     }
