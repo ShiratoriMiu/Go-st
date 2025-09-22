@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -29,7 +30,7 @@ public class PlayerSkill : MonoBehaviour
     [SerializeField, Range(0f, 1f)] float topOffset = 0.9f;    // 上端のオフセット
     [SerializeField, Range(0f, 1f)] float bottomOffset = 0.1f; // 下端のオフセット
 
-    Text skillEnemyNumText;
+    TMP_Text skillEnemyNumText;
 
     Camera mainCamera; // 使用するカメラ
 
@@ -486,7 +487,7 @@ public class PlayerSkill : MonoBehaviour
         return c;
     }
 
-    public void SetSkillEnemyNumText(Text _skillEnemyNumText)
+    public void SetSkillEnemyNumText(TMP_Text _skillEnemyNumText)
     {
         skillEnemyNumText = _skillEnemyNumText;
     }

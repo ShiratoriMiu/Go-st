@@ -14747,6 +14747,7 @@ MonoBehaviour:
   rendererInit: {fileID: 5743897870420690002}
   levelUpEffect: {fileID: 7741266360691419792}
   skillGaugeImage: {fileID: 0}
+  levelUpGaugeImageRect: {fileID: 0}
   gameManager: {fileID: 0}
   playerAttack: {fileID: 8974065453400864011}
   playerSkill: {fileID: 5452021018072248373}
@@ -19991,7 +19992,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: LevelUP
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 0b0efafa70c5e9a4eaba90b4930506a7, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -20057,7 +20058,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 0
+  m_hasFontAssetChanged: 1
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &8408598726837925339

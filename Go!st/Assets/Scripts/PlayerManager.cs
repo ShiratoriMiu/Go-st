@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using System.Collections.Generic;
+using TMPro;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -13,7 +14,7 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private float rotationDamping = 5f;
 
     [Header("UI & References")]
-    [SerializeField] private Text skillEnemyNumText;
+    [SerializeField] private TMP_Text skillEnemyNumText;
     [SerializeField] private ColorChanger colorChanger;
     [SerializeField] private SkinItemUIManager skinItemUIManager;
     [SerializeField] private MakeUpManager makeUpManager;
