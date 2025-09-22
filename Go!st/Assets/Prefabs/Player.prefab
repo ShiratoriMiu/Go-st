@@ -14965,7 +14965,7 @@ MonoBehaviour:
     - {fileID: 5886892243296487040}
     - {fileID: 7556699526396112204}
     - {fileID: 6870368134166854616}
-    itemIcon: {fileID: 21300000, guid: 220d4438d0c063648850f0c29338e744, type: 3}
+    itemIcon: {fileID: 21300000, guid: c9403d49138129b46a4245dd610aa1a7, type: 3}
     canColorChange: 1
     isOwned: 0
     isEquipped: 0
@@ -15049,7 +15049,7 @@ MonoBehaviour:
     - {fileID: 7275128386820050113}
     - {fileID: 8924356707422623832}
     - {fileID: 857106350519418177}
-    itemIcon: {fileID: 21300000, guid: 29fea56b79b956a44b9e92778fe8b131, type: 3}
+    itemIcon: {fileID: 21300000, guid: db27d6c69f1170e4d87a6a2e17ed7939, type: 3}
     canColorChange: 1
     isOwned: 0
     isEquipped: 0
@@ -15067,7 +15067,7 @@ MonoBehaviour:
   - itemName: Glasses
     itemObjectRenderers:
     - {fileID: 6116392421112654668}
-    itemIcon: {fileID: 21300000, guid: 91118f851e15bcb459bf57683c0637b0, type: 3}
+    itemIcon: {fileID: 21300000, guid: 50ed92341059fe64599444013e46d10a, type: 3}
     canColorChange: 1
     isOwned: 0
     isEquipped: 0
