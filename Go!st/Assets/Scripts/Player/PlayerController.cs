@@ -26,6 +26,13 @@ public class PlayerController : MonoBehaviour
     private Image levelUpGaugeImage;
     [SerializeField] private GameManager gameManager;
 
+    //チュートリアルアニメーション
+    private Animator stickAnimator;
+    [SerializeField] private float idleAnimationDelay = 3f; // 3秒無操作でアニメ開始
+    [SerializeField] GameObject fingerImage;
+
+    private float idleTimer = 0f;
+
     public Renderer renderer { get; private set; }
     public bool canSkill { get; private set; }
 
@@ -72,6 +79,7 @@ public class PlayerController : MonoBehaviour
         playerHealth.Init();
         stickControllerRect = stickController.GetComponent<RectTransform>();
         stickControllerInitPos = stickControllerRect.anchoredPosition;
+        stickAnimator = stickController.GetComponent<Animator>();
 
         playerSkill.InitializeSkillDependencies(stickController, () => canSkill, SetCanSkill);
 
@@ -124,10 +132,21 @@ public class PlayerController : MonoBehaviour
         if (isInteracting)
         {
             touchTime += Time.deltaTime;
+
+            idleTimer = 0f;
+            if (stickAnimator.enabled) stickAnimator.enabled = false; // 操作があれば止める
+            if (fingerImage.activeSelf) fingerImage.SetActive(false);
         }
         else
         {
             touchTime = 0;
+
+            idleTimer += Time.deltaTime;
+            if (idleTimer >= idleAnimationDelay)
+            {
+                if (!stickAnimator.enabled) stickAnimator.enabled = true; // 一定時間後に動かす
+                if (!fingerImage.activeSelf) fingerImage.SetActive(true);
+            }
         }
     }
 
