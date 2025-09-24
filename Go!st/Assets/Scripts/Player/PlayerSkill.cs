@@ -193,7 +193,7 @@ public class PlayerSkill : MonoBehaviour
             {
                 StopSkillAnim(_startPosition);
                 onSkillEndCallback?.Invoke(); // ƒAƒjƒŒã‚ÉŒÄ‚Ô
-            });
+            }, enemyNum);
         }
         else
         {

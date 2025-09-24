@@ -1,30 +1,72 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
 public class PlayerSkillAnim : MonoBehaviour
 {
-    // ˆÚ“®—Êiã‰º‚É1ƒ†ƒjƒbƒgj
+    SpriteRenderer skillGhostRenderer;
+
+    // ç§»å‹•é‡ï¼ˆä¸Šä¸‹ã«1ãƒ¦ãƒ‹ãƒƒãƒˆï¼‰
     [SerializeField] float moveAmount = 1f;
     [SerializeField] float duration = 1f;
     [SerializeField] float waitTime = 0.5f;
 
-    public void PlayerSkillAnimPlay(System.Action onComplete)
+    [System.Serializable]
+    public class GhostSprite
+    {
+        public Sprite sprite;
+        public int comboNum;
+    }
+
+    [SerializeField] GhostSprite[] ghostSprites;
+
+    [SerializeField] GameObject twinkleImage;
+
+    private void Start()
+    {
+        skillGhostRenderer = GetComponent<SpriteRenderer>();
+    }
+
+    public void PlayerSkillAnimPlay(System.Action onComplete, int enemyNum)
     {
         Vector3 startPos = transform.position;
 
         if (float.IsNaN(startPos.x) || float.IsNaN(startPos.y) || float.IsNaN(startPos.z))
         {
-            Debug.LogError("ŠJnˆÊ’u‚ªNaN‚Å‚·IƒAƒjƒ[ƒVƒ‡ƒ“’†~");
+            Debug.LogError("é–‹å§‹ä½ç½®ãŒNaNã§ã™ï¼ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ä¸­æ­¢");
             return;
         }
+
+        // ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã§æœ€å¾Œã®Spriteã«ã—ã¦ãŠã
+        skillGhostRenderer.sprite = ghostSprites[ghostSprites.Length - 1].sprite;
+        twinkleImage.SetActive(true);
+
+        //ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆåˆ‡ã‚Šæ›¿ãˆ
+        for (int i = 0; i < ghostSprites.Length; i++)
+        {
+            var ghost = ghostSprites[i];
+
+            if (enemyNum < ghost.comboNum)
+            {
+                skillGhostRenderer.sprite = ghost.sprite;
+
+                //æœ€å¾Œã®è¦ç´ ã˜ã‚ƒãªã‹ã£ãŸã‚‰ twinkleImage ã‚’ç„¡åŠ¹åŒ–
+                if (i != ghostSprites.Length - 1)
+                {
+                    twinkleImage.SetActive(false);
+                }
+
+                break;
+            }
+        }
+
 
         Vector3 upPos = startPos + Vector3.up * moveAmount;
 
         if (float.IsNaN(upPos.x) || float.IsNaN(upPos.y) || float.IsNaN(upPos.z))
         {
-            Debug.LogError("ˆÚ“®æ‚ªNaN‚Å‚·IƒAƒjƒ[ƒVƒ‡ƒ“’†~");
+            Debug.LogError("ç§»å‹•å…ˆãŒNaNã§ã™ï¼ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ä¸­æ­¢");
             return;
         }
 
