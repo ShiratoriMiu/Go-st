@@ -18,7 +18,7 @@ public class LoginController : MonoBehaviour
     private TaskCompletionSource<bool> firebaseReadyTcs = new TaskCompletionSource<bool>();
     public Task WaitForFirebaseReadyAsync() => firebaseReadyTcs.Task;
 
-    [SerializeField] InputField nameInputField;
+    [SerializeField] InputFieldValidator nameInputFieldValidator;
 
     private void Awake()
     {
@@ -32,8 +32,17 @@ public class LoginController : MonoBehaviour
             Destroy(gameObject);
         }
 
-        nameInputField.onEndEdit.AddListener(OnNameEndEdit);
+        // InputFieldValidator を取得してイベント登録
+        var validator = nameInputFieldValidator;
+        if (validator != null)
+        {
+            validator.OnValidatedName += async (validatedName) =>
+            {
+                await SetUserName(validatedName); // 文字数制限後の文字をFirebaseに保存
+            };
+        }
     }
+
 
     private async void Start()
     {
@@ -147,9 +156,9 @@ public class LoginController : MonoBehaviour
         if (User == null)
         {
             Debug.LogWarning("ユーザーがログインしていません");
-            return "NoName";
+            return "Player";
         }
 
-        return User.DisplayName ?? "NoName";
+        return User.DisplayName ?? "Player";
     }
 }
