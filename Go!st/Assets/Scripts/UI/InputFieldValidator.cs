@@ -20,6 +20,8 @@ public class InputFieldValidator : MonoBehaviour
 
     public event Action<string> OnValidatedName; // 確定後の文字列を通知
 
+    [SerializeField] GameObject ngWordPopUp;
+
     private void Awake()
     {
         if (inputField == null)
@@ -97,6 +99,7 @@ public class InputFieldValidator : MonoBehaviour
             {
                 Debug.LogWarning($"NGワード「{ng}」が含まれています");
                 validatedText = "";
+                ShowNgWordPopUp();
                 break;
             }
         }
@@ -186,4 +189,14 @@ public class InputFieldValidator : MonoBehaviour
 
     private bool IsFullWidth(char c) => c > 0xFF;
     private bool IsUppercaseLetter(char c) => c >= 'A' && c <= 'Z';
+
+    private void ShowNgWordPopUp()
+    {
+        ngWordPopUp.SetActive(true);
+    }
+
+    public void CloseNgWordPopUp()
+    {
+        ngWordPopUp.SetActive(false);
+    }
 }
