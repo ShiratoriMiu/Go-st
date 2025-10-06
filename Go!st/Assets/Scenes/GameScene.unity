@@ -1372,7 +1372,7 @@ MonoBehaviour:
     m_Font: {fileID: 12800000, guid: 9a0dddebc0e9aa94f9ef16a7a9b4b8bf, type: 3}
     m_FontSize: 88
     m_FontStyle: 0
-    m_BestFit: 0
+    m_BestFit: 1
     m_MinSize: 7
     m_MaxSize: 88
     m_Alignment: 2
@@ -1381,9 +1381,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: '0/0
-
-'
+  m_Text: 0/0
 --- !u!222 &26169162
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7330,7 +7328,7 @@ MonoBehaviour:
     m_Font: {fileID: 12800000, guid: 9a0dddebc0e9aa94f9ef16a7a9b4b8bf, type: 3}
     m_FontSize: 60
     m_FontStyle: 0
-    m_BestFit: 0
+    m_BestFit: 1
     m_MinSize: 10
     m_MaxSize: 60
     m_Alignment: 0
@@ -27579,7 +27577,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -0.5062256, y: 0}
+  m_SizeDelta: {x: 0, y: -0.04260254}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &635920750
 MonoBehaviour:
@@ -29668,7 +29666,7 @@ MonoBehaviour:
     m_Font: {fileID: 12800000, guid: 9a0dddebc0e9aa94f9ef16a7a9b4b8bf, type: 3}
     m_FontSize: 88
     m_FontStyle: 0
-    m_BestFit: 0
+    m_BestFit: 1
     m_MinSize: 7
     m_MaxSize: 88
     m_Alignment: 2
@@ -29677,9 +29675,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: '0/0
-
-'
+  m_Text: 0/0
 --- !u!222 &680600431
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -34710,7 +34706,7 @@ MonoBehaviour:
     m_Font: {fileID: 12800000, guid: 9a0dddebc0e9aa94f9ef16a7a9b4b8bf, type: 3}
     m_FontSize: 60
     m_FontStyle: 0
-    m_BestFit: 0
+    m_BestFit: 1
     m_MinSize: 10
     m_MaxSize: 60
     m_Alignment: 0
@@ -74268,7 +74264,7 @@ MonoBehaviour:
     m_Font: {fileID: 12800000, guid: 9a0dddebc0e9aa94f9ef16a7a9b4b8bf, type: 3}
     m_FontSize: 60
     m_FontStyle: 0
-    m_BestFit: 0
+    m_BestFit: 1
     m_MinSize: 10
     m_MaxSize: 60
     m_Alignment: 0
@@ -76576,7 +76572,7 @@ MonoBehaviour:
     m_Font: {fileID: 12800000, guid: 9a0dddebc0e9aa94f9ef16a7a9b4b8bf, type: 3}
     m_FontSize: 88
     m_FontStyle: 0
-    m_BestFit: 0
+    m_BestFit: 1
     m_MinSize: 7
     m_MaxSize: 88
     m_Alignment: 2
@@ -76585,9 +76581,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: '0/0
-
-'
+  m_Text: 0/0
 --- !u!222 &2008733799
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -79850,6 +79844,9 @@ MonoBehaviour:
   bestScoreText: {fileID: 1334695408}
   changePlayerIconScrollView: {fileID: 2078280140}
   firebaseController: {fileID: 1905739031}
+  colorNumText: {fileID: 26169161}
+  skinItemNumText: {fileID: 680600430}
+  makeUpNumText: {fileID: 2008733798}
 --- !u!114 &2094441130
 MonoBehaviour:
   m_ObjectHideFlags: 0

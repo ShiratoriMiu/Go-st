@@ -309,7 +309,8 @@ public class GameManager : MonoBehaviour
                         slot.isOwned,
                         slot.isEquipped,
                         slot.canColorChange,
-                        slot.currentColorChange
+                        slot.currentColorChange,
+                        ItemStyle.SkinItem
                     );
                     playerData.allItems.Add(savedItem);
                 }
@@ -342,7 +343,8 @@ public class GameManager : MonoBehaviour
                     makeSlot.isOwned,
                     makeSlot.isEquipped,
                     false,
-                    false
+                    false,
+                    ItemStyle.MakeUp
                 );
                 playerData.allItems.Add(savedItem);
             }
@@ -366,7 +368,8 @@ public class GameManager : MonoBehaviour
                     colorSlot.isOwned,
                     false,
                     false,
-                    false
+                    false,
+                    ItemStyle.SkinColor
                 );
                 playerData.allItems.Add(savedItem);
             }

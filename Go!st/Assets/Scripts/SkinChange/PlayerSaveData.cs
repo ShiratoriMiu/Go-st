@@ -35,7 +35,9 @@ public class ItemData
     public bool canColorChange;  // 色変え可能か
     public bool isColorChangeOn; //現状色変え可能か（ガチャなどでダブったか）
 
-    public ItemData(string _name, string _iconName, Color _color, bool _isOwned, bool _isEquipped, bool _canColorChange, bool _isColorChangeOn)
+    public ItemStyle itemStyle;
+
+    public ItemData(string _name, string _iconName, Color _color, bool _isOwned, bool _isEquipped, bool _canColorChange, bool _isColorChangeOn, ItemStyle _itemStyle)
     {
         this.name = _name;
         IconName = _iconName;
@@ -44,6 +46,7 @@ public class ItemData
         isEquipped = _isEquipped;
         canColorChange = _canColorChange;
         isColorChangeOn = _isColorChangeOn;
+        this.itemStyle = _itemStyle;
     }
 
     public Color ToColor()
@@ -170,7 +173,7 @@ public static class SaveManager
     }
 
     //アイテム保存
-    public static void SaveAllItem(string _name, string _iconName, Color _color, bool _isOwned, bool _isEquipped, bool _canColorChange, bool _isColorChangeOn)
+    public static void SaveAllItem(string _name, string _iconName, Color _color, bool _isOwned, bool _isEquipped, bool _canColorChange, bool _isColorChangeOn, ItemStyle _itemStyle)
     {
         // 既存データを読み込み（null 対策）
         PlayerSaveData data = Load() ?? new PlayerSaveData();
@@ -186,7 +189,7 @@ public static class SaveManager
         if (!exists)
         {
             // 新しい ItemData を正しく生成して追加
-            ItemData item = new ItemData(_name, _iconName, _color, _isOwned, _isEquipped, _canColorChange, _isColorChangeOn);
+            ItemData item = new ItemData(_name, _iconName, _color, _isOwned, _isEquipped, _canColorChange, _isColorChangeOn, _itemStyle);
 
             data.allItems.Add(item);
             Save(data); // 上書き保存

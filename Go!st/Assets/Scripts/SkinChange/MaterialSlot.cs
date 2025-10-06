@@ -31,3 +31,10 @@ public enum ItemNameSlot
     RainbowColor,
     ZombieColor
 }
+
+public enum ItemStyle
+{
+    SkinColor,
+    SkinItem,
+    MakeUp
+}
