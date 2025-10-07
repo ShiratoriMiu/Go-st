@@ -1287,7 +1287,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: -1420.0403}
+  m_SizeDelta: {x: 0, y: -1420.3912}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &24454281
 MonoBehaviour:
@@ -18609,6 +18609,7 @@ GameObject:
   - component: {fileID: 429265384}
   - component: {fileID: 429265388}
   - component: {fileID: 429265389}
+  - component: {fileID: 429265390}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -18745,6 +18746,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seName: SkillButtonSE
+--- !u!114 &429265390
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 429265382}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51a7781b51c5b2942a612520d9550d83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetButton: {fileID: 429265384}
+  targetGraphics:
+  - {fileID: 1470350489}
 --- !u!1 &429341849
 GameObject:
   m_ObjectHideFlags: 0
@@ -29330,6 +29346,7 @@ GameObject:
   - component: {fileID: 679115032}
   - component: {fileID: 679115031}
   - component: {fileID: 679115034}
+  - component: {fileID: 679115035}
   m_Layer: 5
   m_Name: ProfileButton
   m_TagString: Untagged
@@ -29464,6 +29481,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seName: ButtonSE
+--- !u!114 &679115035
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 679115029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51a7781b51c5b2942a612520d9550d83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetButton: {fileID: 679115031}
+  targetGraphics:
+  - {fileID: 2124594996}
 --- !u!1 &679902955
 GameObject:
   m_ObjectHideFlags: 0
@@ -31940,6 +31972,7 @@ GameObject:
   - component: {fileID: 736266842}
   - component: {fileID: 736266841}
   - component: {fileID: 736266844}
+  - component: {fileID: 736266845}
   m_Layer: 5
   m_Name: GachaButton9
   m_TagString: Untagged
@@ -32075,6 +32108,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seName: ButtonSE
+--- !u!114 &736266845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 736266839}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51a7781b51c5b2942a612520d9550d83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetButton: {fileID: 736266841}
+  targetGraphics:
+  - {fileID: 281651592}
+  - {fileID: 2012082161}
 --- !u!1 &737024424
 GameObject:
   m_ObjectHideFlags: 0
@@ -47962,6 +48011,7 @@ GameObject:
   - component: {fileID: 1212912719}
   - component: {fileID: 1212912720}
   - component: {fileID: 1212912721}
+  - component: {fileID: 1212912722}
   m_Layer: 5
   m_Name: IconBGImage
   m_TagString: Untagged
@@ -48110,6 +48160,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seName: ButtonSE
+--- !u!114 &1212912722
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1212912715}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51a7781b51c5b2942a612520d9550d83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetButton: {fileID: 1212912719}
+  targetGraphics:
+  - {fileID: 1332818658}
 --- !u!1 &1214663213
 GameObject:
   m_ObjectHideFlags: 0
@@ -48529,7 +48594,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: -1420.0403}
+  m_SizeDelta: {x: 0, y: -1420.3912}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1224383346
 MonoBehaviour:
@@ -51750,9 +51815,9 @@ MonoBehaviour:
     m_Font: {fileID: 12800000, guid: 9a0dddebc0e9aa94f9ef16a7a9b4b8bf, type: 3}
     m_FontSize: 88
     m_FontStyle: 0
-    m_BestFit: 0
+    m_BestFit: 1
     m_MinSize: 10
-    m_MaxSize: 183
+    m_MaxSize: 88
     m_Alignment: 5
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -65564,6 +65629,7 @@ GameObject:
   - component: {fileID: 1715050483}
   - component: {fileID: 1715050482}
   - component: {fileID: 1715050485}
+  - component: {fileID: 1715050486}
   m_Layer: 5
   m_Name: GachaButton1
   m_TagString: Untagged
@@ -65699,6 +65765,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seName: ButtonSE
+--- !u!114 &1715050486
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1715050480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51a7781b51c5b2942a612520d9550d83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetButton: {fileID: 1715050482}
+  targetGraphics:
+  - {fileID: 524900611}
+  - {fileID: 1370460209}
 --- !u!1 &1715993331
 GameObject:
   m_ObjectHideFlags: 0
@@ -78785,6 +78867,7 @@ GameObject:
   - component: {fileID: 2080787979}
   - component: {fileID: 2080787978}
   - component: {fileID: 2080787982}
+  - component: {fileID: 2080787983}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -78921,6 +79004,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seName: SkillButtonSE
+--- !u!114 &2080787983
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2080787976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51a7781b51c5b2942a612520d9550d83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetButton: {fileID: 2080787979}
+  targetGraphics:
+  - {fileID: 178267687}
 --- !u!1 &2081366322
 GameObject:
   m_ObjectHideFlags: 0
@@ -79488,6 +79586,7 @@ GameObject:
   - component: {fileID: 2087831947}
   - component: {fileID: 2087831946}
   - component: {fileID: 2087831949}
+  - component: {fileID: 2087831950}
   m_Layer: 5
   m_Name: GachaRatesButton
   m_TagString: Untagged
@@ -79622,6 +79721,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seName: ButtonSE
+--- !u!114 &2087831950
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2087831944}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51a7781b51c5b2942a612520d9550d83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetButton: {fileID: 2087831946}
+  targetGraphics:
+  - {fileID: 1853662318}
 --- !u!1 &2089859718
 GameObject:
   m_ObjectHideFlags: 0

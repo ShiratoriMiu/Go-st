@@ -91,6 +91,7 @@ GameObject:
   - component: {fileID: 8580952695825554278}
   - component: {fileID: 2775860734932114672}
   - component: {fileID: 7671644604147784987}
+  - component: {fileID: 257336841559865828}
   m_Layer: 5
   m_Name: ShopIcon
   m_TagString: Untagged
@@ -197,6 +198,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seName: IconButtonSE
+--- !u!114 &257336841559865828
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4961985044328600898}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51a7781b51c5b2942a612520d9550d83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetButton: {fileID: 8580952695825554278}
+  targetGraphics:
+  - {fileID: 3189291432330767927}
+  - {fileID: 3621673992978528342}
 --- !u!1 &8132472762483352908
 GameObject:
   m_ObjectHideFlags: 0
