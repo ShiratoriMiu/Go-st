@@ -42837,7 +42837,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 275050318b79e10419634f6ddfb46e4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scrollSpeed: 100
+  scrollSpeed: 40
   backgrounds:
   - {fileID: 1584164212}
   - {fileID: 1964370029}
