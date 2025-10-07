@@ -82,7 +82,6 @@ public class GachaPullItem : MonoBehaviour
                 UpdateIconDisplay(icons[i], pullResults[i]);
             }
             StartCoroutine(ReturnBaseSmooth());
-            titleButton.SetActive(true);
         }
         else
         {
@@ -190,6 +189,7 @@ public class GachaPullItem : MonoBehaviour
     public void GraveOver()
     {
         if (isGraveOver) return;
+        titleButton.SetActive(true);
         SetIconsActive(true);
         SoundManager.Instance.PlaySE("AppearGhostSE");
         for (int i = 0; i < graveOverAnims.Length; i++)

@@ -300,7 +300,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 1.2077942, y: -1.93219}
+  m_AnchoredPosition: {x: 1.2077637, y: -1.93219}
   m_SizeDelta: {x: 108.53943, y: 0.9000244}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &102272243
@@ -2264,8 +2264,8 @@ MonoBehaviour:
   - {fileID: 2991120742885560648}
   titleButton: {fileID: 3991269}
   tapText: {fileID: 1633810691}
-  offsetY: 59
-  returnDuration: 0.5
+  offsetY: 50
+  returnDuration: 0.2
 --- !u!114 &1051747455
 MonoBehaviour:
   m_ObjectHideFlags: 0
