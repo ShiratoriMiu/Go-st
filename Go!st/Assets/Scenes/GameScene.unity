@@ -65981,6 +65981,7 @@ MonoBehaviour:
   rankingContainer: {fileID: 32715302}
   rankingTextBGPrefab: {fileID: 856124388551408697, guid: a7a414584ce472341b47020076e0d014, type: 3}
   maxDisplayCount: 100
+  rankingScrollRect: {fileID: 1657341315}
 --- !u!4 &1708701842
 Transform:
   m_ObjectHideFlags: 0
