@@ -11,6 +11,7 @@ public class RankingManager : MonoBehaviour
     [SerializeField] private Transform rankingContainer; // VerticalLayoutGroup / GridLayoutGroup 推奨
     [SerializeField] private GameObject rankingTextBGPrefab;
     [SerializeField] private int maxDisplayCount = 100;
+    [SerializeField] private ScrollRect rankingScrollRect;
 
     private List<Text> rankingTextList = new List<Text>();
     private Task initializationTask;
@@ -62,6 +63,9 @@ public class RankingManager : MonoBehaviour
     public async void OnRankingButtonClicked()
     {
         if (_isFetchingTopRankings) return; // 連打防止
+        // スクロール位置を一番上に戻す
+        if (rankingScrollRect != null)
+            rankingScrollRect.verticalNormalizedPosition = 1f;
         _isFetchingTopRankings = true;
 
         Debug.Log("[RankingManager] ランキングボタン押下。初期化完了待機開始...");

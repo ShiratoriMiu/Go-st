@@ -47531,6 +47531,9 @@ MonoBehaviour:
   - mapObj: {fileID: 1836859109}
     offModel: {fileID: 1329325355}
     bgmName: GameBGM
+  - mapObj: {fileID: 1484598389}
+    offModel: {fileID: 0}
+    bgmName: 
 --- !u!4 &1182484034
 Transform:
   m_ObjectHideFlags: 0
@@ -47547,6 +47550,7 @@ Transform:
   - {fileID: 2071681962}
   - {fileID: 641217528}
   - {fileID: 1836859110}
+  - {fileID: 1484598390}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &1182484035
@@ -58023,6 +58027,77 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1484378484}
   m_CullTransparentMesh: 1
+--- !u!1001 &1484598388
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1182484034}
+    m_Modifications:
+    - target: {fileID: 2526598144124755104, guid: fa70ed69d26bb9140b6ecaae166e0192, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2526598144124755104, guid: fa70ed69d26bb9140b6ecaae166e0192, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.328
+      objectReference: {fileID: 0}
+    - target: {fileID: 2526598144124755104, guid: fa70ed69d26bb9140b6ecaae166e0192, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2526598144124755104, guid: fa70ed69d26bb9140b6ecaae166e0192, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2526598144124755104, guid: fa70ed69d26bb9140b6ecaae166e0192, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2526598144124755104, guid: fa70ed69d26bb9140b6ecaae166e0192, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2526598144124755104, guid: fa70ed69d26bb9140b6ecaae166e0192, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2526598144124755104, guid: fa70ed69d26bb9140b6ecaae166e0192, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2526598144124755104, guid: fa70ed69d26bb9140b6ecaae166e0192, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2526598144124755104, guid: fa70ed69d26bb9140b6ecaae166e0192, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6956810736638895165, guid: fa70ed69d26bb9140b6ecaae166e0192, type: 3}
+      propertyPath: m_Name
+      value: HakaNight
+      objectReference: {fileID: 0}
+    - target: {fileID: 6956810736638895165, guid: fa70ed69d26bb9140b6ecaae166e0192, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: fa70ed69d26bb9140b6ecaae166e0192, type: 3}
+--- !u!1 &1484598389 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6956810736638895165, guid: fa70ed69d26bb9140b6ecaae166e0192, type: 3}
+  m_PrefabInstance: {fileID: 1484598388}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1484598390 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2526598144124755104, guid: fa70ed69d26bb9140b6ecaae166e0192, type: 3}
+  m_PrefabInstance: {fileID: 1484598388}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1485684062
 GameObject:
   m_ObjectHideFlags: 0
