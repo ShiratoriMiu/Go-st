@@ -8,7 +8,7 @@ using TMPro;
 
 public class GameManager : MonoBehaviour
 {
-    public enum GameState { Title, Game, Score, Ranking, SkinChange, Help, Setting, GameSetting, Profile,Gacha,Shop }
+    public enum GameState { Title, Game, Score, Ranking, SkinChange, Help, Setting, GameSetting, Profile,Gacha,Shop,StartCountDown}
     public GameState state;
 
     public PlayerManager playerManager;
@@ -48,6 +48,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private ColorChanger colorChanger;
 
     [SerializeField] private MapRandomChanger mapRandomChanger;
+
+    [SerializeField] private CountDownUIController countDownUIController;
 
     CenterToGrayEffect centerToGrayEffect;
 
@@ -247,7 +249,6 @@ public class GameManager : MonoBehaviour
     {
         if (_isReset)
         {
-            mapRandomChanger.ActivateRandomMap();
             playerManager.PlayerGameStart();
             StartGame();
             //SoundManager.Instance.StopBGM();
@@ -277,6 +278,12 @@ public class GameManager : MonoBehaviour
     public void ToProfile() => ChangeGameState(GameState.Profile);
     public void ToGacha() => ChangeGameState(GameState.Gacha);
     public void ToShop() => ChangeGameState(GameState.Shop);
+    public void ToStartCountDown() 
+    { 
+        ChangeGameState(GameState.StartCountDown);
+        countDownUIController.StartCountDown(ToGame);
+        mapRandomChanger.ActivateRandomMap();
+    }
 
     void ChangeGameState(GameState _gameState)
     {
