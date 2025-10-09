@@ -1517,6 +1517,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3240537053247799779, guid: fa70ed69d26bb9140b6ecaae166e0192, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.12
+      objectReference: {fileID: 0}
+    - target: {fileID: 3705402169824121234, guid: fa70ed69d26bb9140b6ecaae166e0192, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.172
+      objectReference: {fileID: 0}
+    - target: {fileID: 4513245569956638534, guid: fa70ed69d26bb9140b6ecaae166e0192, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.172
+      objectReference: {fileID: 0}
     - target: {fileID: 6956810736638895165, guid: fa70ed69d26bb9140b6ecaae166e0192, type: 3}
       propertyPath: m_Name
       value: HakaNight
