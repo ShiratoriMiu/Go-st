@@ -412,11 +412,12 @@ public class PlayerController : MonoBehaviour
         onAutoAim = _onAutoAim;
     }
 
-    public void SetSkillGaugeImage(RectTransform _skillGaugeImage, RectTransform _levelUpGaugeImageRect)
+    public void SetSkillGaugeImage(RectTransform _skillGaugeImage, RectTransform _levelUpGaugeImageRect, Animator _skillIconAnim)
     {
         skillGaugeImage = _skillGaugeImage;
         levelUpGaugeImageRect = _levelUpGaugeImageRect;
         levelUpGaugeImage = levelUpGaugeImageRect.GetComponent<Image>();
+        playerSkill.SetSkillIconAnim(_skillIconAnim);
     }
 
     public void SwitchStickPos()

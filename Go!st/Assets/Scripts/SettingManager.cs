@@ -9,7 +9,8 @@ public class GameUIPanelData
     public GameObject panelRoot;
     public Button skillButton;
     public RectTransform skillGaugeImage; 
-    public RectTransform levelUpGaugeImage; 
+    public RectTransform levelUpGaugeImage;
+    public Animator skillIconAnim;
 }
 
 public class SettingManager : MonoBehaviour
@@ -42,12 +43,12 @@ public class SettingManager : MonoBehaviour
 
         if (isOn) {
             playerSkill.SetSkillButton(leftHandModePanelData.skillButton);
-            playerController.SetSkillGaugeImage(leftHandModePanelData.skillGaugeImage, leftHandModePanelData.levelUpGaugeImage);
+            playerController.SetSkillGaugeImage(leftHandModePanelData.skillGaugeImage, leftHandModePanelData.levelUpGaugeImage, leftHandModePanelData.skillIconAnim);
         }
         else
         {
             playerSkill.SetSkillButton(rightHandModePanelData.skillButton);
-            playerController.SetSkillGaugeImage(rightHandModePanelData.skillGaugeImage, rightHandModePanelData.levelUpGaugeImage);
+            playerController.SetSkillGaugeImage(rightHandModePanelData.skillGaugeImage, rightHandModePanelData.levelUpGaugeImage, rightHandModePanelData.skillIconAnim);
         }
 
         playerController.SwitchStickPos();

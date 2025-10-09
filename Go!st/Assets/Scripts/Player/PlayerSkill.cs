@@ -21,6 +21,9 @@ public class PlayerSkill : MonoBehaviour
     [SerializeField] GameObject skillChargeEffect; //スキル発動可能エフェクト 
     [SerializeField] PlayerSkillAnim playerSkillAnim;
     [SerializeField] private Button skillButton;
+    [SerializeField] Animator skillIconAnim;
+
+    private RectTransform skillIconImage;
 
     //画面内に移動範囲を制限
     [SerializeField] LayerMask groundLayer; // 地面のレイヤー
@@ -78,6 +81,8 @@ public class PlayerSkill : MonoBehaviour
         enemyLayer = LayerMask.NameToLayer("Enemy");
 
         mainCamera = Camera.main;
+
+        skillIconImage = skillIconAnim.GetComponent<RectTransform>();
 
         SetSkillButton(skillButton);
     }
@@ -138,6 +143,7 @@ public class PlayerSkill : MonoBehaviour
                 if (!skillChargeEffect.activeSelf) 
                 { 
                     skillChargeEffect.SetActive(true);
+                    skillIconAnim.enabled = true;
                     SoundManager.Instance.PlaySE("SkillMaxSE");
                 }
                 SetCanSkill(true);
@@ -166,6 +172,10 @@ public class PlayerSkill : MonoBehaviour
         Invoke("StartLine", 0.1f);
         centerToGrayEffect.Gray(true);
         skillChargeEffect.SetActive(false);
+        //アイコンアニメーションストップ
+        skillIconAnim.enabled = false;
+        skillIconImage.localScale = Vector2.one;
+
         if (!isOneHand) stickController.SetActive(false);
         SetCanSkill(false);
         //maxSpeed *= skillAddSpeed;
@@ -547,4 +557,10 @@ public class PlayerSkill : MonoBehaviour
     }
 
     public bool GetIsSkill() => isSkill;
+
+    public void SetSkillIconAnim(Animator _skillIconAnim)
+    {
+        skillIconAnim = _skillIconAnim;
+        skillIconImage = skillIconAnim.GetComponent<RectTransform>();
+    }
 }

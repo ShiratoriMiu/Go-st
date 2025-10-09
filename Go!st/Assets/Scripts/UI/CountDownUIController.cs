@@ -52,17 +52,10 @@ public class CountDownUIController : MonoBehaviour
                     countDownText.text = "GO!";
                     countDownText.transform.localScale = Vector3.zero;
 
-                    // ポンッと出るようなスケール演出
+                    // ポンッと出るようなスケール演出（戻さないバージョン）
                     countDownText.transform
-                        .DOScale(1.3f, 0.4f)
-                        .SetEase(Ease.OutBack)
-                        .OnComplete(() =>
-                        {
-                            // 少し縮むように戻す（自然な感じに）
-                            countDownText.transform
-                                .DOScale(1f, 0.2f)
-                                .SetEase(Ease.OutQuad);
-                        });
+                        .DOScale(1.6f, 0.5f)
+                        .SetEase(Ease.OutBack);
 
                     break; // ループを抜ける
                 }
@@ -84,6 +77,8 @@ public class CountDownUIController : MonoBehaviour
 
         // テキストを非表示にする
         countDownText.gameObject.SetActive(false);
+        //テキストサイズを元に戻す
+        countDownText.transform.localScale = Vector3.one;
 
         // コールバック呼び出し
         onCountDownComplete?.Invoke(true);

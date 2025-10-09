@@ -31,6 +31,27 @@ public class ScoreEntry
     }
 }
 
+[System.Serializable]
+public class PlayerIconDataFirebase
+{
+    public string name;
+    public string style;
+
+    public PlayerIconDataFirebase() { }
+
+    public PlayerIconDataFirebase(PlayerIconData icon)
+    {
+        name = icon.name;
+        style = icon.style.ToString();
+    }
+}
+
+[Serializable]
+class PlayerIconDataWrapper
+{
+    public List<PlayerIconDataFirebase> icons;
+}
+
 public class FirebaseController : MonoBehaviour
 {
     private LoginController login => LoginController.Instance;
@@ -362,5 +383,46 @@ public class FirebaseController : MonoBehaviour
             Debug.LogError($"[FirebaseController] GetMyCoinsAsync エラー: {e}");
             return 0;
         }
+    }
+
+    // ------------------------------
+    // 装備プレイヤーアイコン保存
+    // ------------------------------
+    public async Task SaveEquippedIconsAsync(List<PlayerIconData> equippedIcons)
+    {
+        if (!IsReady)
+        {
+            Debug.LogWarning("[FirebaseController] Firebase not ready in SaveEquippedIconsAsync.");
+            return;
+        }
+
+        try
+        {
+            string uid = user.UserId;
+            var wrapper = new PlayerIconDataWrapper
+            {
+                icons = equippedIcons.Select(i => new PlayerIconDataFirebase(i)).ToList()
+            };
+
+            string json = JsonUtility.ToJson(wrapper);
+            await reference.Child("users").Child(uid).Child("equippedIcons").SetRawJsonValueAsync(json);
+
+            Debug.Log($"[FirebaseController] 装備アイコンを保存しました: {json}");
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[FirebaseController] SaveEquippedIconsAsync エラー: {e}");
+        }
+    }
+
+    // ------------------------------
+    // 装備プレイヤーアイコン保存
+    // ------------------------------
+
+    public async Task EquipPlayerIconAsync(PlayerIconData newIcon)
+    {
+        // Firebase 保存
+        var equippedIcons = SaveManager.LoadEquippedPlayerIcons();
+        await SaveEquippedIconsAsync(equippedIcons);
     }
 }

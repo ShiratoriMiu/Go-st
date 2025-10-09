@@ -15,6 +15,8 @@ public class ChangePlayerIcon : MonoBehaviour
 
     [SerializeField] IconChanger iconChanger;
 
+    [SerializeField] FirebaseController firebaseController;
+
     private void Awake()
     {
         //デフォルトをセット
@@ -82,9 +84,13 @@ public class ChangePlayerIcon : MonoBehaviour
         }
     }
 
-    void ChangeIcon(PlayerIconData _playerIcon)
+    async void ChangeIcon(PlayerIconData _playerIcon)
     {
+        // ローカル保存
         SaveManager.SaveEquippedPlayerIcon(_playerIcon);
+
         iconChanger.UpdatePlayerIcon();
+
+        await firebaseController.EquipPlayerIconAsync(_playerIcon); 
     }
 }
