@@ -20,6 +20,8 @@ public class BuffManager : MonoBehaviour
 
     void Start()
     {
+        // ó‘Ô•Ï‰»‚ğŠÄ‹‚µ‚ÄAGame ˆÈŠO‚É‚È‚Á‚½‚ç‚·‚®íœ
+        gameManager.OnGameStateChanged += HandleGameStateChanged;
         StartCoroutine(SpawnRoutine());
     }
 
@@ -32,10 +34,6 @@ public class BuffManager : MonoBehaviour
             if (gameManager.state == GameState.Game)
             {
                 SpawnBuffs();
-            }
-            else
-            {
-                ClearAllBuffs();
             }
         }
     }
@@ -119,6 +117,14 @@ public class BuffManager : MonoBehaviour
             }
         }
         spawnedBuffs.Clear();
+    }
+
+    void HandleGameStateChanged(GameManager.GameState newState)
+    {
+        if (newState != GameManager.GameState.Game)
+        {
+            ClearAllBuffs(); // ó‘Ô‚ª•Ï‚í‚Á‚½uŠÔ‚ÉŒÄ‚Î‚ê‚é
+        }
     }
 }
 

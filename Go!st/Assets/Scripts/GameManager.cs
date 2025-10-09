@@ -18,6 +18,9 @@ public class GameManager : MonoBehaviour
     public int enemiesDefeated = 0;
     public float survivalTime = 0f;
 
+    // 状態変更イベント
+    public event System.Action<GameState> OnGameStateChanged;
+
     [Header("Game Time Settings")]
     [SerializeField] private float maxTimeLimit = 60f; // 最大制限時間（インスペクターで設定）
 
@@ -288,6 +291,7 @@ public class GameManager : MonoBehaviour
     void ChangeGameState(GameState _gameState)
     {
         state = _gameState;
+        OnGameStateChanged?.Invoke(state); // 状態変更を通知
         SwitchUIPanel(_gameState);
     }
 
