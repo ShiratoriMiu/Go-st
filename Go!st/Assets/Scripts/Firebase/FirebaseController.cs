@@ -82,12 +82,37 @@ public class FirebaseController : MonoBehaviour
             {
                 await userRef.Child("bestScore").SetValueAsync(newScore);
 
-                string displayName = user.DisplayName ?? "NoName";
-                var data = new RankingData(displayName, newScore);
-                string json = JsonUtility.ToJson(data);
+                string displayName = user.DisplayName ?? "Player";
+                var rankingRef = reference.Child("rankings").Child(uid);
 
-                await reference.Child("rankings").Child(uid).SetRawJsonValueAsync(json);
-                Debug.Log($"[FirebaseController] ランキング保存成功: {json}");
+                // 既存のランキングデータ取得
+                var rankingSnapshot = await rankingRef.GetValueAsync();
+
+                List<Dictionary<string, object>> equippedIcons = new();
+
+                if (rankingSnapshot.Exists && rankingSnapshot.Child("equippedIcons").Exists)
+                {
+                    // 既存のequippedIconsを保持
+                    foreach (var iconSnap in rankingSnapshot.Child("equippedIcons").Children)
+                    {
+                        equippedIcons.Add(new Dictionary<string, object>
+                    {
+                        { "name", iconSnap.Child("name").Value?.ToString() },
+                        { "style", iconSnap.Child("style").Value?.ToString() }
+                    });
+                    }
+                }
+
+                // 結合して保存
+                var data = new Dictionary<string, object>
+            {
+                { "displayName", displayName },
+                { "bestScore", newScore },
+                { "equippedIcons", equippedIcons }
+            };
+
+                await rankingRef.SetValueAsync(data);
+                Debug.Log($"[FirebaseController] スコア更新＋装備維持でランキング保存完了: {displayName}, {newScore}");
             }
         }
         catch (Exception e)
@@ -95,6 +120,7 @@ public class FirebaseController : MonoBehaviour
             Debug.LogError($"[FirebaseController] SaveMyScoreAsync エラー: {e}");
         }
     }
+
 
     // ------------------------------
     // 上位ランキング取得（サーバー直）
@@ -399,21 +425,53 @@ public class FirebaseController : MonoBehaviour
         try
         {
             string uid = user.UserId;
-            var wrapper = new PlayerIconDataWrapper
+            var rankingRef = reference.Child("rankings").Child(uid);
+
+            // 既存のランキングデータを取得
+            var rankingSnapshot = await rankingRef.GetValueAsync();
+
+            string displayName = user.DisplayName ?? "Player";
+            int bestScore = 0;
+
+            if (rankingSnapshot.Exists)
             {
-                icons = equippedIcons.Select(i => new PlayerIconDataFirebase(i)).ToList()
-            };
+                bestScore = rankingSnapshot.Child("bestScore").Exists
+                    ? int.Parse(rankingSnapshot.Child("bestScore").Value.ToString())
+                    : 0;
 
-            string json = JsonUtility.ToJson(wrapper);
-            await reference.Child("users").Child(uid).Child("equippedIcons").SetRawJsonValueAsync(json);
+                displayName = rankingSnapshot.Child("displayName").Value?.ToString() ?? displayName;
+            }
 
-            Debug.Log($"[FirebaseController] 装備アイコンを保存しました: {json}");
+            // 装備アイコンを Dictionary に変換
+            var iconsDictList = new List<Dictionary<string, object>>();
+            foreach (var icon in equippedIcons)
+            {
+                iconsDictList.Add(new Dictionary<string, object>
+            {
+                { "name", icon.name },
+                { "style", icon.style.ToString() }
+            });
+            }
+
+            // ランキングデータ全体を Dictionary にまとめる
+            var rankingDict = new Dictionary<string, object>
+        {
+            { "displayName", displayName },
+            { "bestScore", bestScore },
+            { "equippedIcons", iconsDictList }
+        };
+
+            // Firebase に保存
+            await rankingRef.SetValueAsync(rankingDict);
+
+            Debug.Log("[FirebaseController] 装備アイコンをランキングに保存しました（Dictionary方式）");
         }
         catch (Exception e)
         {
             Debug.LogError($"[FirebaseController] SaveEquippedIconsAsync エラー: {e}");
         }
     }
+
 
     // ------------------------------
     // 装備プレイヤーアイコン保存
