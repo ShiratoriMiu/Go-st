@@ -125,9 +125,9 @@ public class FirebaseController : MonoBehaviour
     // ------------------------------
     // 上位ランキング取得（サーバー直）
     // ------------------------------
-    public async Task<List<(int rank, string name, int score)>> GetTopRankingsFromServerAsync(int limit = 100)
+    public async Task<List<(int rank, string name, int score, List<PlayerIconData> icons)>> GetTopRankingsFromServerAsync(int limit = 100)
     {
-        var rankings = new List<(int rank, string name, int score)>();
+        var rankings = new List<(int rank, string name, int score, List<PlayerIconData> icons)>();
 
         if (!IsReady)
         {
@@ -145,20 +145,45 @@ public class FirebaseController : MonoBehaviour
                 return rankings;
             }
 
-            var tempList = snapshot.Children
-                .Select(entry =>
-                {
-                    int score = int.TryParse(entry.Child("bestScore").Value?.ToString(), out int sc) ? sc : 0;
-                    string name = entry.Child("displayName").Value?.ToString() ?? "NoName";
-                    return (name, score);
-                })
-                .OrderByDescending(x => x.score)
-                .Take(limit)
-                .ToList();
+            // 一旦すべてのエントリーを読み込む
+            var tempList = new List<(string name, int score, List<PlayerIconData> icons)>();
 
+            foreach (var entry in snapshot.Children)
+            {
+                string name = entry.Child("displayName").Value?.ToString() ?? "NoName";
+                int score = int.TryParse(entry.Child("bestScore").Value?.ToString(), out int sc) ? sc : 0;
+
+                // --- アイコンリストを読み取る ---
+                var icons = new List<PlayerIconData>();
+                var iconsNode = entry.Child("equippedIcons");
+
+                if (iconsNode.Exists)
+                {
+                    foreach (var icon in iconsNode.Children)
+                    {
+                        string iconName = icon.Child("name").Value?.ToString();
+                        string styleStr = icon.Child("style").Value?.ToString();
+
+                        if (!string.IsNullOrEmpty(iconName) && Enum.TryParse(styleStr, true, out PlayerIconStyle style))
+                        {
+                            icons.Add(new PlayerIconData(iconName, style));
+                        }
+                    }
+                }
+
+                tempList.Add((name, score, icons));
+            }
+
+            // スコア順にソート
             var rankedList = RankListByScore(tempList, x => x.score);
 
-            rankings.AddRange(rankedList.Select(item => (item.rank, item.data.name, item.data.score)));
+            // rank付きでリストに追加
+            rankings.AddRange(rankedList.Select(item => (
+                item.rank,
+                item.data.name,
+                item.data.score,
+                item.data.icons
+            )));
         }
         catch (Exception e)
         {
@@ -426,51 +451,41 @@ public class FirebaseController : MonoBehaviour
         {
             string uid = user.UserId;
             var rankingRef = reference.Child("rankings").Child(uid);
-
-            // 既存のランキングデータを取得
-            var rankingSnapshot = await rankingRef.GetValueAsync();
+            var snapshot = await rankingRef.GetValueAsync();
 
             string displayName = user.DisplayName ?? "Player";
             int bestScore = 0;
 
-            if (rankingSnapshot.Exists)
+            if (snapshot.Exists)
             {
-                bestScore = rankingSnapshot.Child("bestScore").Exists
-                    ? int.Parse(rankingSnapshot.Child("bestScore").Value.ToString())
-                    : 0;
-
-                displayName = rankingSnapshot.Child("displayName").Value?.ToString() ?? displayName;
+                displayName = snapshot.Child("displayName").Value?.ToString() ?? displayName;
+                int.TryParse(snapshot.Child("bestScore").Value?.ToString(), out bestScore);
             }
 
-            // 装備アイコンを Dictionary に変換
-            var iconsDictList = new List<Dictionary<string, object>>();
-            foreach (var icon in equippedIcons)
+            // ランキング本体データ（displayNameとscore）
+            await rankingRef.Child("displayName").SetValueAsync(displayName);
+            await rankingRef.Child("bestScore").SetValueAsync(bestScore);
+
+            // アイコンデータ部分
+            var equippedIconsRef = rankingRef.Child("equippedIcons");
+            await equippedIconsRef.RemoveValueAsync(); // 既存データをクリア
+
+            for (int i = 0; i < equippedIcons.Count; i++)
             {
-                iconsDictList.Add(new Dictionary<string, object>
-            {
-                { "name", icon.name },
-                { "style", icon.style.ToString() }
-            });
+                var icon = equippedIcons[i];
+                var iconRef = equippedIconsRef.Child(i.ToString());
+                await iconRef.Child("name").SetValueAsync(icon.name);
+                await iconRef.Child("style").SetValueAsync(icon.style.ToString());
             }
 
-            // ランキングデータ全体を Dictionary にまとめる
-            var rankingDict = new Dictionary<string, object>
-        {
-            { "displayName", displayName },
-            { "bestScore", bestScore },
-            { "equippedIcons", iconsDictList }
-        };
-
-            // Firebase に保存
-            await rankingRef.SetValueAsync(rankingDict);
-
-            Debug.Log("[FirebaseController] 装備アイコンをランキングに保存しました（Dictionary方式）");
+            Debug.Log("[FirebaseController] equippedIconsを個別ノードで保存しました。");
         }
         catch (Exception e)
         {
             Debug.LogError($"[FirebaseController] SaveEquippedIconsAsync エラー: {e}");
         }
     }
+
 
 
     // ------------------------------

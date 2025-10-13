@@ -28863,7 +28863,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.512, y: 0.22}
   m_AnchorMax: {x: 0.713, y: 0.278}
-  m_AnchoredPosition: {x: -0.5, y: -1.3895874}
+  m_AnchoredPosition: {x: -0.5, y: -1.3896484}
   m_SizeDelta: {x: 252.29999, y: 72.900024}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &736266841
@@ -55168,7 +55168,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1590423194}
   - component: {fileID: 1590423193}
-  - component: {fileID: 1590423192}
   m_Layer: 0
   m_Name: FavoriteSkinCamera
   m_TagString: Untagged
@@ -55176,14 +55175,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!81 &1590423192
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1590423191}
-  m_Enabled: 1
 --- !u!20 &1590423193
 Camera:
   m_ObjectHideFlags: 0
