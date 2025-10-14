@@ -3,7 +3,12 @@ guid: 264c94733f524e24db34819dfa6943fe
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Kid_ghost_v1_Devil
+    second: {fileID: 2100000, guid: 07ed53cc580c3614a9265426d7b96377, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

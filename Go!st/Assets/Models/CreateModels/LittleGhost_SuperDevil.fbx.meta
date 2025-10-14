@@ -3,7 +3,12 @@ guid: 4af1d6c56f51d6a4faeff480e0bf9faa
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: DevilWing
+    second: {fileID: 2100000, guid: 07ed53cc580c3614a9265426d7b96377, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
