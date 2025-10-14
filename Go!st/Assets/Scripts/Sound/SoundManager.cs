@@ -21,11 +21,46 @@ public class SoundManager : MonoBehaviour
     private Dictionary<string, float> lastPlayTime = new Dictionary<string, float>();
     private float minInterval = 0.1f; // 同じSEを鳴らす最小間隔(秒)
 
-    // === 音量設定 ===
-    [Header("Volume Settings")]
-    [Range(0f, 1f)] public float masterVolume = 1f;
-    [Range(0f, 1f)] public float bgmVolume = 1f;
-    [Range(0f, 1f)] public float seVolume = 1f;
+    // イベント
+    public System.Action<float> OnMasterVolumeChangedEvent;
+    public System.Action<float> OnBGMVolumeChangedEvent;
+    public System.Action<float> OnSEVolumeChangedEvent;
+
+    private float _masterVolume = 1f;
+    public float masterVolume
+    {
+        get => _masterVolume;
+        set
+        {
+            _masterVolume = value;
+            ApplyVolume();
+            OnMasterVolumeChangedEvent?.Invoke(_masterVolume);
+        }
+    }
+
+    private float _bgmVolume = 1f;
+    public float bgmVolume
+    {
+        get => _bgmVolume;
+        set
+        {
+            _bgmVolume = value;
+            ApplyVolume();
+            OnBGMVolumeChangedEvent?.Invoke(_bgmVolume);
+        }
+    }
+
+    private float _seVolume = 1f;
+    public float seVolume
+    {
+        get => _seVolume;
+        set
+        {
+            _seVolume = value;
+            ApplyVolume();
+            OnSEVolumeChangedEvent?.Invoke(_seVolume);
+        }
+    }
 
     private void Awake()
     {
@@ -39,6 +74,11 @@ public class SoundManager : MonoBehaviour
 
             foreach (var clip in seClips)
                 seDict[clip.name] = clip;
+
+            // PlayerPrefsから読み込む（存在しなければ1f）
+            masterVolume = PlayerPrefs.GetFloat("MasterVolume", 1f);
+            bgmVolume = PlayerPrefs.GetFloat("BGMVolume", 1f);
+            seVolume = PlayerPrefs.GetFloat("SEVolume", 1f);
 
             // SE用AudioSourceプール作成
             for (int i = 0; i < seSourcePoolSize; i++)
