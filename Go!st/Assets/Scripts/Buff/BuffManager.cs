@@ -66,12 +66,25 @@ public class BuffManager : MonoBehaviour
 
     IEnumerator DestroyAfter(GameObject obj, float delay)
     {
-        yield return new WaitForSeconds(delay);
+        float elapsed = 0f;
+
+        while (elapsed < delay)
+        {
+            // ゲームが進行中のときだけ時間を進める
+            if (gameManager.state == GameState.Game)
+            {
+                elapsed += Time.deltaTime;
+            }
+
+            yield return null; // 1フレーム待つ
+        }
+
         if (obj != null)
         {
             Destroy(obj);
         }
     }
+
 
     Vector3 GetValidPosition()
     {
@@ -121,7 +134,7 @@ public class BuffManager : MonoBehaviour
 
     void HandleGameStateChanged(GameManager.GameState newState)
     {
-        if (newState != GameManager.GameState.Game)
+        if (newState == GameManager.GameState.Title)
         {
             ClearAllBuffs(); // 状態が変わった瞬間に呼ばれる
         }
