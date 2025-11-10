@@ -16,42 +16,12 @@ public class GameUIPanelData
 public class SettingManager : MonoBehaviour
 {
     [SerializeField] Toggle oneHandModeToggle;
-    [SerializeField] Toggle leftHandModeToggle;
-
-    [SerializeField] PlayerManager playerManager;
-
-    [SerializeField] GameUIPanelData leftHandModePanelData;
-    [SerializeField] GameUIPanelData rightHandModePanelData;
-
-    private PlayerController playerController;
     private PlayerSkill playerSkill;
 
     // Start is called before the first frame update
     void Start()
     {
-        leftHandModeToggle.onValueChanged.AddListener(OnLeftHandModeToggleChanged);
         oneHandModeToggle.onValueChanged.AddListener(OnOneHandModeToggleChanged);
-
-        playerController = playerManager.Player.GetComponent<PlayerController>();
-        playerSkill = playerManager.Player.GetComponent<PlayerSkill>();
-    }
-
-    void OnLeftHandModeToggleChanged(bool isOn)
-    {
-        leftHandModePanelData.panelRoot.SetActive(isOn);
-        rightHandModePanelData.panelRoot.SetActive(!isOn);
-
-        if (isOn) {
-            playerSkill.SetSkillButton(leftHandModePanelData.skillButton);
-            playerController.SetSkillGaugeImage(leftHandModePanelData.skillGaugeImage, leftHandModePanelData.levelUpGaugeImage, leftHandModePanelData.skillIconAnim);
-        }
-        else
-        {
-            playerSkill.SetSkillButton(rightHandModePanelData.skillButton);
-            playerController.SetSkillGaugeImage(rightHandModePanelData.skillGaugeImage, rightHandModePanelData.levelUpGaugeImage, rightHandModePanelData.skillIconAnim);
-        }
-
-        playerController.SwitchStickPos();
     }
 
     void OnOneHandModeToggleChanged(bool isOn)
