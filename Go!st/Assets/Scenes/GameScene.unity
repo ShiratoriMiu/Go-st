@@ -105155,6 +105155,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   oneHandModeToggle: {fileID: 47384820}
+  playerManager: {fileID: 990151072}
 --- !u!114 &2108396478
 MonoBehaviour:
   m_ObjectHideFlags: 0
