@@ -35,17 +35,12 @@ public class CameraFollow : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if(gameManager.state == GameManager.GameState.Title)
-        {
-            transform.position = Vector3.Lerp(transform.position,titleCameraPos.position, toSkinChangrSpeed);
-            transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, titleCameraPos.eulerAngles, toSkinChangrSpeed);
-        }
-        else if (gameManager.state == GameManager.GameState.SkinChange)
+        if (gameManager.state == GameManager.GameState.SkinChange)
         {
             transform.position = Vector3.Lerp(transform.position, skinChangeCameraPos.position, toSkinChangrSpeed);
             transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, skinChangeCameraPos.eulerAngles, toSkinChangrSpeed);
         }
-        else if(gameManager.state == GameManager.GameState.Game || gameManager.state == GameManager.GameState.StartCountDown)
+        else if(gameManager.state == GameManager.GameState.Game || gameManager.state == GameManager.GameState.StartCountDown || gameManager.state == GameManager.GameState.GameSetting)
         {
             if(oldState != gameManager.state)
             {
@@ -57,6 +52,11 @@ public class CameraFollow : MonoBehaviour
                 transform.position = Vector3.Lerp(transform.position, player.transform.position - offset, speed);
                 transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, initAngle, speed);
             }
+        }
+        else
+        {
+            transform.position = Vector3.Lerp(transform.position, titleCameraPos.position, toSkinChangrSpeed);
+            transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, titleCameraPos.eulerAngles, toSkinChangrSpeed);
         }
         oldState = gameManager.state;
     }
