@@ -420,11 +420,14 @@ public class PlayerController : MonoBehaviour
         playerSkill.SetSkillIconAnim(_skillIconAnim);
     }
 
-    public void SwitchStickPos()
+    public void SwitchStickPos(bool isRight)
     {
-        stickControllerInitPos.x *= -1;
+        // 絶対値を取って、右なら正、左なら負にする
+        stickControllerInitPos.x = Mathf.Abs(stickControllerInitPos.x) * (isRight ? 1 : -1);
+
         InitializeStick();
     }
+
 
     public int GetHP() => playerHealth.GetHp();
 

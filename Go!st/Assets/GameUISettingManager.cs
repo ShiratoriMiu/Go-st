@@ -88,7 +88,7 @@ public class GameUISettingManager : MonoBehaviour
 
             playerSkill.SetSkillButton(leftHandModePanelData.skillButton);
             playerController.SetSkillGaugeImage(leftHandModePanelData.skillGaugeImage, leftHandModePanelData.levelUpGaugeImage, leftHandModePanelData.skillIconAnim);
-            playerController.SwitchStickPos();
+            playerController.SwitchStickPos(true);//左手モードのときはスティックは右なのでtrue
 
             // 🔹 保存
             PlayerPrefs.SetString(TOGGLE_SAVE_KEY, "Left");
@@ -101,7 +101,7 @@ public class GameUISettingManager : MonoBehaviour
 
             playerSkill.SetSkillButton(rightHandModePanelData.skillButton);
             playerController.SetSkillGaugeImage(rightHandModePanelData.skillGaugeImage, rightHandModePanelData.levelUpGaugeImage, rightHandModePanelData.skillIconAnim);
-            playerController.SwitchStickPos();
+            playerController.SwitchStickPos(false);
 
             // 🔹 保存
             PlayerPrefs.SetString(TOGGLE_SAVE_KEY, "Right");
@@ -157,6 +157,7 @@ public class GameUISettingManager : MonoBehaviour
 
             playerSkill.SetSkillButton(leftHandModePanelData.skillButton);
             playerController.SetSkillGaugeImage(leftHandModePanelData.skillGaugeImage, leftHandModePanelData.levelUpGaugeImage, leftHandModePanelData.skillIconAnim);
+            playerController.SwitchStickPos(true);
 
             // 保存
             PlayerPrefs.SetString(TOGGLE_SAVE_KEY, "Left");
@@ -174,7 +175,7 @@ public class GameUISettingManager : MonoBehaviour
 
             playerSkill.SetSkillButton(rightHandModePanelData.skillButton);
             playerController.SetSkillGaugeImage(rightHandModePanelData.skillGaugeImage, rightHandModePanelData.levelUpGaugeImage, rightHandModePanelData.skillIconAnim);
-            playerController.SwitchStickPos();
+            playerController.SwitchStickPos(false);
 
             // 保存
             PlayerPrefs.SetString(TOGGLE_SAVE_KEY, "Right");
