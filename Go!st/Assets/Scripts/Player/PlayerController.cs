@@ -202,16 +202,25 @@ public class PlayerController : MonoBehaviour
 
     private void HandleSkinChangeRotation()
     {
+        // UIを触っている場合は回転処理しない
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            return;
+
+#if UNITY_ANDROID || UNITY_IOS
+        // モバイルではタッチIDを指定
+        if (Input.touchCount > 0 && EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
+            return;
+#endif
+
         if (lastTouchPos != Vector2.zero)
         {
             float deltaX = currentTouchPos.x - lastTouchPos.x;
-            rotationVelocity = deltaX * rotationSpeed; // velocityとして保持
+            rotationVelocity = deltaX * rotationSpeed;
             transform.Rotate(0f, -rotationVelocity * Time.deltaTime, 0f, Space.World);
         }
 
         lastTouchPos = currentTouchPos;
     }
-
 
     private void OnDisable()
     {
