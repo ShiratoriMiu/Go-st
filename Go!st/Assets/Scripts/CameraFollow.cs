@@ -40,7 +40,8 @@ public class CameraFollow : MonoBehaviour
             transform.position = Vector3.Lerp(transform.position, skinChangeCameraPos.position, toSkinChangrSpeed);
             transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, skinChangeCameraPos.eulerAngles, toSkinChangrSpeed);
         }
-        else if(gameManager.state == GameManager.GameState.Game || gameManager.state == GameManager.GameState.StartCountDown || gameManager.state == GameManager.GameState.GameSetting)
+        else if(gameManager.state == GameManager.GameState.Game || gameManager.state == GameManager.GameState.StartCountDown 
+            || gameManager.state == GameManager.GameState.GameSetting || gameManager.state == GameManager.GameState.Score)
         {
             if(oldState != gameManager.state)
             {
