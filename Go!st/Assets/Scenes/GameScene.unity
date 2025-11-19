@@ -48338,7 +48338,7 @@ MonoBehaviour:
   titleCameraPos: {fileID: 1610425696}
   skinChangeCameraPos: {fileID: 1377337242}
   shakeMagnitude: 0.15
-  shakeFrequency: 40
+  shakeFrequency: 20
 --- !u!114 &963194230
 MonoBehaviour:
   m_ObjectHideFlags: 0
