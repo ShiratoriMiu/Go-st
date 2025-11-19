@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,7 +9,8 @@ public class ProfileManager : MonoBehaviour
     [SerializeField] Text nameText;
     //[SerializeField] Text rankText;
     [SerializeField] Text bestScoreText;
-    [SerializeField] GameObject changePlayerIconScrollView;
+    [SerializeField] GameObject changePlayerIconScrollViewBase;
+    [SerializeField] RectTransform changePlayerIconScrollView;
 
     [SerializeField] private FirebaseController firebaseController;
 
@@ -40,12 +42,25 @@ public class ProfileManager : MonoBehaviour
 
     public void ShowChangePlayerIconScrollView()
     {
-        changePlayerIconScrollView.SetActive(true);
+        changePlayerIconScrollViewBase.SetActive(true);
+
+        // ‰ŠúƒXƒP[ƒ‹‚ð0‚É
+        changePlayerIconScrollView.localScale = Vector3.zero;
+
+        // 0 ¨ 1 ‚ÉŠg‘åi0.25•bj
+        changePlayerIconScrollView.DOScale(1f, 0.25f)
+            .SetEase(Ease.OutBack); // ­‚µ’e‚ÞŠ´‚¶‚É
     }
 
     public void CloseChangePlayerIconScrollView()
     {
-        changePlayerIconScrollView.SetActive(false);
+        // 1 ¨ 0 ‚Ék¬i0.2•bj
+        changePlayerIconScrollView.DOScale(0f, 0.2f)
+            .SetEase(Ease.InBack)
+            .OnComplete(() =>
+            {
+                changePlayerIconScrollViewBase.SetActive(false);
+            });
     }
 
     private void OwnedItemNum()

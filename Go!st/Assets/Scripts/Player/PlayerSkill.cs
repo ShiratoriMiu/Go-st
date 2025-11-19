@@ -36,6 +36,7 @@ public class PlayerSkill : MonoBehaviour
     TMP_Text skillEnemyNumText;
 
     Camera mainCamera; // 使用するカメラ
+    CameraFollow cameraFollow;
 
     private Vector3[] corners = new Vector3[4]; // 四角形の頂点
 
@@ -81,6 +82,7 @@ public class PlayerSkill : MonoBehaviour
         enemyLayer = LayerMask.NameToLayer("Enemy");
 
         mainCamera = Camera.main;
+        cameraFollow = mainCamera.GetComponent<CameraFollow>();
 
         skillIconImage = skillIconAnim.GetComponent<RectTransform>();
 
@@ -373,6 +375,7 @@ public class PlayerSkill : MonoBehaviour
         {
             //エフェクトを出す
             skillEffect.Play();
+            cameraFollow.Shake(0.3f);
             SoundManager.Instance.PlaySE("ExplosionSE",0.5f);
         }
         points.Clear(); // 軌跡をクリア

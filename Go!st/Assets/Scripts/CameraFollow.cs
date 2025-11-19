@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,11 +10,19 @@ public class CameraFollow : MonoBehaviour
     [SerializeField] Transform titleCameraPos;
     [SerializeField] Transform skinChangeCameraPos;
 
+    [SerializeField] float shakeMagnitude = 0.1f;
+    [SerializeField] float shakeFrequency = 20f;
+    float shakeDuration = 0f;
+    float shakeElapsed = 0f; // フィールドで追加
+
     GameObject player;
     Vector3 offset;
     Vector3 initAngle;
+    Vector3 shakeOffset = Vector3.zero;
+    Vector3 shakeDirection;    // ← ランダム方向を保持
 
     PlayerController playerController;
+    PlayerSkill playerSkill;
 
     GameManager gameManager;
 
@@ -25,9 +33,9 @@ public class CameraFollow : MonoBehaviour
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         initAngle = this.transform.eulerAngles;
-        offset = Vector3.zero - this.transform.position;//player�̏����ʒu�����_�ɂ���
+        offset = Vector3.zero - this.transform.position;//playerの初期位置を原点にする
 
-        //�ŏ��̃J�����ʒu�̓^�C�g���̈ʒu�ɂ���
+        //最初のカメラ位置はタイトルの位置にする
         transform.position = titleCameraPos.position;
         transform.eulerAngles = titleCameraPos.eulerAngles;
     }
@@ -48,7 +56,7 @@ public class CameraFollow : MonoBehaviour
                 Init();
             }
 
-            if (!playerController.GetIsSkill())
+            if (!playerController.GetIsSkill() || !playerSkill.isOneHand)
             {
                 transform.position = Vector3.Lerp(transform.position, player.transform.position - offset, speed);
                 transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, initAngle, speed);
@@ -58,7 +66,35 @@ public class CameraFollow : MonoBehaviour
         {
             transform.position = Vector3.Lerp(transform.position, titleCameraPos.position, toSkinChangrSpeed);
             transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, titleCameraPos.eulerAngles, toSkinChangrSpeed);
+
+            if(shakeDuration != 0)
+            {
+                shakeDuration = 0;
+            }
         }
+
+        if (shakeDuration > 0)
+        {
+            shakeElapsed += Time.deltaTime;
+
+            // サイン波で揺れの強度を作る（0〜1〜0）
+            float shakeValue = Mathf.Sin(shakeElapsed * shakeFrequency) * shakeMagnitude;
+
+            // 毎フレームランダム方向（自然に揺れる）
+            Vector3 randomDir = Random.insideUnitSphere.normalized;
+
+            shakeOffset = randomDir * shakeValue;
+
+            shakeDuration -= Time.deltaTime;
+        }
+        else
+        {
+            shakeOffset = Vector3.zero;
+            shakeElapsed = 0; // 次の揺れのためにリセット
+        }
+
+        transform.position += shakeOffset;
+
         oldState = gameManager.state;
     }
 
@@ -66,5 +102,11 @@ public class CameraFollow : MonoBehaviour
     {
         player = GameObject.FindWithTag("Player");
         playerController = player.GetComponent<PlayerController>();
+        playerSkill = player.GetComponent<PlayerSkill>();
+    }
+
+    public void Shake(float duration)
+    {
+        shakeDuration = duration;
     }
 }

@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System;
 using System.Text;
 using UnityEngine;
@@ -20,7 +21,8 @@ public class InputFieldValidator : MonoBehaviour
 
     public event Action<string> OnValidatedName; // Šm’èŒã‚Ì•¶Žš—ñ‚ð’Ê’m
 
-    [SerializeField] GameObject ngWordPopUp;
+    [SerializeField] GameObject ngWordPopUpBase;
+    [SerializeField] RectTransform ngWordPopUp;
 
     private void Awake()
     {
@@ -192,11 +194,24 @@ public class InputFieldValidator : MonoBehaviour
 
     private void ShowNgWordPopUp()
     {
-        ngWordPopUp.SetActive(true);
+        ngWordPopUpBase.SetActive(true);
+
+        // ‰ŠúƒXƒP[ƒ‹‚ð0‚É
+        ngWordPopUp.localScale = Vector3.zero;
+
+        // 0 ¨ 1 ‚ÉŠg‘åi0.25•bj
+        ngWordPopUp.DOScale(1f, 0.25f)
+            .SetEase(Ease.OutBack); // ­‚µ’e‚ÞŠ´‚¶‚É
     }
 
     public void CloseNgWordPopUp()
     {
-        ngWordPopUp.SetActive(false);
+        // 1 ¨ 0 ‚Ék¬i0.2•bj
+        ngWordPopUp.DOScale(0f, 0.2f)
+            .SetEase(Ease.InBack)
+            .OnComplete(() =>
+            {
+                ngWordPopUpBase.SetActive(false);
+            });
     }
 }
