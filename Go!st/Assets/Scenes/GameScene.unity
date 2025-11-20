@@ -26551,6 +26551,18 @@ MonoBehaviour:
     icon: {fileID: 21300000, guid: c4eb3a7d14971ad4fb09f09e1969d432, type: 3}
     isOwned: 0
     isGacha: 0
+  - name: CosmicColor
+    texture: {fileID: 2800000, guid: 02649fe5eeb303c4a811cfa62d61bf07, type: 3}
+    color: {r: 1, g: 1, b: 1, a: 1}
+    icon: {fileID: 21300000, guid: 8e0d68a762d250d4d8a743f0747d32e4, type: 3}
+    isOwned: 0
+    isGacha: 1
+  - name: WaterMelon
+    texture: {fileID: 2800000, guid: 1942ec444f57a4a42a388b005b522dc6, type: 3}
+    color: {r: 1, g: 1, b: 1, a: 1}
+    icon: {fileID: 21300000, guid: 00912d7d9d17b3849bdceead80136a06, type: 3}
+    isOwned: 0
+    isGacha: 1
   _colorScrollViewBase: {fileID: 384417008}
   scrollViewIconPrefab: {fileID: 8238416060495465116, guid: 4f82e4f0f7742974c862086d5eb0a182, type: 3}
 --- !u!114 &565445744
