@@ -1,5 +1,7 @@
+using DG.Tweening;
 using System.Collections;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -8,6 +10,12 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private GameManager gameManager;
 
     private int hp;
+    private RectTransform playerHpImageRect;
+
+    private void Start()
+    {
+        playerHpImageRect = playerHpImage.GetComponent<RectTransform>();
+    }
 
     public void Init()
     {
@@ -19,6 +27,7 @@ public class PlayerHealth : MonoBehaviour
     {
         hp -= damageAmount;
         UpdateHpUI();
+        PlayerHPImageShake();
 
         if (hp <= 0)
         {
@@ -46,4 +55,16 @@ public class PlayerHealth : MonoBehaviour
     }
 
     public int GetHp() => hp;
+
+    private void PlayerHPImageShake()
+    {
+        playerHpImageRect.DOShakeAnchorPos(
+        duration: 0.25f,              // —h‚ê‚éŠÔ
+        strength: new Vector2(20f, 20f), // —h‚ê•
+        vibrato: 20,                // U“®‚Ì×‚©‚³
+        randomness: 90f,            // —h‚ê‚é•ûŒü‚Ìƒ‰ƒ“ƒ_ƒ€«
+        snapping: false,
+        fadeOut: true
+        );
+    }
 }

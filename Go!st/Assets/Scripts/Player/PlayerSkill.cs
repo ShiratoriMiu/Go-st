@@ -1,6 +1,8 @@
+using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using TMPro;
+using Unity.Burst.Intrinsics;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -56,6 +58,8 @@ public class PlayerSkill : MonoBehaviour
     Func<bool> canSkillGetter;
     Action<bool> SetCanSkill;
 
+    Vector2 skillEnemyNumTextInitPos;
+
     void Start()
     {
         if (lineRenderer == null)
@@ -85,6 +89,8 @@ public class PlayerSkill : MonoBehaviour
         cameraFollow = mainCamera.GetComponent<CameraFollow>();
 
         skillIconImage = skillIconAnim.GetComponent<RectTransform>();
+
+        skillEnemyNumTextInitPos = skillEnemyNumText.transform.position;
 
         SetSkillButton(skillButton);
     }
@@ -380,7 +386,7 @@ public class PlayerSkill : MonoBehaviour
         }
         points.Clear(); // ãOê’ÇÉNÉäÉA
         UpdateLineRenderer();
-        skillEnemyNumText.gameObject.SetActive(true);
+        ShowSkillEnemyNumText();
 
         return enemyNum;
     }
@@ -441,6 +447,7 @@ public class PlayerSkill : MonoBehaviour
         if (points.Count < 3)
         {
             skillEnemyNumText.text = detectedEnemies.Count.ToString() + "COMBO!";
+            CancelInvoke(nameof(StopSkillEnemyNumText));
             Invoke("StopSkillEnemyNumText", 3);
             return 0;
         }
@@ -471,6 +478,7 @@ public class PlayerSkill : MonoBehaviour
             }
         }
         skillEnemyNumText.text = detectedEnemies.Count.ToString() + "COMBO!";
+        CancelInvoke(nameof(StopSkillEnemyNumText));
         Invoke("StopSkillEnemyNumText", 3);
 
         return detectedEnemies.Count;
@@ -565,5 +573,23 @@ public class PlayerSkill : MonoBehaviour
     {
         skillIconAnim = _skillIconAnim;
         skillIconImage = skillIconAnim.GetComponent<RectTransform>();
+    }
+
+    public void ShowSkillEnemyNumText()
+    {
+        RectTransform rt = skillEnemyNumText.rectTransform;
+        rt.DOKill();               // ëOâÒÇÃTweenÇé~ÇﬂÇÈ
+        rt.localScale = Vector3.zero;
+
+        skillEnemyNumText.transform.position = skillEnemyNumTextInitPos;
+
+        skillEnemyNumText.gameObject.SetActive(true);
+
+        Sequence seq = DOTween.Sequence();
+
+        seq.Append(rt.DOScale(2.5f, 0.15f).SetEase(Ease.OutBack));
+        seq.Append(rt.DOScale(1.2f, 0.1f).SetEase(Ease.InOutQuad));
+        seq.Append(rt.DOScale(1f, 0.05f).SetEase(Ease.OutQuad));
+        seq.Join(rt.DOAnchorPos(rt.anchoredPosition + new Vector2(0, 20f), 0.3f).SetEase(Ease.OutQuad));
     }
 }
