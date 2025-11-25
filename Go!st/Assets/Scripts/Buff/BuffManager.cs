@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -81,7 +82,8 @@ public class BuffManager : MonoBehaviour
 
         if (obj != null)
         {
-            Destroy(obj);
+            //Destroy(obj);
+            DespawnBuff(obj);
         }
     }
 
@@ -138,6 +140,36 @@ public class BuffManager : MonoBehaviour
         {
             ClearAllBuffs(); // 状態が変わった瞬間に呼ばれる
         }
+    }
+
+    public void DespawnBuff(GameObject item)
+    {
+        var renderers = item.GetComponentsInChildren<Renderer>();
+        var tr = item.transform;
+
+        // マテリアルを保持（複数対応）
+        List<Material> mats = new List<Material>();
+        foreach (var r in renderers)
+        {
+            mats.AddRange(r.materials); // materialはインスタンス化される
+        }
+
+        Sequence seq = DOTween.Sequence();
+
+        // --- 点滅 ---
+        foreach (var m in mats)
+        {
+            seq.Join(m.DOFade(0.3f, 0.3f).SetLoops(6, LoopType.Yoyo));
+        }
+
+        // --- 消滅アニメーション ---
+        seq.Append(tr.DOScale(Vector3.zero, 0.25f).SetEase(Ease.InBack));
+
+        // --- 完了時に破棄 ---
+        seq.OnComplete(() =>
+        {
+            Destroy(item);
+        });
     }
 }
 

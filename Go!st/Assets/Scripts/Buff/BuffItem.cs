@@ -1,8 +1,21 @@
+using DG.Tweening;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 public class BuffItem : MonoBehaviour
 {
     public BuffSO buffData;
+
+    private void OnEnable()
+    {
+        SpawnBuff();
+    }
+
+    private void SpawnBuff()
+    {
+        this.transform.localScale = Vector3.zero;
+        this.transform.DOScale(1f, 0.3f).SetEase(Ease.OutBack);
+    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -24,7 +37,7 @@ public class BuffItem : MonoBehaviour
                     SoundManager.Instance.PlaySE("SpeedBoostSE");
                 }
 
-                Destroy(gameObject); // アイテムを消す
+                Destroy(this.gameObject); // アイテムを消す
             }
         }
     }

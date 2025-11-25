@@ -21,6 +21,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] Renderer rendererInit;
     [SerializeField] private ParticleSystem levelUpEffect;
+    [SerializeField] private ParticleSystem damageEffectPrefab;
     [SerializeField] private RectTransform skillGaugeImage;
     [SerializeField] private RectTransform levelUpGaugeImageRect;
     private Image levelUpGaugeImage;
@@ -358,6 +359,7 @@ public class PlayerController : MonoBehaviour
     public void Damage(int _num)
     {
         playerHealth.Damage(_num);
+        Instantiate(damageEffectPrefab, this.transform.position + new Vector3(0, 0.4f, 0), Quaternion.identity, this.transform);
     }
 
     public void ApplyBuff(BuffSO buff)

@@ -68,6 +68,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buffData: {fileID: 11400000, guid: 7a41790b71fdf2d49856a485c50c5960, type: 2}
+  thisObjRenderer: {fileID: 7807236525866820019}
 --- !u!1001 &8906279345905843511
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -148,6 +149,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1587039723882377819}
   m_SourcePrefab: {fileID: 100100000, guid: 80844d124bb3cb54893e9d8bf21ba7e2, type: 3}
+--- !u!23 &7807236525866820019 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: 80844d124bb3cb54893e9d8bf21ba7e2, type: 3}
+  m_PrefabInstance: {fileID: 8906279345905843511}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &8599654486569418854 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 80844d124bb3cb54893e9d8bf21ba7e2, type: 3}
