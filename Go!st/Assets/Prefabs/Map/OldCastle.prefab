@@ -357,7 +357,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5174842659763464801}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Stairs
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7588,6 +7588,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5174842659763464801}
     m_Modifications:
+    - target: {fileID: 121486, guid: 996c5ca3ae0ceae41aeba2b1f9f7ec9d, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 486556, guid: 996c5ca3ae0ceae41aeba2b1f9f7ec9d, type: 3}
       propertyPath: m_RootOrder
       value: 132

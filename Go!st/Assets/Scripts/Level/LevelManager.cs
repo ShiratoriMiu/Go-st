@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -7,6 +8,7 @@ using UnityEngine.UI;
 public class LevelManager : MonoBehaviour
 {
     [SerializeField] private Text levelText;
+    [SerializeField] private Text oldLevelText;
     [SerializeField] private PlayerManager playerManager;
     [SerializeField] private EnemyManager enemyManager;
 
@@ -79,7 +81,8 @@ public class LevelManager : MonoBehaviour
             level++;
             playerController.UpdateLevelUpImage(0);
             enemyKillCount -= nextLevelEnemyNum;
-            UpdateLevelUI();
+            //UpdateLevelUI();
+            PlayLevelUpAnimation(level - 1, level);
             ApplyLevelParameters(level);
         }
     }
@@ -114,5 +117,37 @@ public class LevelManager : MonoBehaviour
         level = 1;
         enemyKillCount = 0;
         UpdateLevelUI();
+    }
+
+    private void PlayLevelUpAnimation(int oldLevel, int newLevel)
+    {
+        // --- 前回アニメ中なら止める＋最終状態に飛ばす ---
+        levelText.DOKill(true);
+        oldLevelText.DOKill(true);
+
+        // テキスト更新
+        oldLevelText.text = "Level : " + oldLevel;
+        levelText.text = "Level : " + newLevel;
+
+        RectTransform oldRT = oldLevelText.rectTransform;
+        RectTransform newRT = levelText.rectTransform;
+
+        // ★ 毎回初期位置と透明度をリセット
+        oldRT.anchoredPosition = Vector2.zero;
+        newRT.anchoredPosition = new Vector2(0, -40);
+
+        oldLevelText.color = new Color(1, 1, 1, 1);
+        levelText.color = new Color(1, 1, 1, 0);
+
+        // アニメーション
+        Sequence seq = DOTween.Sequence();
+
+        seq.Append(oldRT.DOAnchorPosY(40, 0.3f).SetEase(Ease.OutQuad));
+        seq.Join(oldLevelText.DOFade(0f, 0.3f));
+
+        seq.Insert(0,
+            newRT.DOAnchorPosY(0, 0.3f).SetEase(Ease.OutQuad)
+        );
+        seq.Join(levelText.DOFade(1f, 0.3f));
     }
 }

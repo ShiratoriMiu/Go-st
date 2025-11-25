@@ -5,6 +5,7 @@ public class EnemyController : EnemyBase
     [SerializeField] GameObject bulletPrefab;
 
     [SerializeField] private bool isShot = false;
+    [SerializeField, Header("弾の発射位置の高さ調整")] float offsetY = 0.5f;
 
     [SerializeField] private float shotCoolTime = 5f;
     [SerializeField] private float bulletSpeed = 10f; // 追加：弾の速度
@@ -48,7 +49,7 @@ public class EnemyController : EnemyBase
     void Shot()
     {
         // bulletPrefab を自身の前方に生成
-        GameObject bullet = Instantiate(bulletPrefab, transform.position + transform.forward, transform.rotation);
+        GameObject bullet = Instantiate(bulletPrefab, transform.position + new Vector3(0, offsetY, 0), transform.rotation);
 
         // Rigidbody を取得して前方へ力を加える
         Rigidbody bulletRb = bullet.GetComponent<Rigidbody>();
