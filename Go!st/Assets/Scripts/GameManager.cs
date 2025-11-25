@@ -1,10 +1,11 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -57,7 +58,12 @@ public class GameManager : MonoBehaviour
     CenterToGrayEffect centerToGrayEffect;
 
     private int finalScore;
-    
+
+    private int lastTimeInt = -1;    // 前回の整数秒
+    private bool isLowTimeEffect = false;
+    private Color normalColor = Color.white;
+    private Color warningColor = Color.red;
+
     //デバッグ用
     private float initmaxTimeLimit;
 
@@ -141,14 +147,42 @@ public class GameManager : MonoBehaviour
 
     private void UpdateTimeUI(float time)
     {
-        int totalSeconds = Mathf.CeilToInt(time); // 秒数を整数に切り上げ
+        int totalSeconds = Mathf.CeilToInt(time); // 秒数を切り上げ
         int minutes = totalSeconds / 60;
         int seconds = totalSeconds % 60;
 
-        remainingTimeText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+        remainingTimeText.text = $"{minutes:00}:{seconds:00}";
+
+        // --- ここから演出処理 ---
+        if (totalSeconds <= 5 && totalSeconds >= 0)
+        {
+            if (totalSeconds != lastTimeInt)  // 秒が変わった瞬間だけ
+            {
+                PlayTimeWarningAnimation();
+                lastTimeInt = totalSeconds;
+            }
+        }
+        else
+        {
+            lastTimeInt = -1; // リセット
+        }
     }
 
+    private void PlayTimeWarningAnimation()
+    {
+        var rt = remainingTimeText.rectTransform;
 
+        // 拡縮アニメ
+        rt.DOKill();
+        rt.localScale = Vector3.one;
+        rt.DOScale(1.25f, 0.15f)
+          .OnComplete(() => rt.DOScale(1f, 0.15f));
+
+        // 点滅（色の切り替え）
+        remainingTimeText.DOKill(); // 前回アニメ停止
+        remainingTimeText.color = normalColor;
+        remainingTimeText.DOColor(warningColor, 0.15f).SetLoops(2, LoopType.Yoyo);
+    }
 
     public void AddEnemiesDefeatedNum(int _value)
     {
