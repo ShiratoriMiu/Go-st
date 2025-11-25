@@ -20,6 +20,7 @@ public class GachaPullItem : MonoBehaviour
     private int pullIndex = 0;          // 次に表示するアイテムのインデックス
     private bool pullItemFlag = false;
     private bool isGraveOver = false;
+    private bool isEnableAllIcon = false;
     private List<GameObject> icons;     // Hierarchy 上に配置済みのアイコンを保持
 
     private void Start()
@@ -40,6 +41,9 @@ public class GachaPullItem : MonoBehaviour
 
         // 最初は非表示にする
         SetIconsActive(false);
+
+        // 最初はボタン無効にする
+        SetIconsButtonInteractable(false);
 
         StartCoroutine(WaitForInitializeAndPull());
     }
@@ -85,7 +89,6 @@ public class GachaPullItem : MonoBehaviour
         }
         else
         {
-            tapText.SetActive(true);
             SetIconsActive(true);
             // 選択式用ダミー表示
             for (int i = 0; i < 9; i++)
@@ -220,4 +223,27 @@ public class GachaPullItem : MonoBehaviour
         }
         itemIconBase.localPosition = originalPos; // 最終補正
     }
+
+    /// すべてのアイコンのボタンを押せるようにする
+    public void EnableAllIconButtons()
+    {
+        if (isEnableAllIcon) return;
+        SetIconsButtonInteractable(true);
+        tapText.SetActive(true);
+        isEnableAllIcon = true;
+    }
+
+    /// icons 内のボタンの interactable をまとめて切り替える
+    private void SetIconsButtonInteractable(bool interactable)
+    {
+        foreach (var icon in icons)
+        {
+            var btn = icon.GetComponent<Button>();
+            if (btn != null)
+            {
+                btn.interactable = interactable;
+            }
+        }
+    }
+
 }
