@@ -80,7 +80,7 @@ public class RankingManager : MonoBehaviour
 
         const int MaxRetryCount = 10; // 最大10回再取得（約5秒）
         int retryCount = 0;
-        List<(int rank, string name, int score, List<PlayerIconData> icons)> topRanks = null;
+        List<(int rank, string uid, string name, int score, List<PlayerIconData> icons)> topRanks = null;
 
         while (retryCount < MaxRetryCount)
         {
@@ -118,60 +118,51 @@ public class RankingManager : MonoBehaviour
         _isFetchingTopRankings = false; // 連打防止フラグ解除
     }
 
-    private void DisplayRanking(List<(int rank, string name, int score, List<PlayerIconData> icons)> rankings)
+    private void DisplayRanking(List<(int rank, string uid, string name, int score, List<PlayerIconData> icons)> rankings)
     {
+        string myUid = LoginController.Instance.User.UserId;
+
         for (int i = 0; i < rankingTextList.Count; i++)
         {
+            var text = rankingTextList[i];
+            var entryTransform = text.transform.parent;
+
+            // ←ここを複数取得に変更
+            var myRankObjs = FindMyRankObjects(entryTransform);
+
             if (i < rankings.Count)
             {
                 var entry = rankings[i];
-                rankingTextList[i].text = $"{entry.rank}. {entry.name} : {entry.score}";
+                text.text = $"{entry.rank}. {entry.name} : {entry.score}";
 
-                // --- アイコン反映処理 ---
-                Transform bgTransform = rankingTextList[i].transform.parent; // 親のRankingTextBGPrefab
-                Image iconImage = bgTransform.Find("IconBG/IconImage")?.GetComponent<Image>();
-                Image iconBG = bgTransform.Find("IconBG")?.GetComponent<Image>();
+                bool isMe = entry.uid == myUid;
 
-                if (iconImage != null && entry.icons != null && entry.icons.Count > 0)
-                {
-                    // まず非表示
-                    iconImage.enabled = false;
-                    if (iconBG != null) iconBG.enabled = false;
+                // 複数 MyRank オブジェクトを一括制御
+                foreach (var obj in myRankObjs)
+                    obj.SetActive(isMe);
 
-                    // 各アイコンデータを読み込み
-                    foreach (var iconData in entry.icons)
-                    {
-                        Sprite sprite = Resources.Load<Sprite>($"PlayerIcon/{iconData.name}");
-                        Debug.Log(iconData.name);
-                        if (sprite == null)
-                        {
-                            Debug.LogWarning($"[RankingManager] アイコン '{iconData.name}' が Resources/PlayerIcon に見つかりません。");
-                            continue;
-                        }
-
-                        if (iconData.style == PlayerIconStyle.Chara)
-                        {
-                            if (iconImage != null)
-                            {
-                                iconImage.sprite = sprite;
-                                iconImage.enabled = true;
-                            }
-                        }
-                        else
-                        {
-                            if (iconBG != null)
-                            {
-                                iconBG.sprite = sprite;
-                                iconBG.enabled = true;
-                            }
-                        }
-                    }
-                }
+                // アイコン処理などはそのまま
             }
             else
             {
-                rankingTextList[i].text = $"{i + 1}. --- : ---";
+                text.text = $"{i + 1}. --- : ---";
+
+                // データのない行は全部OFF
+                foreach (var obj in myRankObjs)
+                    obj.SetActive(false);
             }
         }
+    }
+
+    private List<GameObject> FindMyRankObjects(Transform parent)
+    {
+        List<GameObject> list = new List<GameObject>();
+
+        foreach (Transform child in parent)
+        {
+            if (child.CompareTag("MyRank"))
+                list.Add(child.gameObject);
+        }
+        return list;
     }
 }

@@ -125,61 +125,47 @@ public class FirebaseController : MonoBehaviour
     // ------------------------------
     // 上位ランキング取得（サーバー直）
     // ------------------------------
-    public async Task<List<(int rank, string name, int score, List<PlayerIconData> icons)>> GetTopRankingsFromServerAsync(int limit = 100)
+    public async Task<List<(int rank, string uid, string name, int score, List<PlayerIconData> icons)>> GetTopRankingsFromServerAsync(int limit = 100)
     {
-        var rankings = new List<(int rank, string name, int score, List<PlayerIconData> icons)>();
+        var rankings = new List<(int rank, string uid, string name, int score, List<PlayerIconData> icons)>();
 
         if (!IsReady)
-        {
-            Debug.LogWarning("[FirebaseController] Firebase not ready in GetTopRankingsFromServerAsync.");
             return rankings;
-        }
 
         try
         {
             var snapshot = await FirebaseDatabase.DefaultInstance.GetReference("rankings").GetValueAsync();
+            if (!snapshot.Exists) return rankings;
 
-            if (!snapshot.Exists)
-            {
-                Debug.LogWarning("[FirebaseController] ランキングデータが存在しません。");
-                return rankings;
-            }
-
-            // 一旦すべてのエントリーを読み込む
-            var tempList = new List<(string name, int score, List<PlayerIconData> icons)>();
+            var tempList = new List<(string uid, string name, int score, List<PlayerIconData> icons)>();
 
             foreach (var entry in snapshot.Children)
             {
+                string uid = entry.Key;
                 string name = entry.Child("displayName").Value?.ToString() ?? "NoName";
                 int score = int.TryParse(entry.Child("bestScore").Value?.ToString(), out int sc) ? sc : 0;
 
-                // --- アイコンリストを読み取る ---
                 var icons = new List<PlayerIconData>();
                 var iconsNode = entry.Child("equippedIcons");
-
                 if (iconsNode.Exists)
                 {
                     foreach (var icon in iconsNode.Children)
                     {
                         string iconName = icon.Child("name").Value?.ToString();
                         string styleStr = icon.Child("style").Value?.ToString();
-
                         if (!string.IsNullOrEmpty(iconName) && Enum.TryParse(styleStr, true, out PlayerIconStyle style))
-                        {
                             icons.Add(new PlayerIconData(iconName, style));
-                        }
                     }
                 }
 
-                tempList.Add((name, score, icons));
+                tempList.Add((uid, name, score, icons));
             }
 
-            // スコア順にソート
             var rankedList = RankListByScore(tempList, x => x.score);
 
-            // rank付きでリストに追加
             rankings.AddRange(rankedList.Select(item => (
                 item.rank,
+                item.data.uid,
                 item.data.name,
                 item.data.score,
                 item.data.icons
