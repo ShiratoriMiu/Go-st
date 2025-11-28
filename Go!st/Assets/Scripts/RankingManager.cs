@@ -142,6 +142,46 @@ public class RankingManager : MonoBehaviour
                     obj.SetActive(isMe);
 
                 // アイコン処理などはそのまま
+                // --- アイコン反映処理 ---
+                Transform bgTransform = rankingTextList[i].transform.parent; // 親のRankingTextBGPrefab
+                Image iconImage = bgTransform.Find("IconBG/IconImage")?.GetComponent<Image>();
+                Image iconBG = bgTransform.Find("IconBG")?.GetComponent<Image>();
+
+                if (iconImage != null && entry.icons != null && entry.icons.Count > 0)
+                {
+                    // まず非表示
+                    iconImage.enabled = false;
+                    if (iconBG != null) iconBG.enabled = false;
+
+                    // 各アイコンデータを読み込み
+                    foreach (var iconData in entry.icons)
+                    {
+                        Sprite sprite = Resources.Load<Sprite>($"PlayerIcon/{iconData.name}");
+                        Debug.Log(iconData.name);
+                        if (sprite == null)
+                        {
+                            Debug.LogWarning($"[RankingManager] アイコン '{iconData.name}' が Resources/PlayerIcon に見つかりません。");
+                            continue;
+                        }
+
+                        if (iconData.style == PlayerIconStyle.Chara)
+                        {
+                            if (iconImage != null)
+                            {
+                                iconImage.sprite = sprite;
+                                iconImage.enabled = true;
+                            }
+                        }
+                        else
+                        {
+                            if (iconBG != null)
+                            {
+                                iconBG.sprite = sprite;
+                                iconBG.enabled = true;
+                            }
+                        }
+                    }
+                }
             }
             else
             {
