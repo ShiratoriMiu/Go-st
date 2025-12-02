@@ -10130,9 +10130,9 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -83.85005, y: 0}
+  m_AnchoredPosition: {x: -167.69995, y: 0}
   m_SizeDelta: {x: -167.69989, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &194985775
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10166,7 +10166,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 10000000
+  m_Text: 0
 --- !u!222 &194985776
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -20945,7 +20945,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ce1ad6e1ff49314abc0374fcf86d175, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  coinText: {fileID: 2034322187}
 --- !u!114 &429341852
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23746,6 +23745,54 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 480426769}
   m_CullTransparentMesh: 1
+--- !u!1 &481011484
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 481011486}
+  - component: {fileID: 481011485}
+  m_Layer: 0
+  m_Name: CoinUIManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &481011485
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 481011484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c3bd8da450911b4c986749e660656ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  coinTexts:
+  - {fileID: 2034322187}
+  - {fileID: 194985775}
+  - {fileID: 1796206514}
+--- !u!4 &481011486
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 481011484}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 200.875, y: 357, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &481780464
 GameObject:
   m_ObjectHideFlags: 0
@@ -76817,7 +76864,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ce1ad6e1ff49314abc0374fcf86d175, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  coinText: {fileID: 1796206514}
 --- !u!114 &1616607612
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -79566,7 +79612,6 @@ MonoBehaviour:
   maxTimeLimit: 90
   scoreText: {fileID: 1008488438}
   remainingTimeText: {fileID: 1397179318}
-  coinUI: {fileID: 429341851}
   uiPanelEntries:
   - state: 0
     panel: {fileID: 2033015495}
@@ -79820,7 +79865,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ce1ad6e1ff49314abc0374fcf86d175, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  coinText: {fileID: 194985775}
 --- !u!114 &1664272118
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -85723,9 +85767,9 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0.71, y: 1}
-  m_AnchoredPosition: {x: 0.14990234, y: 0}
+  m_AnchoredPosition: {x: 0.29992676, y: 0.000030517578}
   m_SizeDelta: {x: 0.30010986, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &1796206514
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -85759,7 +85803,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 10000000
+  m_Text: 0
 --- !u!222 &1796206515
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -86313,8 +86357,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1664272117}
-        m_TargetAssemblyTypeName: CoinUI, Assembly-CSharp
+      - m_Target: {fileID: 481011485}
+        m_TargetAssemblyTypeName: CoinUIManager, Assembly-CSharp
         m_MethodName: UpdateCoinUI
         m_Mode: 1
         m_Arguments:
@@ -97685,9 +97729,9 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -83.85005, y: 0}
+  m_AnchoredPosition: {x: -167.7001, y: 0.000061035156}
   m_SizeDelta: {x: -167.69989, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &2034322187
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -102919,3 +102963,4 @@ SceneRoots:
   - {fileID: 1590423194}
   - {fileID: 1187026190}
   - {fileID: 513403080}
+  - {fileID: 481011486}

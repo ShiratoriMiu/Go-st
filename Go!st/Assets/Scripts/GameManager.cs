@@ -28,7 +28,6 @@ public class GameManager : MonoBehaviour
     [Header("UI")]
     [SerializeField] private Text scoreText;           // スコア表示用
     [SerializeField] private Text remainingTimeText;   // 残り時間表示用
-    [SerializeField] private CoinUI coinUI;
 
     [System.Serializable]
     public class UIPanelEntry
@@ -202,7 +201,6 @@ public class GameManager : MonoBehaviour
         int coinNum = SaveManager.LoadCoin();
         coinNum += enemiesDefeated;
         SaveManager.SaveCoin(coinNum);
-        coinUI.UpdateCoinUI();
         return finalScore;
     }
 
