@@ -144,8 +144,9 @@ public class RankingManager : MonoBehaviour
                 // アイコン処理などはそのまま
                 // --- アイコン反映処理 ---
                 Transform bgTransform = rankingTextList[i].transform.parent; // 親のRankingTextBGPrefab
-                Image iconImage = bgTransform.Find("IconBG/IconImage")?.GetComponent<Image>();
-                Image iconBG = bgTransform.Find("IconBG")?.GetComponent<Image>();
+                PlayerIconParts playerIconParts = bgTransform.GetComponent<PlayerIconParts>();
+                Image iconImage = playerIconParts.iconImage;
+                Image iconBG = playerIconParts.iconBGImage;
 
                 if (iconImage != null && entry.icons != null && entry.icons.Count > 0)
                 {
