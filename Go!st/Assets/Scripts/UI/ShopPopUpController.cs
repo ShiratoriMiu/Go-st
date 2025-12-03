@@ -20,6 +20,8 @@ public class ShopPopUpController : MonoBehaviour
 
     [SerializeField] Button buyButton;
 
+    [SerializeField] Sprite defaultBG;
+
     private string itemName;
     private int coinNum = 0;
 
@@ -43,7 +45,7 @@ public class ShopPopUpController : MonoBehaviour
         ShopPopUpOpen();
         iconImage.sprite = _sprite;
         iconBG.color = _bgColor;
-        iconBG.sprite = null;
+        iconBG.sprite = defaultBG;
         iconText.text = _text;
         coinText.text = _coinNum.ToString();
         coinNum = _coinNum;
@@ -60,12 +62,12 @@ public class ShopPopUpController : MonoBehaviour
         onBuyAction = _onBuy; // コールバック登録
     }
 
-    public void ShowShopPop(Sprite _sprite, Sprite _bgSprite, string _text, int _coinNum, Action _onBuy)
+    public void ShowShopPop(Sprite _sprite, Image _bgSprite, string _text, int _coinNum, Action _onBuy)
     {
         ShopPopUpOpen();
         iconImage.sprite = _sprite;
-        iconBG.sprite = _bgSprite;
-        iconBG.color = Color.white;
+        iconBG.sprite = _bgSprite.sprite;
+        iconBG.color = _bgSprite.color;
         iconText.text = _text;
         coinText.text = _coinNum.ToString();
         coinNum = _coinNum;

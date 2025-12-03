@@ -30,7 +30,7 @@ public class ShopIconPlayerIcon : MonoBehaviour
         shopButton.onClick.AddListener(() =>
         {
             ShopPopUpController.Instance.ShowShopPop(
-                iconImage.sprite, iconBG.sprite, iconText.text, coinNum, Buy);
+                iconImage.sprite, iconBG, iconText.text, coinNum, Buy);
         });
     }
 

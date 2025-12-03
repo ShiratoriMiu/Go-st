@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public enum GameState { Title, Game, Score, Ranking, SkinChange, Help, Setting, GameSetting, Profile,Gacha,Shop,StartCountDown, GameUISettingUI}
+    public enum GameState { Title, Game, Score, Ranking, SkinChange, Setting, GameSetting, Profile,Gacha,Shop,StartCountDown, GameUISettingUI}
     public GameState state;
 
     public PlayerManager playerManager;
@@ -307,7 +307,6 @@ public class GameManager : MonoBehaviour
         playerManager.ToSkinChangeSelectedPlayer();
         ChangeGameState(GameState.SkinChange); 
     }
-    public void ToHelp() => ChangeGameState(GameState.Help);
     public void ToSetting() => ChangeGameState(GameState.Setting);
     public void ToGameSetting() => ChangeGameState(GameState.GameSetting);
     public void ToProfile() => ChangeGameState(GameState.Profile);
