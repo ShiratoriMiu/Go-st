@@ -29086,7 +29086,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0.8245877}
-  m_AnchoredPosition: {x: -0.000030517578, y: 0.12301636}
+  m_AnchoredPosition: {x: 0, y: 0.12301636}
   m_SizeDelta: {x: 0, y: 0.24500275}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1619272047
@@ -33616,8 +33616,8 @@ MonoBehaviour:
   csvFileName: NGWordList
   fontSizeMin: 1
   fontSizeMax: 88
-  ngWordPopUpBase: {fileID: 0}
-  ngWordPopUp: {fileID: 991720391}
+  ngWordPopUpBase: {fileID: 991720390}
+  ngWordPopUp: {fileID: 587997345}
 --- !u!114 &1867176804
 MonoBehaviour:
   m_ObjectHideFlags: 0
