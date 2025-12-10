@@ -3,9 +3,9 @@ using UnityEngine.UI;
 
 public class SoundSettingsUI : MonoBehaviour
 {
-    [SerializeField] private Slider masterSlider;
-    [SerializeField] private Slider bgmSlider;
-    [SerializeField] private Slider seSlider;
+    [SerializeField] private CustomSlider masterSlider;
+    [SerializeField] private CustomSlider bgmSlider;
+    [SerializeField] private CustomSlider seSlider;
 
     private void Start()
     {
