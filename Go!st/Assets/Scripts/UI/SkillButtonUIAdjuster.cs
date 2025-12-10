@@ -10,8 +10,8 @@ public class SkillButtonUIAdjuster : MonoBehaviour
     [SerializeField] private RectTransform[] skillButtonImages;
 
     [Header("UI要素")]
-    [SerializeField] private Slider moveSlider;   // 上下移動用
-    [SerializeField] private Slider sizeSlider;   // サイズ調整用
+    [SerializeField] private CustomSlider moveSlider;   // 上下移動用
+    [SerializeField] private CustomSlider sizeSlider;   // サイズ調整用
 
     [Header("設定値")]
     [SerializeField, Range(0f, 1f)] private float defaultMoveValue = 0.15f;
