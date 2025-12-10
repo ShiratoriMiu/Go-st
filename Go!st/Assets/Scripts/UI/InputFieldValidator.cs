@@ -1,4 +1,4 @@
-using DG.Tweening;
+ï»¿using DG.Tweening;
 using System;
 using System.Text;
 using UnityEngine;
@@ -8,10 +8,10 @@ using UnityEngine.UI;
 public class InputFieldValidator : MonoBehaviour
 {
     [SerializeField] private InputField inputField;
-    [SerializeField] private Text textComponent; // InputField‚ÌText
+    [SerializeField] private Text textComponent; // InputFieldã®Text
     [SerializeField] private string csvFileName = "NGWords";
 
-    [Header("•¶šƒTƒCƒY©“®’²®")]
+    [Header("æ–‡å­—ã‚µã‚¤ã‚ºè‡ªå‹•èª¿æ•´")]
     [SerializeField] private int fontSizeMin = 10;
     [SerializeField] private int fontSizeMax = 40;
 
@@ -19,7 +19,7 @@ public class InputFieldValidator : MonoBehaviour
     private const int maxJapaneseLength = 6;
     private const int maxEnglishLength = 12;
 
-    public event Action<string> OnValidatedName; // Šm’èŒã‚Ì•¶š—ñ‚ğ’Ê’m
+    public event Action<string> OnValidatedName; // ç¢ºå®šå¾Œã®æ–‡å­—åˆ—ã‚’é€šçŸ¥
 
     [SerializeField] GameObject ngWordPopUpBase;
     [SerializeField] RectTransform ngWordPopUp;
@@ -55,7 +55,7 @@ public class InputFieldValidator : MonoBehaviour
         TextAsset csvData = Resources.Load<TextAsset>(csvFileName);
         if (csvData == null)
         {
-            Debug.LogWarning($"CSVƒtƒ@ƒCƒ‹ '{csvFileName}.csv' ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñB");
+            Debug.LogWarning($"CSVãƒ•ã‚¡ã‚¤ãƒ« '{csvFileName}.csv' ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã€‚");
             ngWords = new string[0];
             return;
         }
@@ -63,23 +63,23 @@ public class InputFieldValidator : MonoBehaviour
         ngWords = csvData.text.Split(new[] { '\r', '\n' }, System.StringSplitOptions.RemoveEmptyEntries);
     }
 
-    // “ü—Í’†‚Í‰üsíœ‚Ì‚İ
+    // å…¥åŠ›ä¸­ã¯æ”¹è¡Œå‰Šé™¤ã®ã¿
     private void OnValueChanged(string text)
     {
         if (string.IsNullOrEmpty(text))
             return;
 
-        // ‰üsíœ
+        // æ”¹è¡Œå‰Šé™¤
         string newText = text.Replace("\n", "").Replace("\r", "");
 
-        // d‚İ•t‚«’·‚³§ŒÀ
-        int maxWeightedLength = maxJapaneseLength * 2; // 6‘SŠp or 12”¼Šp‘Š“–
+        // é‡ã¿ä»˜ãé•·ã•åˆ¶é™
+        int maxWeightedLength = maxJapaneseLength * 2; // 6å…¨è§’ or 12åŠè§’ç›¸å½“
         if (GetWeightedLength(newText) > maxWeightedLength)
         {
             newText = CutToWeightedLimit(newText, maxWeightedLength);
         }
 
-        // •¶š—ñ‚ª•Ï‰»‚µ‚½‚ç”½‰f
+        // æ–‡å­—åˆ—ãŒå¤‰åŒ–ã—ãŸã‚‰åæ˜ 
         if (newText != text)
         {
             int caretPos = inputField.caretPosition;
@@ -89,41 +89,30 @@ public class InputFieldValidator : MonoBehaviour
     }
 
 
-    // Šm’è‚ÉNGƒ[ƒhƒ`ƒFƒbƒNE•¶š”§ŒÀE•¶šƒTƒCƒY’²®
+    // ç¢ºå®šæ™‚ã«NGãƒ¯ãƒ¼ãƒ‰ãƒã‚§ãƒƒã‚¯ãƒ»æ–‡å­—æ•°åˆ¶é™ãƒ»æ–‡å­—ã‚µã‚¤ã‚ºèª¿æ•´
     private void OnEndEdit(string text)
     {
-        string validatedText = text;
-
-        // NGƒ[ƒhƒ`ƒFƒbƒN
-        foreach (string ng in ngWords)
+        string validated = text?.Trim();
+        if (string.IsNullOrEmpty(validated))
         {
-            if (!string.IsNullOrEmpty(ng) && validatedText.Contains(ng))
-            {
-                Debug.LogWarning($"NGƒ[ƒhu{ng}v‚ªŠÜ‚Ü‚ê‚Ä‚¢‚Ü‚·");
-                validatedText = "";
-                ShowNgWordPopUp();
-                break;
-            }
+            inputField.text = "";
+            return;
         }
 
-        // •¶š”§ŒÀ
-        int maxWeightedLength = maxJapaneseLength * 2;
-        if (GetWeightedLength(validatedText) > maxWeightedLength)
+        // æ–‡å­—æ•°åˆ¶é™
+        int maxWeighted = maxJapaneseLength * 2;
+        if (GetWeightedLength(validated) > maxWeighted)
         {
-            validatedText = CutToWeightedLimit(validatedText, maxWeightedLength);
+            validated = CutToWeightedLimit(validated, maxWeighted);
         }
 
-        // InputField ‚É”½‰f
-        inputField.text = validatedText;
+        inputField.text = validated;
 
-        // ‚±‚±‚Å Firebase ‚É’Ê’m
-        OnValidatedName?.Invoke(validatedText);
-
-        // •¶šƒTƒCƒY’²®‚È‚Ç‚à‚±‚±‚ÅOK
-        AdjustFontSize(validatedText);
+        // è¦‹ãŸç›®ã ã‘èª¿æ•´
+        AdjustFontSize(validated);
     }
 
-    // BestFit•—‚Ì•¶šƒTƒCƒY’²®
+    // BestFité¢¨ã®æ–‡å­—ã‚µã‚¤ã‚ºèª¿æ•´
     private void AdjustFontSize(string text)
     {
         if (textComponent == null || string.IsNullOrEmpty(text))
@@ -132,13 +121,13 @@ public class InputFieldValidator : MonoBehaviour
         int size = fontSizeMax;
         textComponent.fontSize = size;
 
-        // CanvasXV‚µ‚Ä³‚µ‚¢•‚ğæ“¾
+        // Canvasæ›´æ–°ã—ã¦æ­£ã—ã„å¹…ã‚’å–å¾—
         Canvas.ForceUpdateCanvases();
 
         RectTransform rt = textComponent.rectTransform;
         float maxWidth = rt.rect.width;
 
-        // TextGenerator‚ğg‚Á‚Ä•¶š•‚ğ³Šm‚ÉŒvZ
+        // TextGeneratorã‚’ä½¿ã£ã¦æ–‡å­—å¹…ã‚’æ­£ç¢ºã«è¨ˆç®—
         TextGenerationSettings settings = textComponent.GetGenerationSettings(rt.rect.size);
 
         while (size > fontSizeMin)
@@ -155,7 +144,7 @@ public class InputFieldValidator : MonoBehaviour
     }
 
     // ======================
-    // •¶š”§ŒÀid‚İ•t‚«j
+    // æ–‡å­—æ•°åˆ¶é™ï¼ˆé‡ã¿ä»˜ãï¼‰
     // ======================
     private int GetWeightedLength(string text)
     {
@@ -196,17 +185,17 @@ public class InputFieldValidator : MonoBehaviour
     {
         ngWordPopUpBase.SetActive(true);
 
-        // ‰ŠúƒXƒP[ƒ‹‚ğ0‚É
+        // åˆæœŸã‚¹ã‚±ãƒ¼ãƒ«ã‚’0ã«
         ngWordPopUp.localScale = Vector3.zero;
 
-        // 0 ¨ 1 ‚ÉŠg‘åi0.25•bj
+        // 0 â†’ 1 ã«æ‹¡å¤§ï¼ˆ0.25ç§’ï¼‰
         ngWordPopUp.DOScale(1f, 0.25f)
-            .SetEase(Ease.OutBack); // ­‚µ’e‚ŞŠ´‚¶‚É
+            .SetEase(Ease.OutBack); // å°‘ã—å¼¾ã‚€æ„Ÿã˜ã«
     }
 
     public void CloseNgWordPopUp()
     {
-        // 1 ¨ 0 ‚Ék¬i0.2•bj
+        // 1 â†’ 0 ã«ç¸®å°ï¼ˆ0.2ç§’ï¼‰
         ngWordPopUp.DOScale(0f, 0.2f)
             .SetEase(Ease.InBack)
             .OnComplete(() =>
@@ -214,4 +203,56 @@ public class InputFieldValidator : MonoBehaviour
                 ngWordPopUpBase.SetActive(false);
             });
     }
+
+    public bool OnClick_SaveName()
+    {
+        string validated = inputField.text?.Trim();
+
+        // ç©ºæ–‡å­—ã®ã¨ãã¯ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå "Player" ã¨ã—ã¦æ‰±ã†
+        if (string.IsNullOrEmpty(validated))
+        {
+            OnValidatedName?.Invoke("Player");
+            return true; // ä¿å­˜æˆåŠŸæ‰±ã„
+        }
+
+        // æ­£è¦åŒ– + å°æ–‡å­—åŒ–
+        string normalized = validated
+            .Normalize(NormalizationForm.FormKC)
+            .ToLower();
+
+        // ã²ã‚‰ãŒãª â†’ ã‚«ã‚¿ã‚«ãƒŠçµ±ä¸€
+        normalized = ToKatakana(normalized);
+
+        foreach (string ng in ngWords)
+        {
+            string ngNorm = ng.Trim()
+                .Normalize(NormalizationForm.FormKC)
+                .ToLower();
+            ngNorm = ToKatakana(ngNorm);
+
+            if (!string.IsNullOrEmpty(ngNorm) && normalized.Contains(ngNorm))
+            {
+                ShowNgWordPopUp();
+                inputField.text = "";
+                return false;  // âŒ ä¿å­˜å¤±æ•—ï¼ˆNGãƒ¯ãƒ¼ãƒ‰ã‚ã‚Šï¼‰
+            }
+        }
+
+        // NGãªã— â†’ ä¿å­˜å‡¦ç†
+        OnValidatedName?.Invoke(validated);
+        return true; // â­• ä¿å­˜OK
+    }
+
+    string ToKatakana(string input)
+    {
+        char[] arr = input.ToCharArray();
+        for (int i = 0; i < arr.Length; i++)
+        {
+            // ã²ã‚‰ãŒãª â†’ ã‚«ã‚¿ã‚«ãƒŠã¸å¤‰æ›
+            if (arr[i] >= 'ã' && arr[i] <= 'ã‚–')
+                arr[i] = (char)(arr[i] + 0x60);
+        }
+        return new string(arr);
+    }
+
 }

@@ -8,21 +8,38 @@ public class CountDownUIController : MonoBehaviour
 {
     [SerializeField] Image countDownImage;
     [SerializeField] Text countDownText;
-    [SerializeField] float countDownDuration = 3.0f;
+    [SerializeField] float startCountDownDuration = 3.0f;
+    [SerializeField] float finishCountDownDuration = 10.0f;
     [SerializeField] float goDisplayTime = 0.8f;
+    [SerializeField] Color startCountDownColor;
+    [SerializeField] Color finishCountDownColor;
 
     private int countDownCount;
     private float countDownElapsedTime;
-    private Action<bool> onCountDownComplete;
+    private Action<bool> onCountDownCompleteBool;
+    private Action onCountDownComplete;
 
-    public void StartCountDown(Action<bool> onComplete = null)
+    public void StartCountDownStart(Action<bool> onComplete = null)
     {
-        onCountDownComplete = onComplete;
+        SetColor(startCountDownColor);
+        onCountDownComplete = null;
+        onCountDownCompleteBool = null;
+        onCountDownCompleteBool = onComplete;
         StopAllCoroutines();
-        StartCoroutine(CountDown());
+        StartCoroutine(StartCountDown());
     }
 
-    IEnumerator CountDown()
+    public void FinishCountDownStart(Action onComplete = null)
+    {
+        SetColor(finishCountDownColor);
+        onCountDownComplete = null;
+        onCountDownCompleteBool = null;
+        onCountDownComplete = onComplete;
+        StopAllCoroutines();
+        StartCoroutine(FinishCountDownCoroutine());
+    }
+
+    IEnumerator StartCountDown()
     {
         countDownCount = 0;
         countDownElapsedTime = 0;
@@ -30,11 +47,11 @@ public class CountDownUIController : MonoBehaviour
         countDownImage.gameObject.SetActive(true);
         countDownText.gameObject.SetActive(true);
 
-        countDownText.text = Mathf.FloorToInt(countDownDuration).ToString();
+        countDownText.text = Mathf.FloorToInt(startCountDownDuration).ToString();
         countDownImage.fillAmount = 0f;
 
         // カウントダウンループ
-        while (countDownElapsedTime < countDownDuration)
+        while (countDownElapsedTime < startCountDownDuration)
         {
             countDownElapsedTime += Time.deltaTime;
             countDownImage.fillAmount = countDownElapsedTime % 1.0f;
@@ -44,7 +61,7 @@ public class CountDownUIController : MonoBehaviour
             {
                 countDownCount++;
 
-                int remaining = Mathf.FloorToInt(countDownDuration - countDownCount);
+                int remaining = Mathf.FloorToInt(startCountDownDuration - countDownCount);
 
                 if (remaining <= 0)
                 {
@@ -81,6 +98,68 @@ public class CountDownUIController : MonoBehaviour
         countDownText.transform.localScale = Vector3.one;
 
         // コールバック呼び出し
-        onCountDownComplete?.Invoke(true);
+        onCountDownCompleteBool?.Invoke(true);
+        onCountDownComplete?.Invoke();
+
+        onCountDownComplete = null;
+        onCountDownCompleteBool = null;
+    }
+
+    IEnumerator FinishCountDownCoroutine()
+    {
+        countDownCount = 0;
+        countDownElapsedTime = 0;
+
+        countDownImage.gameObject.SetActive(true);
+        countDownText.gameObject.SetActive(true);
+
+        countDownText.text = Mathf.FloorToInt(finishCountDownDuration).ToString();
+        countDownImage.fillAmount = 0f;
+
+        // カウントダウンループ
+        while (countDownElapsedTime < finishCountDownDuration)
+        {
+            countDownElapsedTime += Time.deltaTime;
+            countDownImage.fillAmount = countDownElapsedTime % 1.0f;
+
+            if (countDownCount < Mathf.FloorToInt(countDownElapsedTime))
+            {
+                countDownCount++;
+
+                int remaining = Mathf.FloorToInt(finishCountDownDuration - countDownCount);
+
+                if (remaining <= 0)
+                {
+                    // ← GO! を表示しないので、そのままループを抜ける
+                    break;
+                }
+                else
+                {
+                    countDownText.text = remaining.ToString();
+                    countDownText.transform.localScale = Vector3.one;
+                }
+            }
+
+            yield return null;
+        }
+
+        // カウントダウン終了 → UI を隠す
+        countDownImage.gameObject.SetActive(false);
+        countDownText.gameObject.SetActive(false);
+        countDownText.transform.localScale = Vector3.one;
+
+        // コールバック呼び出し
+        onCountDownCompleteBool?.Invoke(true);
+        onCountDownComplete?.Invoke();
+
+        // コールバックをクリア
+        onCountDownComplete = null;
+        onCountDownCompleteBool = null;
+    }
+
+    void SetColor(Color _color)
+    {
+        countDownImage.color = _color;
+        countDownText.color = _color;
     }
 }

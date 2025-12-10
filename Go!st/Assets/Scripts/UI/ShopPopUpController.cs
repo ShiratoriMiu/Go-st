@@ -27,6 +27,8 @@ public class ShopPopUpController : MonoBehaviour
 
     private Action onBuyAction;
 
+    [SerializeField] ScrollRect shopScrollRect;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -114,5 +116,11 @@ public class ShopPopUpController : MonoBehaviour
             {
                 shopPopUpBase.SetActive(false);
             });
+    }
+
+    private void OnEnable()
+    {
+        if (shopScrollRect != null)
+            shopScrollRect.verticalNormalizedPosition = 1f;
     }
 }

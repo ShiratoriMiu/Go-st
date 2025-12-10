@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class GameManager : MonoBehaviour
 {
@@ -60,6 +61,7 @@ public class GameManager : MonoBehaviour
 
     private int lastTimeInt = -1;    // ëOâÒÇÃêÆêîïb
     private bool isLowTimeEffect = false;
+    private bool finishCountDown = false;
     private Color normalColor = Color.white;
     private Color warningColor = Color.red;
 
@@ -108,9 +110,13 @@ public class GameManager : MonoBehaviour
             float remainingTime = Mathf.Max(0f, maxTimeLimit - survivalTime);
             UpdateTimeUI(remainingTime);
 
-            if (remainingTime <= 0f)
+            if (remainingTime <= 10f)
             {
-                EndGame(); // êßå¿éûä‘Ç™êsÇ´ÇΩÇÁÉQÅ[ÉÄèIóπ
+                if (!finishCountDown)
+                {
+                    ToFinishCountDown(); // êßå¿éûä‘Ç™êsÇ´ÇΩÇÁÉQÅ[ÉÄèIóπ
+                    finishCountDown = true;
+                }
             }
         }
     }
@@ -219,6 +225,7 @@ public class GameManager : MonoBehaviour
         enemyManager.StopSpawning();
         remainingTimeText.text = "00 : 00";
         centerToGrayEffect.ResetGrey();
+        finishCountDown = false;
     }
 
     IEnumerator ResetSelectPlayerRotate()
@@ -316,8 +323,14 @@ public class GameManager : MonoBehaviour
     public void ToStartCountDown() 
     { 
         ChangeGameState(GameState.StartCountDown);
-        countDownUIController.StartCountDown(ToGame);
+        countDownUIController.StartCountDownStart(ToGame);
         mapRandomChanger.ActivateRandomMap();
+    }
+
+    public void ToFinishCountDown()
+    {
+        uiPanels[GameState.StartCountDown].SetActive(true);
+        countDownUIController.FinishCountDownStart(EndGame);
     }
 
     void ChangeGameState(GameState _gameState)

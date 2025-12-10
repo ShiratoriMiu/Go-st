@@ -18,6 +18,9 @@ public class ProfileManager : MonoBehaviour
     [SerializeField] private Text skinItemNumText;
     [SerializeField] private Text makeUpNumText;
 
+    [SerializeField] private InputFieldValidator inputFieldValidator;
+    [SerializeField] private GameManager gameManager;
+
     private int colorNum;
     private int skinItemNum;
     private int makeUpNum;
@@ -97,5 +100,13 @@ public class ProfileManager : MonoBehaviour
         colorNumText.text = $"{colorNum} / {colorNumMax}";
         skinItemNumText.text = $"{skinItemNum} / {skinItemNumMax}";
         makeUpNumText.text = $"{makeUpNum} / {makeUpNumMax}";
+    }
+
+    public void CloseProfileUI()
+    {
+        if (inputFieldValidator.OnClick_SaveName())
+        {
+            gameManager.ToTitle(false);
+        }
     }
 }
