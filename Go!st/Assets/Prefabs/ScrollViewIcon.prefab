@@ -90,6 +90,7 @@ GameObject:
   - component: {fileID: 7972587719551415580}
   - component: {fileID: -1201321086007090965}
   - component: {fileID: 7525746463799059347}
+  - component: {fileID: 14604798919890348}
   m_Layer: 5
   m_Name: ScrollViewIcon
   m_TagString: Untagged
@@ -238,3 +239,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetButton: {fileID: 4667516644181654189}
   targetGraphics: []
+--- !u!114 &14604798919890348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8238416060495465116}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13b937f9ee7627740a7a345ca3b37f7b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pressScaleMultiplier: 0.9
