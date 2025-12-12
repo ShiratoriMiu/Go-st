@@ -184,9 +184,9 @@ public static class SaveManager
         }
 
         // 既に同名のアイテムがあるかチェック
-        bool exists = data.allItems.Exists(x => x.name == _name);
+        ItemData existing = data.allItems.Find(x => x.name == _name);
 
-        if (!exists)
+        if (existing == null)
         {
             // 新しい ItemData を正しく生成して追加
             ItemData item = new ItemData(_name, _iconName, _color, _isOwned, _isEquipped, _canColorChange, _isColorChangeOn, _itemStyle);
@@ -198,7 +198,12 @@ public static class SaveManager
         }
         else
         {
-            Debug.Log($"SaveAllItem: '{_name}' already exists, skip add.");
+            // ★ここ！既存アイテムの iconName だけ更新
+            existing.IconName = _iconName;
+
+            Save(data); // 上書き保存
+
+            Debug.Log($"SaveAllItem: '{_name}' exists, updated iconName → {_iconName}");
         }
     }
 
