@@ -40,3 +40,15 @@ public enum ItemStyle
     SkinItem,
     MakeUp
 }
+
+public enum ItemColorChangeSlotColor
+{
+    White,
+    Black,
+    Yellow,
+    Red,
+    Blue,
+    Green,
+    Purple,
+    Pink
+}

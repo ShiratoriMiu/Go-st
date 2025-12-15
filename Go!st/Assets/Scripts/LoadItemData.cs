@@ -32,7 +32,7 @@ public class LoadItemData : MonoBehaviour
             string itemName = string.IsNullOrEmpty(skinItem.itemName) ? "" : skinItem.itemName;
             string iconName = skinItem.itemIcon == null ? "" : skinItem.itemIcon.name;
 
-            SaveManager.SaveAllItem(itemName, iconName, Color.white, skinItem.isOwned, skinItem.isEquipped, skinItem.canColorChange,skinItem.currentColorChange, ItemStyle.SkinItem);
+            SaveManager.SaveAllItem(itemName, iconName, Color.white, skinItem.isOwned, skinItem.isEquipped, skinItem.canColorChange,skinItem.currentColorChange, ItemStyle.SkinItem,skinItem.colorComplete);
             if (skinItem.isGacha)
             {
                 SaveManager.SaveGachaItemName(itemName);
@@ -45,7 +45,7 @@ public class LoadItemData : MonoBehaviour
             string iconName = colorItem.icon == null ? "" : colorItem.icon.name;
             //色変え機能はついてないので直接false
             //装備中判定も使用していないのでfalse
-            SaveManager.SaveAllItem(itemName, iconName, colorItem.color, colorItem.isOwned,false, false, false, ItemStyle.SkinColor);
+            SaveManager.SaveAllItem(itemName, iconName, colorItem.color, colorItem.isOwned,false, false, false, ItemStyle.SkinColor,false);
             if (colorItem.isGacha)
             {
                 SaveManager.SaveGachaItemName(itemName);
@@ -56,7 +56,7 @@ public class LoadItemData : MonoBehaviour
         {
             string itemName = string.IsNullOrEmpty(makeUpItem.name) ? "" : makeUpItem.name;
             //色変え機能はついてないので直接false
-            SaveManager.SaveAllItem(itemName, itemName, Color.white,makeUpItem.isOwned,makeUpItem.isEquipped,false,false, ItemStyle.MakeUp);
+            SaveManager.SaveAllItem(itemName, itemName, Color.white,makeUpItem.isOwned,makeUpItem.isEquipped,false,false, ItemStyle.MakeUp,false);
             if (makeUpItem.isGacha)
             {
                 SaveManager.SaveGachaItemName(itemName);

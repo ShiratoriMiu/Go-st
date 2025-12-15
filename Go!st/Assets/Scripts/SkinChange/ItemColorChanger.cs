@@ -9,18 +9,24 @@ public class ItemColorChanger : MonoBehaviour
     [SerializeField] SkinItemUIManager skinItemUIManager;
     [SerializeField] GameObject itemColorScrollView;
 
-    [SerializeField] Button[] itemColorButtons;
+    [System.Serializable]
+    public class ItemColorChangeSlot
+    {
+        public ItemColorChangeSlotColor colorName;
+        public Button button;
+    }
+    [SerializeField] ItemColorChangeSlot[] itemColorChangeSlots;
 
     // Start is called before the first frame update
     void Start()
     {
-        foreach (var button in itemColorButtons)
+        foreach (var itemColorChangeSlot in itemColorChangeSlots)
         {
-            if (button != null)
+            if (itemColorChangeSlot != null)
             {
-                var capturedItemColorButton = button; // ラムダ内でキャプチャするため
+                var capturedItemColorButton = itemColorChangeSlot.button; // ラムダ内でキャプチャするため
 
-                button.onClick.AddListener(() =>
+                itemColorChangeSlot.button.onClick.AddListener(() =>
                 {
                     OnClickItemColorButton(capturedItemColorButton);
                 });
@@ -34,7 +40,11 @@ public class ItemColorChanger : MonoBehaviour
         //itemColorScrollViewの表示非表示切替
         if (skinItemUIManager != null && skinItemUIManager.selectItem != null)
         {
-            if(!itemColorScrollView.activeSelf) itemColorScrollView.SetActive(true);
+            if (!itemColorScrollView.activeSelf)
+            {
+                itemColorScrollView.SetActive(true);
+                RefreshColorSlots();
+            }
         }
         else
         {
@@ -46,9 +56,9 @@ public class ItemColorChanger : MonoBehaviour
     {
         if (skinItemUIManager.selectItem == null) return;
 
-        for(int i = 0; i < skinItemUIManager.selectItem.Length; ++i)
+        for(int i = 0; i < skinItemUIManager.selectItem.itemObjectRenderers.Length; ++i)
         {
-            Material matInstance = new Material(skinItemUIManager.selectItem[i].material); // マテリアルの複製
+            Material matInstance = new Material(skinItemUIManager.selectItem.itemObjectRenderers[i].material); // マテリアルの複製
 
             Image image = _itemColorButton.GetComponent<Image>();// Imageの使用
 
@@ -57,7 +67,32 @@ public class ItemColorChanger : MonoBehaviour
                 matInstance.color = image.color;
             }
 
-            skinItemUIManager.selectItem[i].material = matInstance;
+            skinItemUIManager.selectItem.itemObjectRenderers[i].material = matInstance;
+        }
+    }
+
+    void RefreshColorSlots()
+    {
+        if (skinItemUIManager == null || skinItemUIManager.selectItem == null)
+            return;
+
+        string itemName = skinItemUIManager.selectItem.itemName;
+        // 解放済み色を取得
+        List<string> unlockedColors =
+            SaveManager.LoadUnlockedColors(itemName);
+
+        Debug.Log("開放済み色" + unlockedColors + "ここまで");
+
+        foreach (var slot in itemColorChangeSlots)
+        {
+            bool unlocked = unlockedColors != null &&
+                            unlockedColors.Contains(slot.colorName.ToString());
+
+            // ボタンのON/OFF
+            slot.button.interactable = unlocked;
+
+            // 見た目も変える
+            slot.button.gameObject.SetActive(unlocked);
         }
     }
 }

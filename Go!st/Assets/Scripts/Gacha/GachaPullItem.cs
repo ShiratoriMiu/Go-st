@@ -23,6 +23,8 @@ public class GachaPullItem : MonoBehaviour
     private bool isEnableAllIcon = false;
     private List<GameObject> icons;     // Hierarchy 上に配置済みのアイコンを保持
 
+    private HashSet<string> tempOwnedItems;//仮の所持状態を保持
+
     private void Start()
     {
         titleButton.SetActive(false);
@@ -72,6 +74,8 @@ public class GachaPullItem : MonoBehaviour
 
         // 抽選結果を保存
         pullResults = new List<ItemData>();
+        tempOwnedItems = new HashSet<string>();
+
         for (int i = 0; i < pullNum; i++)
         {
             int randIndex = Random.Range(0, gachaItemDatas.Count);
@@ -147,17 +151,36 @@ public class GachaPullItem : MonoBehaviour
 
         iconBG.color = Color.white;
 
+        bool alreadyOwned = currentItem.isOwned || tempOwnedItems.Contains(currentItem.name);
+
         // 所持判定と更新
-        if (currentItem.isOwned)
+        if (alreadyOwned)
         {
+            // ダブり処理
             if (currentItem.canColorChange && !currentItem.isColorChangeOn)
             {
                 SaveManager.UpdateItemFlags(currentItem.name, colorChangeOn: true);
+
+                List<string> unlocked = SaveManager.LoadUnlockedColors(currentItem.name);
+                var allColors = System.Enum.GetNames(typeof(ItemColorChangeSlotColor));
+                var locked = allColors.Where(c => !unlocked.Contains(c)).ToList();
+
+                if (locked.Count > 0)
+                {
+                    string newColor = locked[Random.Range(0, locked.Count)];
+                    SaveManager.SaveUnlockedColor(currentItem.name, newColor);
+                    SaveManager.UpdateItemColorComplete(currentItem.name);
+                }
             }
             else
             {
                 ReturnCoin();
             }
+        }
+        else
+        {
+            // 初取得扱い
+            tempOwnedItems.Add(currentItem.name);
         }
         SaveManager.UpdateItemFlags(currentItem.name, owned: true);
     }

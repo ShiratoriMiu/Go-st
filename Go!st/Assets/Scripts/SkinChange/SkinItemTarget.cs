@@ -16,6 +16,7 @@ public class SkinItemTarget : MonoBehaviour
         public bool isEquipped;
         public bool currentColorChange;//現状の色変え可能状態
         public bool isGacha;//ガチャで排出するか
+        public bool colorComplete;
     }
 
     [SerializeField]

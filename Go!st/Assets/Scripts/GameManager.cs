@@ -366,7 +366,8 @@ public class GameManager : MonoBehaviour
                         slot.isEquipped,
                         slot.canColorChange,
                         slot.currentColorChange,
-                        ItemStyle.SkinItem
+                        ItemStyle.SkinItem,
+                        false
                     );
                     playerData.allItems.Add(savedItem);
                 }
@@ -400,7 +401,8 @@ public class GameManager : MonoBehaviour
                     makeSlot.isEquipped,
                     false,
                     false,
-                    ItemStyle.MakeUp
+                    ItemStyle.MakeUp,
+                    false
                 );
                 playerData.allItems.Add(savedItem);
             }
@@ -425,7 +427,8 @@ public class GameManager : MonoBehaviour
                     false,
                     false,
                     false,
-                    ItemStyle.SkinColor
+                    ItemStyle.SkinColor,
+                    false
                 );
                 playerData.allItems.Add(savedItem);
             }

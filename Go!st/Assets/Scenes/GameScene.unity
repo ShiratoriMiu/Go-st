@@ -11051,15 +11051,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skinItemUIManager: {fileID: 565445745}
   itemColorScrollView: {fileID: 1584662467}
-  itemColorButtons:
-  - {fileID: 1619591122}
-  - {fileID: 586812477}
-  - {fileID: 1774007539}
-  - {fileID: 1861506819}
-  - {fileID: 533446515}
-  - {fileID: 1556281820}
-  - {fileID: 867792997}
-  - {fileID: 1254214563}
+  itemColorChangeSlots:
+  - colorName: 0
+    button: {fileID: 1619591122}
+  - colorName: 1
+    button: {fileID: 586812477}
+  - colorName: 2
+    button: {fileID: 1774007539}
+  - colorName: 3
+    button: {fileID: 1861506819}
+  - colorName: 4
+    button: {fileID: 533446515}
+  - colorName: 5
+    button: {fileID: 1556281820}
+  - colorName: 6
+    button: {fileID: 867792997}
+  - colorName: 7
+    button: {fileID: 1254214563}
 --- !u!114 &565445747
 MonoBehaviour:
   m_ObjectHideFlags: 0

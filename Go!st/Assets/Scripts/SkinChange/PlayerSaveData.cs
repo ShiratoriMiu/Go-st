@@ -34,10 +34,11 @@ public class ItemData
     public bool isEquipped;     // 装備しているか
     public bool canColorChange;  // 色変え可能か
     public bool isColorChangeOn; //現状色変え可能か（ガチャなどでダブったか）
+    public bool colorComplete;
 
     public ItemStyle itemStyle;
 
-    public ItemData(string _name, string _iconName, Color _color, bool _isOwned, bool _isEquipped, bool _canColorChange, bool _isColorChangeOn, ItemStyle _itemStyle)
+    public ItemData(string _name, string _iconName, Color _color, bool _isOwned, bool _isEquipped, bool _canColorChange, bool _isColorChangeOn, ItemStyle _itemStyle, bool _colorComplete)
     {
         this.name = _name;
         IconName = _iconName;
@@ -47,6 +48,7 @@ public class ItemData
         canColorChange = _canColorChange;
         isColorChangeOn = _isColorChangeOn;
         this.itemStyle = _itemStyle;
+        colorComplete = _colorComplete;
     }
 
     public Color ToColor()
@@ -90,6 +92,13 @@ public class PlayerIconData
     }
 }
 
+[System.Serializable]
+public class ItemUnlockedColorData
+{
+    public string itemName;
+    public List<string> unlockedColors = new List<string>();
+}
+
 /// <summary>
 /// セーブするデータ
 /// </summary>
@@ -108,6 +117,8 @@ public class PlayerSaveData
     public List<PlayerIconData> ownedPlayerIcons = new List<PlayerIconData>();//所持プレイヤーアイコンの名前
 
     public List<PlayerIconData> equippedPlayerIcons = new List<PlayerIconData>();
+
+    public List<ItemUnlockedColorData> itemUnlockedColors = new List<ItemUnlockedColorData>();//アイテムごとの開放済み色
 }
 
 /// <summary>
@@ -173,7 +184,7 @@ public static class SaveManager
     }
 
     //アイテム保存
-    public static void SaveAllItem(string _name, string _iconName, Color _color, bool _isOwned, bool _isEquipped, bool _canColorChange, bool _isColorChangeOn, ItemStyle _itemStyle)
+    public static void SaveAllItem(string _name, string _iconName, Color _color, bool _isOwned, bool _isEquipped, bool _canColorChange, bool _isColorChangeOn, ItemStyle _itemStyle, bool _colorComplete)
     {
         // 既存データを読み込み（null 対策）
         PlayerSaveData data = Load() ?? new PlayerSaveData();
@@ -189,7 +200,7 @@ public static class SaveManager
         if (existing == null)
         {
             // 新しい ItemData を正しく生成して追加
-            ItemData item = new ItemData(_name, _iconName, _color, _isOwned, _isEquipped, _canColorChange, _isColorChangeOn, _itemStyle);
+            ItemData item = new ItemData(_name, _iconName, _color, _isOwned, _isEquipped, _canColorChange, _isColorChangeOn, _itemStyle, _colorComplete);
 
             data.allItems.Add(item);
             Save(data); // 上書き保存
@@ -354,6 +365,100 @@ public static class SaveManager
     {
         PlayerSaveData data = Load();
         return data?.equippedPlayerIcons ?? new List<PlayerIconData>();
+    }
+
+    public static List<string> LoadUnlockedColors(string itemName)
+    {
+        if (string.IsNullOrEmpty(itemName))
+            return new List<string>();
+
+        PlayerSaveData data = Load();
+        if (data?.itemUnlockedColors == null)
+            return new List<string>();
+
+        var itemData = data.itemUnlockedColors
+            .Find(x => x.itemName == itemName);
+
+        if (itemData == null)
+            return new List<string>();
+
+        return new List<string>(itemData.unlockedColors);
+    }
+
+    public static void SaveUnlockedColor(string itemName, string colorName)
+    {
+        if (string.IsNullOrEmpty(itemName) || string.IsNullOrEmpty(colorName))
+            return;
+
+        PlayerSaveData data = Load() ?? new PlayerSaveData();
+
+        if (data.itemUnlockedColors == null)
+            data.itemUnlockedColors = new List<ItemUnlockedColorData>();
+
+        var itemData = data.itemUnlockedColors
+            .Find(x => x.itemName == itemName);
+
+        if (itemData == null)
+        {
+            itemData = new ItemUnlockedColorData
+            {
+                itemName = itemName
+            };
+            data.itemUnlockedColors.Add(itemData);
+        }
+
+        if (!itemData.unlockedColors.Contains(colorName))
+        {
+            itemData.unlockedColors.Add(colorName);
+            Save(data);
+
+            Debug.Log($"[ColorUnlock] {itemName} : {colorName}");
+        }
+    }
+
+    public static void UpdateItemColorComplete(string itemName)
+    {
+        if (string.IsNullOrEmpty(itemName))
+            return;
+
+        PlayerSaveData data = Load();
+        if (data == null || data.allItems == null)
+            return;
+
+        // 対象アイテム取得
+        ItemData item = data.allItems.Find(i => i.name == itemName);
+        if (item == null)
+            return;
+
+        // 色変更不可アイテムは対象外
+        if (!item.canColorChange)
+            return;
+
+        // 色解放データ取得
+        if (data.itemUnlockedColors == null)
+            data.itemUnlockedColors = new List<ItemUnlockedColorData>();
+
+        ItemUnlockedColorData colorData =
+            data.itemUnlockedColors.Find(x => x.itemName == itemName);
+
+        // まだ1色も解放されていない
+        if (colorData == null || colorData.unlockedColors == null)
+        {
+            item.colorComplete = false;
+            Save(data);
+            return;
+        }
+
+        int unlockedCount = colorData.unlockedColors.Count;
+        int allColorCount =
+            System.Enum.GetNames(typeof(ItemColorChangeSlotColor)).Length;
+
+        bool isComplete = unlockedCount >= allColorCount;
+        item.colorComplete = isComplete;
+
+        Debug.Log($"[ColorComplete] {itemName} : {unlockedCount}/{allColorCount} => {isComplete}");
+
+        Save(data);
     }
 }
 

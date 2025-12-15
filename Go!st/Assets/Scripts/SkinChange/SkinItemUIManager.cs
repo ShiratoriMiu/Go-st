@@ -22,7 +22,7 @@ public class SkinItemUIManager : MonoBehaviour
 
     private SkinItemTarget currentTarget;
 
-    public Renderer[] selectItem { get; private set; }
+    public SkinItemTarget.ItemSlot selectItem { get; private set; }
 
     [SerializeField] private ItemNumTMP itemNumTMP;
 
@@ -42,17 +42,26 @@ public class SkinItemUIManager : MonoBehaviour
 
         GenerateOwnedItemButtons();
 
-        currentTarget.OnItemEquipped = (item) => {
-            var renderer = item.itemObjectRenderers;
-            if (renderer != null)
+        currentTarget.OnItemEquipped = (item) =>
+        {
+            // 色変更可能条件を満たしているか
+            if (item.canColorChange && item.currentColorChange && item.itemObjectRenderers != null)
             {
-                if(item.canColorChange && item.currentColorChange) selectItem = renderer;
-                else selectItem = null;
+                selectItem = item; // ★ ここが一番重要
+                Debug.Log($"[ItemColor] SelectItem = {item.itemName}");
+            }
+            else
+            {
+                selectItem = null;
             }
         };
 
-        currentTarget.OnItemUnequipped = (item) => {
-            selectItem = null;
+        currentTarget.OnItemUnequipped = (item) =>
+        {
+            if (selectItem == item)
+            {
+                selectItem = null;
+            }
         };
     }
 
