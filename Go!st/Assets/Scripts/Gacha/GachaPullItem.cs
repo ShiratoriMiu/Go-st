@@ -181,6 +181,14 @@ public class GachaPullItem : MonoBehaviour
         {
             // 初取得扱い
             tempOwnedItems.Add(currentItem.name);
+
+            // デフォルトカラーを自動解放
+            SaveManager.SaveUnlockedColor(
+                currentItem.name,
+                currentItem.defaultColor.ToString()
+            );
+
+            SaveManager.UpdateItemColorComplete(currentItem.name);
         }
         SaveManager.UpdateItemFlags(currentItem.name, owned: true);
     }

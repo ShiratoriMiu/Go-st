@@ -37,8 +37,9 @@ public class ItemData
     public bool colorComplete;
 
     public ItemStyle itemStyle;
+    public ItemColorChangeSlotColor defaultColor;
 
-    public ItemData(string _name, string _iconName, Color _color, bool _isOwned, bool _isEquipped, bool _canColorChange, bool _isColorChangeOn, ItemStyle _itemStyle, bool _colorComplete)
+    public ItemData(string _name, string _iconName, Color _color, bool _isOwned, bool _isEquipped, bool _canColorChange, bool _isColorChangeOn, ItemStyle _itemStyle, bool _colorComplete, ItemColorChangeSlotColor _defaultColor)
     {
         this.name = _name;
         IconName = _iconName;
@@ -49,6 +50,7 @@ public class ItemData
         isColorChangeOn = _isColorChangeOn;
         this.itemStyle = _itemStyle;
         colorComplete = _colorComplete;
+        this.defaultColor = _defaultColor;
     }
 
     public Color ToColor()
@@ -184,7 +186,7 @@ public static class SaveManager
     }
 
     //アイテム保存
-    public static void SaveAllItem(string _name, string _iconName, Color _color, bool _isOwned, bool _isEquipped, bool _canColorChange, bool _isColorChangeOn, ItemStyle _itemStyle, bool _colorComplete)
+    public static void SaveAllItem(string _name, string _iconName, Color _color, bool _isOwned, bool _isEquipped, bool _canColorChange, bool _isColorChangeOn, ItemStyle _itemStyle, bool _colorComplete,ItemColorChangeSlotColor _defaultColor)
     {
         // 既存データを読み込み（null 対策）
         PlayerSaveData data = Load() ?? new PlayerSaveData();
@@ -200,7 +202,7 @@ public static class SaveManager
         if (existing == null)
         {
             // 新しい ItemData を正しく生成して追加
-            ItemData item = new ItemData(_name, _iconName, _color, _isOwned, _isEquipped, _canColorChange, _isColorChangeOn, _itemStyle, _colorComplete);
+            ItemData item = new ItemData(_name, _iconName, _color, _isOwned, _isEquipped, _canColorChange, _isColorChangeOn, _itemStyle, _colorComplete, _defaultColor);
 
             data.allItems.Add(item);
             Save(data); // 上書き保存

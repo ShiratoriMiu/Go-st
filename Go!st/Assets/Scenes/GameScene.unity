@@ -38698,6 +38698,10 @@ PrefabInstance:
       propertyPath: itemSlots.Array.data[8].itemIcon
       value: 
       objectReference: {fileID: 21300000, guid: c95a31da69df9dc43915add692fc6048, type: 3}
+    - target: {fileID: 1495171607223402771, guid: 0ee97adfaaaf7d84daf9b8f9a83a163b, type: 3}
+      propertyPath: itemSlots.Array.data[14].defaultColor
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 1919042294704253296, guid: 0ee97adfaaaf7d84daf9b8f9a83a163b, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
