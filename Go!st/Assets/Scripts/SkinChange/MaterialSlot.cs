@@ -31,7 +31,11 @@ public enum ItemNameSlot
     RedColor,
     PurpleColor,
     RainbowColor,
-    ZombieColor
+    ZombieColor,
+    Bow,
+    BowTie,
+    CosmicColor,
+    WaterMelon
 }
 
 public enum ItemStyle

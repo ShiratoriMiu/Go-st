@@ -10,6 +10,7 @@ TagManager:
   - FxTemporaire
   - PlayerBullet
   - MyRank
+  - DoubleIcon
   layers:
   - Default
   - TransparentFX

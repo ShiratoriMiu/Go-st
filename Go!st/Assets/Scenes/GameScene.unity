@@ -38707,6 +38707,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1495171607223402771, guid: 0ee97adfaaaf7d84daf9b8f9a83a163b, type: 3}
+      propertyPath: itemSlots.Array.data[11].defaultColor
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1495171607223402771, guid: 0ee97adfaaaf7d84daf9b8f9a83a163b, type: 3}
       propertyPath: itemSlots.Array.data[13].defaultColor
       value: 7
       objectReference: {fileID: 0}
