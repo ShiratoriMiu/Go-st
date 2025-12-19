@@ -38786,6 +38786,10 @@ PrefabInstance:
       propertyPath: centerToGrayEffect
       value: 
       objectReference: {fileID: 963194230}
+    - target: {fileID: 5743897870420690002, guid: 0ee97adfaaaf7d84daf9b8f9a83a163b, type: 3}
+      propertyPath: m_ReceiveShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7205623681682634441, guid: 0ee97adfaaaf7d84daf9b8f9a83a163b, type: 3}
       propertyPath: m_IsActive
       value: 0
