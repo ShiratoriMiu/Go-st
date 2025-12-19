@@ -35,7 +35,14 @@ public enum ItemNameSlot
     Bow,
     BowTie,
     CosmicColor,
-    WaterMelon
+    WaterMelon,
+    BandAid,
+    ButterflyGreenPink,
+    ButterflyPurpleBlue,
+    ButterflyYellowRed,
+    CatWhiskers,
+    Clown,
+    Gauze
 }
 
 public enum ItemStyle
