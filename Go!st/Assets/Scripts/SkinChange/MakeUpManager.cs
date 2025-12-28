@@ -29,48 +29,15 @@ public class MakeUpManager : MonoBehaviour
 
     void Start()
     {
-        // JSONからロード
         PlayerSaveData playerData = SaveManager.Load();
-
         RestoreMakeEquipped(playerData);
-
-        if (_makeUpScrollViewBase == null) return;
-        
-        // 既存の子オブジェクト削除
-        foreach (Transform child in _makeUpScrollViewBase)
-        {
-            Destroy(child.gameObject);
-        }
-
-        // isOwned == true のスロットだけUI生成
-        foreach (var slot in makeUpSlots)
-        {
-            if (!slot.isOwned) continue;
-
-            var go = Instantiate(scrollViewIconPrefab, _makeUpScrollViewBase);
-            Button btn = go.GetComponent<Button>();
-            var captured = slot;
-
-            if (btn != null)
-            {
-                btn.onClick.AddListener(() =>
-                {
-                    ToggleMakeup(captured);
-                });
-            }
-
-            Text childText = go.GetComponentsInChildren<Text>().FirstOrDefault(txt => txt.gameObject != go);
-            // 子の Image にアイコン設定（icon がある場合）
-            if (go.name != null)
-            {
-                childText.text = slot.name;
-            }
-            else
-            {
-                childText.text = "";
-            }
-        }
     }
+
+    void OnEnable()
+    {
+        RefreshMakeUpUI();
+    }
+
 
     void ToggleMakeup(MakeUpSlot slot)
     {
@@ -168,6 +135,43 @@ public class MakeUpManager : MonoBehaviour
 
             // 装備状態をを復元
             makeSlot.isEquipped = savedItem.isEquipped;
+        }
+    }
+
+    public void RefreshMakeUpUI()
+    {
+        // データ再ロード
+        PlayerSaveData playerData = SaveManager.Load();
+        RestoreMakeEquipped(playerData);
+
+        // 既存UI削除
+        foreach (Transform child in _makeUpScrollViewBase)
+        {
+            Destroy(child.gameObject);
+        }
+
+        // 再生成
+        foreach (var slot in makeUpSlots)
+        {
+            if (!slot.isOwned) continue;
+
+            var go = Instantiate(scrollViewIconPrefab, _makeUpScrollViewBase);
+            Button btn = go.GetComponent<Button>();
+            var captured = slot;
+
+            if (btn != null)
+            {
+                btn.onClick.AddListener(() =>
+                {
+                    ToggleMakeup(captured);
+                });
+            }
+
+            Text text = go.GetComponentsInChildren<Text>()
+                          .FirstOrDefault(t => t.gameObject != go);
+
+            if (text != null)
+                text.text = slot.name;
         }
     }
 }

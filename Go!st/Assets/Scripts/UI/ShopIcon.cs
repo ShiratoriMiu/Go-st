@@ -103,6 +103,12 @@ public class ShopIcon : MonoBehaviour
             {
                 skinItem.isOwned = true;
                 skinItem.currentColorChange = true;
+                foreach (ItemColorChangeSlotColor color in System.Enum.GetValues(typeof(ItemColorChangeSlotColor)))
+                {
+                    string colorName = color.ToString();
+                    SaveManager.SaveUnlockedColor(skinItem.itemName, colorName);
+                }
+                SaveManager.UpdateItemColorComplete(skinItem.itemName);
             }
         }
 
