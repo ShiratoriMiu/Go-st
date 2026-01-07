@@ -47,8 +47,10 @@ public class PlayerManager : MonoBehaviour
         skillEnemyNumText.gameObject.SetActive(false);
     }
 
-    private void Start()
+    private async void Start()
     {
+        await LoginController.Instance.WaitForFirebaseReadyAsync();
+
         // JSONÇ©ÇÁÉçÅ[Éh
         playerData = SaveManager.Load();
 

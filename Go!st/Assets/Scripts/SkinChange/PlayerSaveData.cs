@@ -462,5 +462,25 @@ public static class SaveManager
 
         Save(data);
     }
+
+    /// <summary>
+    /// ローカルの全セーブデータを完全にリセットする
+    /// Firebase にデータが存在しない場合などに使用
+    /// </summary>
+    public static void ResetAllLocalData()
+    {
+        // メインセーブ削除
+        if (File.Exists(SavePath))
+        {
+            File.Delete(SavePath);
+            Debug.Log("[SaveManager] playerSave.json を削除しました");
+        }
+
+        // 念のため新規データを作っておく（null事故防止）
+        PlayerSaveData freshData = new PlayerSaveData();
+        Save(freshData);
+
+        Debug.Log("[SaveManager] ローカルデータを完全リセットしました");
+    }
 }
 

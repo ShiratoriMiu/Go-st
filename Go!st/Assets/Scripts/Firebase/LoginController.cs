@@ -57,35 +57,57 @@ public class LoginController : MonoBehaviour
         try
         {
             var dependencyStatus = await FirebaseApp.CheckAndFixDependenciesAsync()
-                .ContinueWithOnMainThread(task => task.Result); // ★ここ重要
+                .ContinueWithOnMainThread(task => task.Result);
 
             if (dependencyStatus != DependencyStatus.Available)
             {
                 Debug.LogError($"Firebase初期化失敗: {dependencyStatus}");
-                firebaseReadyTcs.TrySetException(new Exception($"Firebase initialization failed: {dependencyStatus}"));
+                firebaseReadyTcs.TrySetException(
+                    new Exception($"Firebase initialization failed: {dependencyStatus}")
+                );
                 return;
             }
 
             var auth = FirebaseAuth.DefaultInstance;
             var loginResult = await auth.SignInAnonymouslyAsync()
-                .ContinueWithOnMainThread(task => task.Result); // ★これも追加
+                .ContinueWithOnMainThread(task => task.Result);
 
             if (loginResult == null || auth.CurrentUser == null)
             {
                 Debug.LogError("匿名ログイン失敗（ユーザー情報がnull）");
-                firebaseReadyTcs.TrySetException(new Exception("Anonymous login failed"));
+                firebaseReadyTcs.TrySetException(
+                    new Exception("Anonymous login failed")
+                );
                 return;
             }
 
+            // ------------------------------
+            // Firebaseログイン成功
+            // ------------------------------
             User = auth.CurrentUser;
             DbReference = FirebaseDatabase.DefaultInstance.RootReference;
             IsFirebaseReady = true;
 
             Debug.Log($"匿名ログイン成功: {User.UserId}");
 
+            // ★ここが今回の追加ポイント
+            var firebaseController = UnityEngine.Object.FindFirstObjectByType<FirebaseController>();
+            if (firebaseController != null)
+            {
+                bool hasServerData = await firebaseController.HasServerUserDataAsync();
+                if (!hasServerData)
+                {
+                    Debug.Log("Firebaseにデータが存在しないためローカルデータを全削除");
+                    SaveManager.ResetAllLocalData();
+                    LoadItemData.Instance.InitializeOnce();
+                    CoinUIManager.Instance.UpdateCoinUI();
+                }
+            }
+
+            // DisplayName 初期設定
             if (string.IsNullOrEmpty(User.DisplayName))
             {
-                await SetUserName("Player"); // これも ContinueWithOnMainThread をつけるとより安全
+                await SetUserName("Player");
             }
 
             firebaseReadyTcs.TrySetResult(true);

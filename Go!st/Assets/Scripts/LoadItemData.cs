@@ -25,7 +25,7 @@ public class LoadItemData : MonoBehaviour
 
     }
 
-    private void InitializeOnce()
+    public void InitializeOnce()
     {
         foreach (var skinItem in skinItemTarget.ItemSlots)
         {

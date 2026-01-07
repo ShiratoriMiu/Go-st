@@ -484,4 +484,22 @@ public class FirebaseController : MonoBehaviour
         var equippedIcons = SaveManager.LoadEquippedPlayerIcons();
         await SaveEquippedIconsAsync(equippedIcons);
     }
+
+    // ------------------------------
+    // FirebaseにUIDが存在するかだけチェック
+    // ------------------------------
+    public async Task<bool> HasServerUserDataAsync()
+    {
+        if (!IsReady)
+            return false;
+
+        string uid = user.UserId;
+
+        var snapshot = await reference
+            .Child("users")
+            .Child(uid)
+            .GetValueAsync();
+
+        return snapshot.Exists;
+    }
 }
