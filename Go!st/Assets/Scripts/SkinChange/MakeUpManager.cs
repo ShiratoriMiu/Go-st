@@ -1,7 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Linq;
+using static ColorChanger;
 
 public class MakeUpManager : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class MakeUpManager : MonoBehaviour
         public string name;
         public Material makeUpMaterial;
         public MaterialSlot slotType;
+        public Sprite icon;
         public bool isOwned;
         [HideInInspector] public bool isEquipped;
         public bool isGacha;
@@ -178,11 +180,27 @@ public class MakeUpManager : MonoBehaviour
                 });
             }
 
+            Image childImage = btn.GetComponentsInChildren<Image>(true)
+                .FirstOrDefault(img => img.transform.parent == btn.transform);
+
             Text text = go.GetComponentsInChildren<Text>()
                           .FirstOrDefault(t => t.gameObject != go);
 
-            if (text != null)
-                text.text = slot.name;
+            // 子の Image にアイコン設定（icon がある場合）
+            if (slot.icon != null)
+            {
+                childImage.sprite = slot.icon;
+                childImage.color = new Color(1, 1, 1, 1); // 完全透明
+                if (text != null)
+                    text.text = "";
+            }
+            else
+            {
+                childImage.sprite = null;
+                childImage.color = new Color(1, 1, 1, 0); // 完全透明
+                if (text != null)
+                    text.text = slot.name;
+            }
         }
     }
 }

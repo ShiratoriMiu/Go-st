@@ -36686,114 +36686,133 @@ MonoBehaviour:
   - name: Cheek
     makeUpMaterial: {fileID: 2100000, guid: 42b77b11fcad2704ca644a85722c0f32, type: 2}
     slotType: 1
+    icon: {fileID: 21300000, guid: e2f7654212987e54993bf2a36b653e59, type: 3}
     isOwned: 0
     isEquipped: 0
     isGacha: 1
   - name: BandAid
     makeUpMaterial: {fileID: 2100000, guid: ad814be59b9afe748bbb57ac12b92b5c, type: 2}
     slotType: 1
+    icon: {fileID: 0}
     isOwned: 0
     isEquipped: 0
     isGacha: 0
   - name: ButterflyGreenPink
     makeUpMaterial: {fileID: 2100000, guid: bb785353f84c5064bb4e3c9dba77ec60, type: 2}
     slotType: 1
+    icon: {fileID: 0}
     isOwned: 0
     isEquipped: 0
     isGacha: 0
   - name: ButterflyPurpleBlue
     makeUpMaterial: {fileID: 2100000, guid: 0e9c79aff4815f740b30b47998faad41, type: 2}
     slotType: 1
+    icon: {fileID: 0}
     isOwned: 0
     isEquipped: 0
     isGacha: 0
   - name: ButterflyYellowOrange
     makeUpMaterial: {fileID: 2100000, guid: 53a245d0b07c5194cb64720efce8fa5e, type: 2}
     slotType: 1
+    icon: {fileID: 0}
     isOwned: 0
     isEquipped: 0
     isGacha: 0
   - name: Whisker
     makeUpMaterial: {fileID: 2100000, guid: 62763d58be64cb846bf4d268adcb9d78, type: 2}
     slotType: 1
+    icon: {fileID: 0}
     isOwned: 0
     isEquipped: 0
     isGacha: 0
   - name: Clown
     makeUpMaterial: {fileID: 2100000, guid: d78dafa3cb03b2c409523b6523ac7fdc, type: 2}
     slotType: 1
+    icon: {fileID: 0}
     isOwned: 0
     isEquipped: 0
     isGacha: 0
   - name: Gauze
     makeUpMaterial: {fileID: 2100000, guid: 403bd448ec3b95044b1f177ecd70f216, type: 2}
     slotType: 1
+    icon: {fileID: 0}
     isOwned: 0
     isEquipped: 0
     isGacha: 0
   - name: AngelEyeGold
     makeUpMaterial: {fileID: 2100000, guid: 3d6ed5dec8194494db05e9be392cab02, type: 2}
     slotType: 1
+    icon: {fileID: 0}
     isOwned: 0
     isEquipped: 0
     isGacha: 0
   - name: AngelEyeSilver
     makeUpMaterial: {fileID: 2100000, guid: 547873a4b9567b94894c35e5c69c0914, type: 2}
     slotType: 1
+    icon: {fileID: 0}
     isOwned: 0
     isEquipped: 0
     isGacha: 1
   - name: Crest1Blue
     makeUpMaterial: {fileID: 2100000, guid: 5338acfa64ef867468ae3ae2f28a3065, type: 2}
     slotType: 1
+    icon: {fileID: 0}
     isOwned: 0
     isEquipped: 0
     isGacha: 0
   - name: Crest2Blue
     makeUpMaterial: {fileID: 2100000, guid: dcfb611062cfdf543b1e1446e98e5f86, type: 2}
     slotType: 1
+    icon: {fileID: 0}
     isOwned: 0
     isEquipped: 0
     isGacha: 0
   - name: DoubleEyelinerBrown
     makeUpMaterial: {fileID: 2100000, guid: 38cdddb48b9ce8748a3d0922f27329ab, type: 2}
     slotType: 1
+    icon: {fileID: 0}
     isOwned: 0
     isEquipped: 0
     isGacha: 0
   - name: EyelinerRed
     makeUpMaterial: {fileID: 2100000, guid: b51687df132ef314e922c66b5867151e, type: 2}
     slotType: 1
+    icon: {fileID: 0}
     isOwned: 0
     isEquipped: 0
     isGacha: 1
   - name: HeartEye
     makeUpMaterial: {fileID: 2100000, guid: 7558b0e0a0ab4ce4b9358a3077fd5668, type: 2}
     slotType: 1
+    icon: {fileID: 0}
     isOwned: 0
     isEquipped: 0
     isGacha: 1
   - name: LeftMole
     makeUpMaterial: {fileID: 2100000, guid: 2bd45f6a8d418b745a72c5587227607a, type: 2}
     slotType: 1
+    icon: {fileID: 0}
     isOwned: 0
     isEquipped: 0
     isGacha: 0
   - name: NoseWound
     makeUpMaterial: {fileID: 2100000, guid: 466795ed564fc2149833642515827294, type: 2}
     slotType: 1
+    icon: {fileID: 0}
     isOwned: 0
     isEquipped: 0
     isGacha: 0
   - name: PawPink
     makeUpMaterial: {fileID: 2100000, guid: d59ed8f983a32ec4586e519529134f5b, type: 2}
     slotType: 1
+    icon: {fileID: 0}
     isOwned: 0
     isEquipped: 0
     isGacha: 0
   - name: SmileSticker
     makeUpMaterial: {fileID: 2100000, guid: 4fa37f043dd7d404fa0e98ff8cc14d21, type: 2}
     slotType: 1
+    icon: {fileID: 0}
     isOwned: 0
     isEquipped: 0
     isGacha: 0

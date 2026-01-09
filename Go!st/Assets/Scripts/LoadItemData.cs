@@ -55,8 +55,9 @@ public class LoadItemData : MonoBehaviour
         foreach (var makeUpItem in makeUpManager.MakeUpSlots)
         {
             string itemName = string.IsNullOrEmpty(makeUpItem.name) ? "" : makeUpItem.name;
+            string iconName = makeUpItem.icon == null ? itemName : makeUpItem.icon.name;
             //êFïœÇ¶ã@î\ÇÕÇ¬Ç¢ÇƒÇ»Ç¢ÇÃÇ≈íºê⁄false
-            SaveManager.SaveAllItem(itemName, itemName, Color.white,makeUpItem.isOwned,makeUpItem.isEquipped,false,false, ItemStyle.MakeUp,false,ItemColorChangeSlotColor.White);
+            SaveManager.SaveAllItem(itemName, iconName, Color.white,makeUpItem.isOwned,makeUpItem.isEquipped,false,false, ItemStyle.MakeUp,false,ItemColorChangeSlotColor.White);
             if (makeUpItem.isGacha)
             {
                 SaveManager.SaveGachaItemName(itemName);
