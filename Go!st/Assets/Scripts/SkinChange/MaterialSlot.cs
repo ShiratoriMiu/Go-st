@@ -39,10 +39,21 @@ public enum ItemNameSlot
     BandAid,
     ButterflyGreenPink,
     ButterflyPurpleBlue,
-    ButterflyYellowRed,
-    CatWhiskers,
+    ButterflyYellowOrange,
+    Whisker,
     Clown,
-    Gauze
+    Gauze,
+    AngelEyeGold,
+    AngelEyeSilver,
+    Crest1Blue,
+    Crest2Blue,
+    DoubleEyelinerBrown,
+    EyelinerRed,
+    HeartEye,
+    LeftMole,
+    NoseWound,
+    PawPink,
+    SmileSticker
 }
 
 public enum ItemStyle
