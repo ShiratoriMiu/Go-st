@@ -54,6 +54,17 @@ public class MakeUpManager : MonoBehaviour
     void ApplyMaterial(MakeUpSlot slot)
     {
         int slotIndex = (int)slot.slotType;
+
+        // š “¯‚¶ slotType ‚Ì‘¼ƒƒCƒN‚ğ‰ğœ
+        foreach (var s in makeUpSlots)
+        {
+            if (s == slot) continue;
+            if (s.slotType != slot.slotType) continue;
+            if (!s.isEquipped) continue;
+
+            s.isEquipped = false;
+        }
+
         EnsureMaterialLength(slotIndex + 1);
 
         var mats = targetRenderer.materials;
